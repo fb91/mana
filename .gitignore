@@ -1,0 +1,36 @@
+# Backend
+backend/.gradle/
+backend/build/
+backend/.kotlin/
+*.jar
+!gradle-wrapper.jar
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/dev-dist/
+frontend/.env
+frontend/.env.local
+
+# Root env
+.env
+.env.local
+*.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite

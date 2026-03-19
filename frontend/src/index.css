@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-cafe-dark dark:text-crema-200 antialiased;
+    /* Safe area para notch/home indicator en iOS */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  h1, h2, h3 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-dorado text-crema-50 px-6 py-3 rounded-full font-medium
+           active:scale-95 transition-all duration-150 shadow-sm
+           hover:bg-dorado-dark disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply border border-dorado text-dorado px-6 py-3 rounded-full font-medium
+           active:scale-95 transition-all duration-150
+           hover:bg-crema-200 dark:hover:bg-oscuro-surface disabled:opacity-50;
+  }
+
+  .card {
+    @apply bg-white dark:bg-oscuro-surface rounded-2xl shadow-sm p-5
+           border border-crema-200 dark:border-oscuro-border;
+  }
+
+  .input-field {
+    @apply w-full bg-crema-100 dark:bg-oscuro-surface border border-crema-300
+           dark:border-oscuro-border rounded-xl px-4 py-3 text-cafe-dark
+           dark:text-crema-200 placeholder-cafe-light/60 focus:outline-none
+           focus:ring-2 focus:ring-dorado/40 transition-all;
+  }
+
+  .chat-bubble-user {
+    @apply bg-dorado text-crema-50 rounded-2xl rounded-br-sm px-4 py-3 max-w-xs ml-auto;
+  }
+
+  .chat-bubble-assistant {
+    @apply bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+           text-cafe-dark dark:text-crema-200 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs;
+  }
+}
+
+/* Ocultar scrollbar manteniendo scroll funcional */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scrollbar mínimo */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-crema-300 rounded-full;
+}

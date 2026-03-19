@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#8B6914" />
+    <meta name="description" content="Tu compañero espiritual diario — Maná" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- No Flash of Unstyled Dark Mode -->
+    <script>
+      const dark = localStorage.getItem('mana-dark-mode');
+      if (dark === 'true') document.documentElement.classList.add('dark');
+    </script>
+
+    <title>Maná</title>
+  </head>
+  <body class="bg-crema dark:bg-oscuro-bg">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
