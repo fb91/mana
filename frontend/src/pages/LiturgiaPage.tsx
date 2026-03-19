@@ -1,4 +1,5 @@
 import PageHeader from '../components/PageHeader'
+import Icon from '../components/Icon'
 
 function getTiempoLiturgico(): { nombre: string; color: string; emoji: string; descripcion: string } {
   const hoy = new Date()
@@ -46,7 +47,7 @@ export default function LiturgiaPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      <PageHeader icon="🗓️" title="Liturgia del Día" subtitle={getDiaSemana()} />
+      <PageHeader icon={<Icon name="cross" size={18} />} title="Liturgia del Día" subtitle={getDiaSemana()} />
 
       <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4 animate-fade-in">
 

@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import PageHeader from '../components/PageHeader'
+import Icon, { IconName } from '../components/Icon'
 import { api, ExamenData, ExamenPerfil } from '../services/api'
 
 type Phase = 'loading' | 'select_profile' | 'intro' | 'questions'
 
-const PROFILE_ICONS: Record<string, string> = {
-  adultos: '🧑',
-  jovenes: '🌱',
-  ninos: '🧒',
+const PROFILE_ICONS: Record<string, IconName> = {
+  adultos: 'user',
+  jovenes: 'sparkles',
+  ninos: 'star',
 }
 
 export default function ExamenPage() {
@@ -105,7 +106,7 @@ export default function ExamenPage() {
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
-        icon="🙏"
+        icon={<Icon name="clipboard" size={18} />}
         title="Examen de Conciencia"
         subtitle={perfil ? perfil.label : 'Preparación para la confesión'}
         onReset={phase !== 'select_profile' && phase !== 'loading' ? handleReset : undefined}
@@ -137,7 +138,9 @@ export default function ExamenPage() {
                 onClick={() => handleSelectPerfil(p)}
                 className="w-full card text-left flex items-center gap-4 hover:border-dorado/50 hover:shadow-md transition-all duration-200 active:scale-[0.98]"
               >
-                <span className="text-3xl">{PROFILE_ICONS[p.id] ?? '🙏'}</span>
+                <div className="w-10 h-10 rounded-xl bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
+                  <Icon name={PROFILE_ICONS[p.id] ?? 'clipboard'} size={20} />
+                </div>
                 <div>
                   <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200">{p.label}</p>
                   <p className="text-xs text-cafe-light dark:text-crema-300 mt-0.5">

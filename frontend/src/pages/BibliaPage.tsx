@@ -1,166 +1,24 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
-import { api, BibleBook, BibleChapter, BibliaRecomendacion, LectioBiblicaResponse } from '../services/api'
+import { api, BibleBook, BibleChapter, LectioBiblicaResponse } from '../services/api'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
 import PageHeader from '../components/PageHeader'
-
-// ── AI Recommendation Modal (bottom sheet) ───────────────────────────────────
-
-function AIModal({
-  books,
-  onClose,
-  onNavigate,
-}: {
-  books: BibleBook[]
-  onClose: () => void
-  onNavigate: (libro: string, cap: number, verso: number) => void
-}) {
-  const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<BibliaRecomendacion | null>(null)
-  const [error, setError] = useState('')
-
-  async function handleSubmit() {
-    if (!text.trim() || loading) return
-    setLoading(true)
-    setError('')
-    try {
-      const rec = await api.getBibliaRecomendacion(text.trim())
-      setResult(rec)
-    } catch {
-      setError('No se pudo obtener una recomendación. Intentá de nuevo.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  function handleGoToPassage() {
-    if (!result) return
-    onNavigate(result.libro, result.capitulo, result.versiculo)
-    onClose()
-  }
-
-  return (
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      {/* Sheet — pb-24 clears the fixed BottomNav (~56px) */}
-      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-24
-                      max-h-[90vh] overflow-y-auto animate-slide-up shadow-2xl">
-        {/* Handle */}
-        <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
-
-        <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200 mb-1">
-          Recomendación espiritual
-        </h2>
-        <p className="text-sm text-cafe-light dark:text-crema-300 mb-5">
-          Contanos brevemente cómo te sentís o qué te preocupa.
-        </p>
-
-        {!result ? (
-          <>
-            <textarea
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="Estoy ansioso por una prueba que se me viene..."
-              rows={3}
-              className="input-field text-sm w-full resize-none mb-3"
-              autoFocus
-            />
-            {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
-            <button
-              onClick={handleSubmit}
-              disabled={!text.trim() || loading}
-              className="btn-primary w-full"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-pulse-soft">✨</span> Buscando pasaje...
-                </span>
-              ) : (
-                'Recibir recomendación'
-              )}
-            </button>
-          </>
-        ) : (
-          <div className="animate-fade-in space-y-5">
-            {/* Message */}
-            <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">
-              {result.mensaje}
-            </p>
-
-            {/* Verse — most prominent element */}
-            <div className="bg-dorado/10 dark:bg-dorado/15 border border-dorado/30
-                            rounded-2xl p-5 space-y-3">
-              <p className="text-cafe-light dark:text-crema-300 text-xs font-semibold uppercase tracking-wider">
-                {result.libroNombre} {result.capitulo}:{result.versiculo}
-              </p>
-              <p className="font-serif text-lg text-cafe-dark dark:text-crema-200 leading-relaxed">
-                "{result.textoVersiculo}"
-              </p>
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={handleGoToPassage}
-              className="btn-primary w-full flex items-center justify-center gap-2 text-base"
-            >
-              <span>📖</span>
-              <span>Ir al pasaje y seguir leyendo</span>
-            </button>
-
-            <button
-              onClick={() => setResult(null)}
-              className="btn-secondary w-full text-sm"
-            >
-              Pedir otra recomendación
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
+import Icon from '../components/Icon'
 
 // ── Book Selector ────────────────────────────────────────────────────────────
 
 function BookSelector({
   books,
   onSelect,
-  onOpenAI,
 }: {
   books: BibleBook[]
   onSelect: (abbr: string) => void
-  onOpenAI: () => void
 }) {
   const at = books.filter(b => b.testament === 'AT')
   const nt = books.filter(b => b.testament === 'NT')
 
   return (
     <div className="pb-6 animate-fade-in">
-      {/* AI recommendation chip */}
-      <div className="px-4 mb-5">
-        <button
-          onClick={onOpenAI}
-          className="w-full flex items-center gap-3 bg-dorado/10 dark:bg-dorado/15
-                     border border-dorado/30 rounded-2xl px-4 py-3
-                     hover:bg-dorado/20 active:scale-98 transition-all duration-150"
-        >
-          <span className="text-xl">✨</span>
-          <div className="text-left flex-1">
-            <p className="text-sm font-semibold text-dorado">Recomendación espiritual</p>
-            <p className="text-xs text-cafe-light dark:text-crema-300">
-              Decinos cómo te sentís y te sugerimos un pasaje
-            </p>
-          </div>
-          <span className="text-dorado text-lg">›</span>
-        </button>
-      </div>
-
-      {/* Books by testament */}
       <TestamentSection title="Antiguo Testamento" books={at} onSelect={onSelect} />
       <TestamentSection title="Nuevo Testamento" books={nt} onSelect={onSelect} />
     </div>
@@ -351,12 +209,12 @@ function LectioModal({
             <DownloadPDFButton onClick={() => downloadLectioPDF(result, chapter, selectedVerses)} />
 
             {/* Lectio */}
-            <LectioSection icon="📖" titulo="Lectio · Leer" color="dorado">
+            <LectioSection titulo="Lectio · Leer" color="dorado">
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.lectio}</p>
             </LectioSection>
 
             {/* Meditatio */}
-            <LectioSection icon="🤔" titulo="Meditatio · Meditar" color="cafe">
+            <LectioSection titulo="Meditatio · Meditar" color="cafe">
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-3">{result.meditatioIntro}</p>
               <ul className="space-y-2">
                 {result.meditatioPreguntas.map((q, i) => (
@@ -369,12 +227,12 @@ function LectioModal({
             </LectioSection>
 
             {/* Oratio */}
-            <LectioSection icon="🙏" titulo="Oratio · Orar" color="dorado">
+            <LectioSection titulo="Oratio · Orar" color="dorado">
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.oratio}</p>
             </LectioSection>
 
             {/* Contemplatio */}
-            <LectioSection icon="🕯️" titulo="Contemplatio · Contemplar" color="cafe">
+            <LectioSection titulo="Contemplatio · Contemplar" color="cafe">
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.contemplatio}</p>
             </LectioSection>
 
@@ -404,9 +262,8 @@ function LectioModal({
 }
 
 function LectioSection({
-  icon, titulo, color, children,
+  titulo, color, children,
 }: {
-  icon: string
   titulo: string
   color: 'dorado' | 'cafe'
   children: React.ReactNode
@@ -415,7 +272,7 @@ function LectioSection({
   return (
     <div className={`border-l-2 ${border} pl-4`}>
       <p className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wider mb-2">
-        {icon} {titulo}
+        {titulo}
       </p>
       {children}
     </div>
@@ -596,7 +453,6 @@ export default function BibliaPage() {
   const [loadingChapter, setLoadingChapter] = useState(false)
   const [view, setView] = useState<View>('books')
   const [highlightVerse, setHighlightVerse] = useState<number | null>(null)
-  const [showAIModal, setShowAIModal] = useState(false)
 
   useEffect(() => {
     api.getBibleBooks()
@@ -660,16 +516,6 @@ export default function BibliaPage() {
     loadChapter(selectedBook.abbr, next)
   }
 
-  function handleAINavigate(libro: string, cap: number, verso: number) {
-    const book = books.find(b => b.abbr === libro)
-    if (!book) return
-    setSelectedBook(book)
-    setView('reader')
-    setHighlightVerse(verso)
-    navigate(`/biblia/${libro}/${cap}?verso=${verso}`, { replace: true })
-    loadChapter(libro, cap)
-  }
-
   const subtitle = view === 'reader' && chapterData
     ? `${chapterData.bookName} ${chapterData.chapter}`
     : view === 'chapters' && selectedBook
@@ -678,7 +524,7 @@ export default function BibliaPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      <PageHeader icon="📖" title="Biblia" subtitle={subtitle} />
+      <PageHeader icon={<Icon name="book-open" size={18} />} title="Biblia" subtitle={subtitle} />
 
       <div className="flex-1 overflow-y-auto pt-4">
         {loadingBooks ? (
@@ -697,7 +543,6 @@ export default function BibliaPage() {
           <BookSelector
             books={books}
             onSelect={handleSelectBook}
-            onOpenAI={() => setShowAIModal(true)}
           />
         ) : view === 'chapters' && selectedBook ? (
           <ChapterSelector
@@ -722,14 +567,6 @@ export default function BibliaPage() {
         ) : null}
       </div>
 
-      {/* AI Recommendation Modal */}
-      {showAIModal && (
-        <AIModal
-          books={books}
-          onClose={() => setShowAIModal(false)}
-          onNavigate={handleAINavigate}
-        />
-      )}
     </div>
   )
 }

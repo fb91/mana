@@ -56,6 +56,51 @@
   }
 }
 
+/* ── Temas de color (via CSS variables usadas por Tailwind) ──────────────── */
+/* Los valores son tripletas RGB separadas por espacio (para Tailwind /opacity) */
+
+:root,
+html.theme-claro {
+  --accent:       139 105 20;   /* dorado cálido  #8B6914 */
+  --accent-dark:  107  79 13;   /* #6B4F0D */
+  --accent-light: 212 168 83;   /* #D4A853 */
+}
+
+html.theme-oscuro {
+  --accent:       212 168 83;   /* dorado más brillante sobre fondo oscuro */
+  --accent-dark:  139 105 20;
+  --accent-light: 232 200 120;
+}
+
+html.theme-juvenil {
+  --accent:       124  58 237;  /* violeta  #7C3AED */
+  --accent-dark:  109  40 217;  /* #6D28D9 */
+  --accent-light: 167 139 250;  /* #A78BFA */
+}
+
+html.theme-colorido {
+  --accent:         8 145 178;  /* cyan     #0891B2 */
+  --accent-dark:   14 116 144;  /* #0E7490 */
+  --accent-light:  34 211 238;  /* #22D3EE */
+}
+
+html.theme-rosa {
+  --accent:       219  39 119;  /* rosa     #DB2777 */
+  --accent-dark:  190  24  93;  /* #BE185D */
+  --accent-light: 244 114 182;  /* #F472B6 */
+}
+
+html.theme-rojo {
+  --accent:       220  38  38;  /* rojo     #DC2626 */
+  --accent-dark:  185  28  28;  /* #B91C1C */
+  --accent-light: 248 113 113;  /* #F87171 */
+}
+
+/* Tamaño de letra escalable — todas las unidades rem escalan con esto */
+html.font-small { font-size: 14px; }
+html.font-large  { font-size: 18px; }
+/* font-normal es el default del navegador (16px) */
+
 /* Ocultar scrollbar manteniendo scroll funcional */
 .scrollbar-hide {
   -ms-overflow-style: none;

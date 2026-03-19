@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
+import Icon from '../components/Icon'
 import { api, Novena } from '../services/api'
 
 export default function NovenasPage() {
@@ -18,15 +19,15 @@ export default function NovenasPage() {
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
-        icon="📿"
+        icon={<Icon name="beads" size={18} />}
         title="Novenas"
         subtitle="Nueve días de oración continua"
       />
 
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {loading && (
-          <div className="flex items-center justify-center py-12 animate-pulse-soft">
-            <span className="text-4xl">📿</span>
+          <div className="flex items-center justify-center py-12 animate-pulse-soft text-dorado">
+            <Icon name="beads" size={40} />
           </div>
         )}
 

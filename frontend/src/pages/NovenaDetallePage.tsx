@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { api, Novena } from '../services/api'
 import { usePushNotifications } from '../hooks/usePushNotifications'
 import PageHeader from '../components/PageHeader'
+import Icon from '../components/Icon'
 
 export default function NovenaDetallePage() {
   const { id } = useParams<{ id: string }>()
@@ -63,9 +64,9 @@ export default function NovenaDetallePage() {
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
-        icon="📿"
+        icon={<Icon name="beads" size={18} />}
         title={novena.nombre}
-        subtitle={`✨ ${novena.santo}`}
+        subtitle={novena.santo}
         onReset={() => navigate('/novenas')}
       />
 

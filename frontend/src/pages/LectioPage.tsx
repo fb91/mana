@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import PageHeader from '../components/PageHeader'
+import Icon from '../components/Icon'
 import ChatInterface from '../components/ChatInterface'
 import { api, ChatMessage } from '../services/api'
 import { clearChatHistory } from '../lib/db'
@@ -72,7 +73,7 @@ export default function LectioPage() {
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
-        icon="🕯️"
+        icon={<Icon name="book-open" size={18} />}
         title="Lectio Divina"
         subtitle={pasaje || 'Lectura orante de la Escritura'}
         onReset={phase !== 'select' ? handleReset : undefined}

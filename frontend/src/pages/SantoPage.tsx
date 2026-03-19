@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import PageHeader from '../components/PageHeader'
+import Icon from '../components/Icon'
 import AxisRater from '../components/AxisRater'
 import SantoCard from '../components/SantoCard'
 import { api, SantoSugerido } from '../services/api'
@@ -54,7 +55,7 @@ export default function SantoPage() {
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
-        icon="✨"
+        icon={<Icon name="star" size={18} />}
         title="Un Santo Para Vos"
         subtitle="Descubrí tu compañero en la fe"
         onReset={phase !== 'intro' ? handleReset : undefined}

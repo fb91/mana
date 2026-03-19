@@ -108,12 +108,6 @@ export const api = {
       body: JSON.stringify({ messages, pasaje }),
     }),
 
-  qa: (messages: ChatMessage[]) =>
-    request<AIResponseWithOptions>('/api/ai/qa', {
-      method: 'POST',
-      body: JSON.stringify({ messages }),
-    }),
-
   // ── Novenas ────────────────────────────────────────────────────
 
   getNovenas: () =>

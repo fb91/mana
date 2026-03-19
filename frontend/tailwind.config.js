@@ -5,18 +5,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta cálida — cremas, dorados, marrones
+        // Paleta cálida — cremas, marrones (fija)
         crema: {
           50:  '#FDFAF5',
           100: '#FAF7F0',
           200: '#F5EDD8',
           300: '#EDD9B0',
           DEFAULT: '#FAF7F2',
-        },
-        dorado: {
-          light: '#D4A853',
-          DEFAULT: '#8B6914',
-          dark:  '#6B4F0D',
         },
         cafe: {
           light: '#C4956A',
@@ -27,7 +22,14 @@ export default {
         oscuro: {
           bg:      '#1C1510',
           surface: '#261D15',
+          card:    '#2E2016',
           border:  '#3D2E20',
+        },
+        // Acento — cambia según el tema activo (CSS variables)
+        dorado: {
+          light: 'rgb(var(--accent-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          dark:  'rgb(var(--accent-dark) / <alpha-value>)',
         },
       },
       fontFamily: {
