@@ -1,0 +1,357 @@
+{
+  "01-01": {
+    "name": "Solemnidad de María, Madre de Dios",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Nm 6:22-27",
+      "psalm": "Sal 67",
+      "second": "Gal 4:4-7",
+      "gospel": "Lc 2:16-21"
+    }
+  },
+  "01-06": {
+    "name": "Epifanía del Señor",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Is 60:1-6",
+      "psalm": "Sal 72",
+      "second": "Ef 3:2-3a.5-6",
+      "gospel": "Mt 2:1-12"
+    }
+  },
+  "01-25": {
+    "name": "Conversión de san Pablo, apóstol",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Hch 22:3-16",
+      "psalm": "Sal 117",
+      "gospel": "Mc 16:15-18"
+    }
+  },
+  "02-02": {
+    "name": "Presentación del Señor",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Mal 3:1-4",
+      "psalm": "Sal 24",
+      "second": "Heb 2:14-18",
+      "gospel": "Lc 2:22-40"
+    }
+  },
+  "02-22": {
+    "name": "Cátedra de san Pedro, apóstol",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "1Pe 5:1-4",
+      "psalm": "Sal 23",
+      "gospel": "Mt 16:13-19"
+    }
+  },
+  "03-19": {
+    "name": "San José, esposo de la Virgen María",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "2Sam 7:4-5a.12-14a.16",
+      "psalm": "Sal 89",
+      "second": "Rom 4:13.16-18.22",
+      "gospel": "Mt 1:16.18-21.24a"
+    }
+  },
+  "03-25": {
+    "name": "Anunciación del Señor",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Is 7:10-14;8:10",
+      "psalm": "Sal 40",
+      "second": "Heb 10:4-10",
+      "gospel": "Lc 1:26-38"
+    }
+  },
+  "04-23": {
+    "name": "San Jorge, mártir",
+    "rank": "OPT_MEMORIAL",
+    "color": "red",
+    "readings": {
+      "first": "Ap 12:10b-12a",
+      "psalm": "Sal 126",
+      "gospel": "Jn 15:18-21"
+    }
+  },
+  "05-01": {
+    "name": "San José Obrero",
+    "rank": "OPT_MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Gn 1:26-2:3",
+      "psalm": "Sal 90",
+      "gospel": "Mt 13:54-58"
+    }
+  },
+  "05-31": {
+    "name": "Visitación de la Virgen María",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Sof 3:14-18a",
+      "psalm": "Is 12:2-6",
+      "gospel": "Lc 1:39-56"
+    }
+  },
+  "06-24": {
+    "name": "Natividad de san Juan Bautista",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Is 49:1-6",
+      "psalm": "Sal 139",
+      "second": "Hch 13:22-26",
+      "gospel": "Lc 1:57-66.80"
+    }
+  },
+  "06-29": {
+    "name": "Santos Pedro y Pablo, apóstoles",
+    "rank": "SOLEMNITY",
+    "color": "red",
+    "readings": {
+      "first": "Hch 12:1-11",
+      "psalm": "Sal 34",
+      "second": "2Tim 4:6-8.17-18",
+      "gospel": "Mt 16:13-19"
+    }
+  },
+  "07-22": {
+    "name": "Santa María Magdalena",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Cant 3:1-4a",
+      "psalm": "Sal 63",
+      "gospel": "Jn 20:1-2.11-18"
+    }
+  },
+  "07-25": {
+    "name": "Santiago, apóstol",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "2Cor 4:7-15",
+      "psalm": "Sal 126",
+      "gospel": "Mt 20:20-28"
+    }
+  },
+  "08-06": {
+    "name": "Transfiguración del Señor",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Dn 7:9-10.13-14",
+      "psalm": "Sal 97",
+      "second": "2Pe 1:16-19",
+      "gospel": "Mt 17:1-9"
+    }
+  },
+  "08-10": {
+    "name": "San Lorenzo, diácono y mártir",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "2Cor 9:6-10",
+      "psalm": "Sal 112",
+      "gospel": "Jn 12:24-26"
+    }
+  },
+  "08-15": {
+    "name": "Asunción de la Virgen María",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Ap 11:19a;12:1-6a.10ab",
+      "psalm": "Sal 45",
+      "second": "1Cor 15:20-27",
+      "gospel": "Lc 1:39-56"
+    }
+  },
+  "08-22": {
+    "name": "Inmaculado Corazón de María",
+    "rank": "MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Is 61:9-11",
+      "psalm": "Sal 34",
+      "gospel": "Lc 2:41-51"
+    }
+  },
+  "09-08": {
+    "name": "Natividad de la Virgen María",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Miq 5:1-4a",
+      "psalm": "Sal 13",
+      "gospel": "Mt 1:1-16.18-23"
+    }
+  },
+  "09-14": {
+    "name": "Exaltación de la Santa Cruz",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "Nm 21:4b-9",
+      "psalm": "Sal 78",
+      "second": "Flp 2:6-11",
+      "gospel": "Jn 3:13-17"
+    }
+  },
+  "09-15": {
+    "name": "Nuestra Señora de los Dolores",
+    "rank": "MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Heb 5:7-9",
+      "psalm": "Sal 31",
+      "gospel": "Jn 19:25-27"
+    }
+  },
+  "09-29": {
+    "name": "Santos Arcángeles Miguel, Gabriel y Rafael",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Dn 7:9-10.13-14",
+      "psalm": "Sal 138",
+      "gospel": "Jn 1:47-51"
+    }
+  },
+  "10-01": {
+    "name": "Santa Teresa del Niño Jesús, virgen y doctora",
+    "rank": "MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Is 66:10-14c",
+      "psalm": "Sal 131",
+      "gospel": "Mt 18:1-4"
+    }
+  },
+  "10-04": {
+    "name": "San Francisco de Asís",
+    "rank": "MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Gal 6:14-18",
+      "psalm": "Sal 16",
+      "gospel": "Mt 11:25-30"
+    }
+  },
+  "10-28": {
+    "name": "Santos Simón y Judas, apóstoles",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "Ef 2:19-22",
+      "psalm": "Sal 19",
+      "gospel": "Lc 6:12-16"
+    }
+  },
+  "11-01": {
+    "name": "Todos los Santos",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Ap 7:2-4.9-14",
+      "psalm": "Sal 24",
+      "second": "1Jn 3:1-3",
+      "gospel": "Mt 5:1-12a"
+    }
+  },
+  "11-02": {
+    "name": "Conmemoración de todos los Fieles Difuntos",
+    "rank": "SOLEMNITY",
+    "color": "black",
+    "readings": {
+      "first": "Sab 3:1-9",
+      "psalm": "Sal 23",
+      "second": "Rom 8:31b-35.37-39",
+      "gospel": "Jn 11:17-27"
+    }
+  },
+  "11-09": {
+    "name": "Dedicación de la Basílica de Letrán",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "Ez 47:1-2.8-9.12",
+      "psalm": "Sal 46",
+      "second": "1Cor 3:9c-11.16-17",
+      "gospel": "Jn 2:13-22"
+    }
+  },
+  "11-21": {
+    "name": "Presentación de la Virgen María",
+    "rank": "MEMORIAL",
+    "color": "white",
+    "readings": {
+      "first": "Zac 2:14-17",
+      "psalm": "Sal 45",
+      "gospel": "Mt 12:46-50"
+    }
+  },
+  "12-08": {
+    "name": "Inmaculada Concepción de la Virgen María",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Gn 3:9-15.20",
+      "psalm": "Sal 98",
+      "second": "Ef 1:3-6.11-12",
+      "gospel": "Lc 1:26-38"
+    }
+  },
+  "12-25": {
+    "name": "Natividad del Señor",
+    "rank": "SOLEMNITY",
+    "color": "white",
+    "readings": {
+      "first": "Is 52:7-10",
+      "psalm": "Sal 98",
+      "second": "Heb 1:1-6",
+      "gospel": "Jn 1:1-18"
+    }
+  },
+  "12-26": {
+    "name": "San Esteban, protomártir",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "Hch 6:8-10;7:54-60",
+      "psalm": "Sal 31",
+      "gospel": "Mt 10:17-22"
+    }
+  },
+  "12-27": {
+    "name": "San Juan, apóstol y evangelista",
+    "rank": "FEAST",
+    "color": "white",
+    "readings": {
+      "first": "1Jn 1:1-4",
+      "psalm": "Sal 97",
+      "gospel": "Jn 20:2-8"
+    }
+  },
+  "12-28": {
+    "name": "Santos Inocentes, mártires",
+    "rank": "FEAST",
+    "color": "red",
+    "readings": {
+      "first": "1Jn 1:5-2:2",
+      "psalm": "Sal 124",
+      "gospel": "Mt 2:13-18"
+    }
+  }
+}

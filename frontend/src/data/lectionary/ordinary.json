@@ -1,0 +1,664 @@
+{
+  "sunday": {
+    "2": {
+      "A": {
+        "first": "Is 49:3.5-6",
+        "psalm": "Sal 40",
+        "second": "1Cor 1:1-3",
+        "gospel": "Jn 1:29-34"
+      },
+      "B": {
+        "first": "1Sam 3:3b-10.19",
+        "psalm": "Sal 40",
+        "second": "1Cor 6:13c-15a.17-20",
+        "gospel": "Jn 1:35-42"
+      },
+      "C": {
+        "first": "Is 62:1-5",
+        "psalm": "Sal 96",
+        "second": "1Cor 12:4-11",
+        "gospel": "Jn 2:1-11"
+      }
+    },
+    "3": {
+      "A": {
+        "first": "Is 8:23b-9:3",
+        "psalm": "Sal 27",
+        "second": "1Cor 1:10-13.17",
+        "gospel": "Mt 4:12-23"
+      },
+      "B": {
+        "first": "Jon 3:1-5.10",
+        "psalm": "Sal 25",
+        "second": "1Cor 7:29-31",
+        "gospel": "Mc 1:14-20"
+      },
+      "C": {
+        "first": "Neh 8:2-4a.5-6.8-10",
+        "psalm": "Sal 19",
+        "second": "1Cor 12:12-30",
+        "gospel": "Lc 1:1-4;4:14-21"
+      }
+    },
+    "4": {
+      "A": {
+        "first": "Sof 2:3;3:12-13",
+        "psalm": "Sal 146",
+        "second": "1Cor 1:26-31",
+        "gospel": "Mt 5:1-12a"
+      },
+      "B": {
+        "first": "Dt 18:15-20",
+        "psalm": "Sal 95",
+        "second": "1Cor 7:32-35",
+        "gospel": "Mc 1:21-28"
+      },
+      "C": {
+        "first": "Jr 1:4-5.17-19",
+        "psalm": "Sal 71",
+        "second": "1Cor 12:31-13:13",
+        "gospel": "Lc 4:21-30"
+      }
+    },
+    "5": {
+      "A": {
+        "first": "Is 58:7-10",
+        "psalm": "Sal 112",
+        "second": "1Cor 2:1-5",
+        "gospel": "Mt 5:13-16"
+      },
+      "B": {
+        "first": "Job 7:1-4.6-7",
+        "psalm": "Sal 147",
+        "second": "1Cor 9:16-19.22-23",
+        "gospel": "Mc 1:29-39"
+      },
+      "C": {
+        "first": "Is 6:1-2a.3-8",
+        "psalm": "Sal 138",
+        "second": "1Cor 15:1-11",
+        "gospel": "Lc 5:1-11"
+      }
+    },
+    "6": {
+      "A": {
+        "first": "Sir 15:15-20",
+        "psalm": "Sal 119",
+        "second": "1Cor 2:6-10",
+        "gospel": "Mt 5:17-37"
+      },
+      "B": {
+        "first": "Lv 13:1-2.44-46",
+        "psalm": "Sal 32",
+        "second": "1Cor 10:31-11:1",
+        "gospel": "Mc 1:40-45"
+      },
+      "C": {
+        "first": "Jr 17:5-8",
+        "psalm": "Sal 1",
+        "second": "1Cor 15:12.16-20",
+        "gospel": "Lc 6:17.20-26"
+      }
+    },
+    "7": {
+      "A": {
+        "first": "Lv 19:1-2.17-18",
+        "psalm": "Sal 103",
+        "second": "1Cor 3:16-23",
+        "gospel": "Mt 5:38-48"
+      },
+      "B": {
+        "first": "Is 43:18-19.21-22.24b-25",
+        "psalm": "Sal 41",
+        "second": "2Cor 1:18-22",
+        "gospel": "Mc 2:1-12"
+      },
+      "C": {
+        "first": "1Sam 26:2.7-9.12-13.22-23",
+        "psalm": "Sal 103",
+        "second": "1Cor 15:45-49",
+        "gospel": "Lc 6:27-38"
+      }
+    },
+    "8": {
+      "A": {
+        "first": "Is 49:14-15",
+        "psalm": "Sal 62",
+        "second": "1Cor 4:1-5",
+        "gospel": "Mt 6:24-34"
+      },
+      "B": {
+        "first": "Os 2:16b.17b.21-22",
+        "psalm": "Sal 103",
+        "second": "2Cor 3:1b-6",
+        "gospel": "Mc 2:18-22"
+      },
+      "C": {
+        "first": "Sir 27:4-7",
+        "psalm": "Sal 92",
+        "second": "1Cor 15:54-58",
+        "gospel": "Lc 6:39-45"
+      }
+    },
+    "9": {
+      "A": {
+        "first": "Dt 11:18.26-28.32",
+        "psalm": "Sal 31",
+        "second": "Rom 3:21-25a.28",
+        "gospel": "Mt 7:21-27"
+      },
+      "B": {
+        "first": "Dt 5:12-15",
+        "psalm": "Sal 81",
+        "second": "2Cor 4:6-11",
+        "gospel": "Mc 2:23-3:6"
+      },
+      "C": {
+        "first": "1Re 8:41-43",
+        "psalm": "Sal 117",
+        "second": "Gal 1:1-2.6-10",
+        "gospel": "Lc 7:1-10"
+      }
+    },
+    "10": {
+      "A": {
+        "first": "Os 6:3-6",
+        "psalm": "Sal 50",
+        "second": "Rom 4:18-25",
+        "gospel": "Mt 9:9-13"
+      },
+      "B": {
+        "first": "Gn 3:9-15",
+        "psalm": "Sal 130",
+        "second": "2Cor 4:13-5:1",
+        "gospel": "Mc 3:20-35"
+      },
+      "C": {
+        "first": "1Re 17:17-24",
+        "psalm": "Sal 30",
+        "second": "Gal 1:11-19",
+        "gospel": "Lc 7:11-17"
+      }
+    },
+    "11": {
+      "A": {
+        "first": "Ex 19:2-6a",
+        "psalm": "Sal 100",
+        "second": "Rom 5:6-11",
+        "gospel": "Mt 9:36-10:8"
+      },
+      "B": {
+        "first": "Ez 17:22-24",
+        "psalm": "Sal 92",
+        "second": "2Cor 5:6-10",
+        "gospel": "Mc 4:26-34"
+      },
+      "C": {
+        "first": "2Sam 12:7-10.13",
+        "psalm": "Sal 32",
+        "second": "Gal 2:16.19-21",
+        "gospel": "Lc 7:36-8:3"
+      }
+    },
+    "12": {
+      "A": {
+        "first": "Jr 20:10-13",
+        "psalm": "Sal 69",
+        "second": "Rom 5:12-15",
+        "gospel": "Mt 10:26-33"
+      },
+      "B": {
+        "first": "Job 38:1.8-11",
+        "psalm": "Sal 107",
+        "second": "2Cor 5:14-17",
+        "gospel": "Mc 4:35-41"
+      },
+      "C": {
+        "first": "Zac 12:10-11;13:1",
+        "psalm": "Sal 63",
+        "second": "Gal 3:26-29",
+        "gospel": "Lc 9:18-24"
+      }
+    },
+    "13": {
+      "A": {
+        "first": "2Re 4:8-11.14-16a",
+        "psalm": "Sal 89",
+        "second": "Rom 6:3-4.8-11",
+        "gospel": "Mt 10:37-42"
+      },
+      "B": {
+        "first": "Sab 1:13-15;2:23-24",
+        "psalm": "Sal 30",
+        "second": "2Cor 8:7.9.13-15",
+        "gospel": "Mc 5:21-43"
+      },
+      "C": {
+        "first": "1Re 19:16b.19-21",
+        "psalm": "Sal 16",
+        "second": "Gal 5:1.13-18",
+        "gospel": "Lc 9:51-62"
+      }
+    },
+    "14": {
+      "A": {
+        "first": "Zac 9:9-10",
+        "psalm": "Sal 145",
+        "second": "Rom 8:9.11-13",
+        "gospel": "Mt 11:25-30"
+      },
+      "B": {
+        "first": "Ez 2:2-5",
+        "psalm": "Sal 123",
+        "second": "2Cor 12:7-10",
+        "gospel": "Mc 6:1-6"
+      },
+      "C": {
+        "first": "Is 66:10-14c",
+        "psalm": "Sal 66",
+        "second": "Gal 6:14-18",
+        "gospel": "Lc 10:1-12.17-20"
+      }
+    },
+    "15": {
+      "A": {
+        "first": "Is 55:10-11",
+        "psalm": "Sal 65",
+        "second": "Rom 8:18-23",
+        "gospel": "Mt 13:1-23"
+      },
+      "B": {
+        "first": "Am 7:12-15",
+        "psalm": "Sal 85",
+        "second": "Ef 1:3-14",
+        "gospel": "Mc 6:7-13"
+      },
+      "C": {
+        "first": "Dt 30:10-14",
+        "psalm": "Sal 69",
+        "second": "Col 1:15-20",
+        "gospel": "Lc 10:25-37"
+      }
+    },
+    "16": {
+      "A": {
+        "first": "Sab 12:13.16-19",
+        "psalm": "Sal 86",
+        "second": "Rom 8:26-27",
+        "gospel": "Mt 13:24-43"
+      },
+      "B": {
+        "first": "Jr 23:1-6",
+        "psalm": "Sal 23",
+        "second": "Ef 2:13-18",
+        "gospel": "Mc 6:30-34"
+      },
+      "C": {
+        "first": "Gn 18:1-10a",
+        "psalm": "Sal 15",
+        "second": "Col 1:24-28",
+        "gospel": "Lc 10:38-42"
+      }
+    },
+    "17": {
+      "A": {
+        "first": "1Re 3:5.7-12",
+        "psalm": "Sal 119",
+        "second": "Rom 8:28-30",
+        "gospel": "Mt 13:44-52"
+      },
+      "B": {
+        "first": "2Re 4:42-44",
+        "psalm": "Sal 145",
+        "second": "Ef 4:1-6",
+        "gospel": "Jn 6:1-15"
+      },
+      "C": {
+        "first": "Gn 18:20-32",
+        "psalm": "Sal 138",
+        "second": "Col 2:12-14",
+        "gospel": "Lc 11:1-13"
+      }
+    },
+    "18": {
+      "A": {
+        "first": "Is 55:1-3",
+        "psalm": "Sal 145",
+        "second": "Rom 8:35.37-39",
+        "gospel": "Mt 14:13-21"
+      },
+      "B": {
+        "first": "Ex 16:2-4.12-15",
+        "psalm": "Sal 78",
+        "second": "Ef 4:17.20-24",
+        "gospel": "Jn 6:24-35"
+      },
+      "C": {
+        "first": "Ecl 1:2;2:21-23",
+        "psalm": "Sal 90",
+        "second": "Col 3:1-5.9-11",
+        "gospel": "Lc 12:13-21"
+      }
+    },
+    "19": {
+      "A": {
+        "first": "1Re 19:9a.11-13a",
+        "psalm": "Sal 85",
+        "second": "Rom 9:1-5",
+        "gospel": "Mt 14:22-33"
+      },
+      "B": {
+        "first": "1Re 19:4-8",
+        "psalm": "Sal 34",
+        "second": "Ef 4:30-5:2",
+        "gospel": "Jn 6:41-51"
+      },
+      "C": {
+        "first": "Sab 18:6-9",
+        "psalm": "Sal 33",
+        "second": "Heb 11:1-2.8-19",
+        "gospel": "Lc 12:32-48"
+      }
+    },
+    "20": {
+      "A": {
+        "first": "Is 56:1.6-7",
+        "psalm": "Sal 67",
+        "second": "Rom 11:13-15.29-32",
+        "gospel": "Mt 15:21-28"
+      },
+      "B": {
+        "first": "Prov 9:1-6",
+        "psalm": "Sal 34",
+        "second": "Ef 5:15-20",
+        "gospel": "Jn 6:51-58"
+      },
+      "C": {
+        "first": "Jr 38:4-6.8-10",
+        "psalm": "Sal 40",
+        "second": "Heb 12:1-4",
+        "gospel": "Lc 12:49-53"
+      }
+    },
+    "21": {
+      "A": {
+        "first": "Is 22:19-23",
+        "psalm": "Sal 138",
+        "second": "Rom 11:33-36",
+        "gospel": "Mt 16:13-20"
+      },
+      "B": {
+        "first": "Jos 24:1-2a.15-17.18b",
+        "psalm": "Sal 34",
+        "second": "Ef 5:21-32",
+        "gospel": "Jn 6:60-69"
+      },
+      "C": {
+        "first": "Is 66:18-21",
+        "psalm": "Sal 117",
+        "second": "Heb 12:5-7.11-13",
+        "gospel": "Lc 13:22-30"
+      }
+    },
+    "22": {
+      "A": {
+        "first": "Jr 20:7-9",
+        "psalm": "Sal 63",
+        "second": "Rom 12:1-2",
+        "gospel": "Mt 16:21-27"
+      },
+      "B": {
+        "first": "Dt 4:1-2.6-8",
+        "psalm": "Sal 15",
+        "second": "Sant 1:17-18.21b-22.27",
+        "gospel": "Mc 7:1-8.14-15.21-23"
+      },
+      "C": {
+        "first": "Sir 3:17-18.20.28-29",
+        "psalm": "Sal 68",
+        "second": "Heb 12:18-19.22-24a",
+        "gospel": "Lc 14:1.7-14"
+      }
+    },
+    "23": {
+      "A": {
+        "first": "Ez 33:7-9",
+        "psalm": "Sal 95",
+        "second": "Rom 13:8-10",
+        "gospel": "Mt 18:15-20"
+      },
+      "B": {
+        "first": "Is 35:4-7a",
+        "psalm": "Sal 146",
+        "second": "Sant 2:1-5",
+        "gospel": "Mc 7:31-37"
+      },
+      "C": {
+        "first": "Sab 9:13-18b",
+        "psalm": "Sal 90",
+        "second": "Flm 9b-10.12-17",
+        "gospel": "Lc 14:25-33"
+      }
+    },
+    "24": {
+      "A": {
+        "first": "Sir 27:30-28:7",
+        "psalm": "Sal 103",
+        "second": "Rom 14:7-9",
+        "gospel": "Mt 18:21-35"
+      },
+      "B": {
+        "first": "Is 50:4c-9a",
+        "psalm": "Sal 116",
+        "second": "Sant 2:14-18",
+        "gospel": "Mc 8:27-35"
+      },
+      "C": {
+        "first": "Ex 32:7-11.13-14",
+        "psalm": "Sal 51",
+        "second": "1Tim 1:12-17",
+        "gospel": "Lc 15:1-32"
+      }
+    },
+    "25": {
+      "A": {
+        "first": "Is 55:6-9",
+        "psalm": "Sal 144",
+        "second": "Flp 1:20c-24.27a",
+        "gospel": "Mt 20:1-16a"
+      },
+      "B": {
+        "first": "Sab 2:12.17-20",
+        "psalm": "Sal 54",
+        "second": "Sant 3:16-4:3",
+        "gospel": "Mc 9:30-37"
+      },
+      "C": {
+        "first": "Am 8:4-7",
+        "psalm": "Sal 113",
+        "second": "1Tim 2:1-8",
+        "gospel": "Lc 16:1-13"
+      }
+    },
+    "26": {
+      "A": {
+        "first": "Ez 18:25-28",
+        "psalm": "Sal 25",
+        "second": "Flp 2:1-11",
+        "gospel": "Mt 21:28-32"
+      },
+      "B": {
+        "first": "Nm 11:25-29",
+        "psalm": "Sal 19",
+        "second": "Sant 5:1-6",
+        "gospel": "Mc 9:38-43.45.47-48"
+      },
+      "C": {
+        "first": "Am 6:1a.4-7",
+        "psalm": "Sal 146",
+        "second": "1Tim 6:11-16",
+        "gospel": "Lc 16:19-31"
+      }
+    },
+    "27": {
+      "A": {
+        "first": "Is 5:1-7",
+        "psalm": "Sal 80",
+        "second": "Flp 4:6-9",
+        "gospel": "Mt 21:33-43"
+      },
+      "B": {
+        "first": "Gn 2:18-24",
+        "psalm": "Sal 128",
+        "second": "Heb 2:9-11",
+        "gospel": "Mc 10:2-16"
+      },
+      "C": {
+        "first": "Hab 1:2-3;2:2-4",
+        "psalm": "Sal 95",
+        "second": "2Tim 1:6-8.13-14",
+        "gospel": "Lc 17:5-10"
+      }
+    },
+    "28": {
+      "A": {
+        "first": "Is 25:6-10a",
+        "psalm": "Sal 23",
+        "second": "Flp 4:12-14.19-20",
+        "gospel": "Mt 22:1-14"
+      },
+      "B": {
+        "first": "Sab 7:7-11",
+        "psalm": "Sal 90",
+        "second": "Heb 4:12-13",
+        "gospel": "Mc 10:17-30"
+      },
+      "C": {
+        "first": "2Re 5:14-17",
+        "psalm": "Sal 98",
+        "second": "2Tim 2:8-13",
+        "gospel": "Lc 17:11-19"
+      }
+    },
+    "29": {
+      "A": {
+        "first": "Is 45:1.4-6",
+        "psalm": "Sal 96",
+        "second": "1Tes 1:1-5b",
+        "gospel": "Mt 22:15-21"
+      },
+      "B": {
+        "first": "Is 53:10-11",
+        "psalm": "Sal 33",
+        "second": "Heb 4:14-16",
+        "gospel": "Mc 10:35-45"
+      },
+      "C": {
+        "first": "Sir 35:12-14.16-18",
+        "psalm": "Sal 34",
+        "second": "2Tim 4:6-8.16-18",
+        "gospel": "Lc 18:1-8"
+      }
+    },
+    "30": {
+      "A": {
+        "first": "Ex 22:20-26",
+        "psalm": "Sal 18",
+        "second": "1Tes 1:5c-10",
+        "gospel": "Mt 22:34-40"
+      },
+      "B": {
+        "first": "Jr 31:7-9",
+        "psalm": "Sal 126",
+        "second": "Heb 5:1-6",
+        "gospel": "Mc 10:46-52"
+      },
+      "C": {
+        "first": "Sir 35:15b-17.20-22a",
+        "psalm": "Sal 34",
+        "second": "2Tim 4:6-8.16-18",
+        "gospel": "Lc 18:9-14"
+      }
+    },
+    "31": {
+      "A": {
+        "first": "Mal 1:14b-2:2b.8-10",
+        "psalm": "Sal 131",
+        "second": "1Tes 2:7b-9.13",
+        "gospel": "Mt 23:1-12"
+      },
+      "B": {
+        "first": "Dt 6:2-6",
+        "psalm": "Sal 18",
+        "second": "Heb 7:23-28",
+        "gospel": "Mc 12:28b-34"
+      },
+      "C": {
+        "first": "Sab 11:22-12:2",
+        "psalm": "Sal 145",
+        "second": "2Tes 1:11-2:2",
+        "gospel": "Lc 19:1-10"
+      }
+    },
+    "32": {
+      "A": {
+        "first": "Sab 6:12-16",
+        "psalm": "Sal 63",
+        "second": "1Tes 4:13-18",
+        "gospel": "Mt 25:1-13"
+      },
+      "B": {
+        "first": "1Re 17:10-16",
+        "psalm": "Sal 146",
+        "second": "Heb 9:24-28",
+        "gospel": "Mc 12:38-44"
+      },
+      "C": {
+        "first": "2Mac 7:1-2.9-14",
+        "psalm": "Sal 17",
+        "second": "2Tes 2:16-3:5",
+        "gospel": "Lc 20:27-38"
+      }
+    },
+    "33": {
+      "A": {
+        "first": "Prov 31:10-13.19-20.30-31",
+        "psalm": "Sal 128",
+        "second": "1Tes 5:1-6",
+        "gospel": "Mt 25:14-30"
+      },
+      "B": {
+        "first": "Dn 12:1-3",
+        "psalm": "Sal 16",
+        "second": "Heb 10:11-14.18",
+        "gospel": "Mc 13:24-32"
+      },
+      "C": {
+        "first": "Mal 3:19-20a",
+        "psalm": "Sal 98",
+        "second": "2Tes 3:7-12",
+        "gospel": "Lc 21:5-19"
+      }
+    },
+    "34": {
+      "A": {
+        "first": "Ez 34:11-12.15-17",
+        "psalm": "Sal 23",
+        "second": "1Cor 15:20-26.28",
+        "gospel": "Mt 25:31-46"
+      },
+      "B": {
+        "first": "Dn 7:13-14",
+        "psalm": "Sal 93",
+        "second": "Ap 1:5-8",
+        "gospel": "Jn 18:33b-37"
+      },
+      "C": {
+        "first": "2Sam 5:1-3",
+        "psalm": "Sal 122",
+        "second": "Col 1:12-20",
+        "gospel": "Lc 23:35-43"
+      }
+    }
+  }
+}

@@ -15,11 +15,18 @@ export type IconName =
   | 'archive'
   | 'refresh'
   | 'chevron-right'
+  | 'chevron-left'
+  | 'chevron-up'
+  | 'chevron-down'
   | 'check'
   | 'sun'
   | 'star'
   | 'bell'
   | 'user'
+  | 'calendar'
+  | 'share'
+  | 'candle'
+  | 'copy'
 
 const PATHS: Record<IconName, JSX.Element> = {
   home: (
@@ -97,6 +104,45 @@ const PATHS: Record<IconName, JSX.Element> = {
   ),
   'chevron-right': (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  ),
+  'chevron-left': (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  ),
+  'chevron-up': (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+  ),
+  'chevron-down': (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  ),
+  calendar: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.75}
+      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+    />
+  ),
+  share: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.75}
+      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+    />
+  ),
+  candle: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 3c0 0-1.5 2-1.5 3.5S11 9 12 9s1.5-1 1.5-2.5S12 3 12 3z" />
+      <rect x="9" y="9" width="6" height="12" rx="1.5" strokeWidth={1.75} strokeLinecap="round" />
+    </>
+  ),
+  copy: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.75}
+      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+    />
   ),
   check: (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
