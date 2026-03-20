@@ -113,10 +113,10 @@ export const api = {
   getBibleChapter: (book: string, chapter: number) =>
     import('../lib/bible').then(m => m.getBibleChapter(book, chapter)),
 
-  getBibliaRecomendacion: (estadoAnimo: string) =>
+  getBibliaRecomendacion: (estadoAnimo: string, excludedPassages?: string[]) =>
     request<BibliaRecomendacion>('/api/ai/biblia-recomendacion', {
       method: 'POST',
-      body: JSON.stringify({ estadoAnimo }),
+      body: JSON.stringify({ estadoAnimo, excludedPassages: excludedPassages || [] }),
     }),
 
   getLectioBiblica: (libro: string, libroNombre: string, capitulo: number, versos: number[], textos: string[]) =>

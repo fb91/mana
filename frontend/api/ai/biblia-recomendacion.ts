@@ -32,14 +32,23 @@ RESTRICCIÓN: ${MAGISTERIO}
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { estadoAnimo } = req.body as { estadoAnimo: string }
+  const { estadoAnimo, excludedPassages = [] } = req.body as { 
+    estadoAnimo: string
+    excludedPassages?: string[]
+  }
   if (!estadoAnimo?.trim()) {
     return res.status(422).json({ error: 'INVALID_INPUT' })
   }
 
+  // Construir mensaje del usuario con restricciones de pasajes si existen
+  let userMessage = estadoAnimo
+  if (excludedPassages.length > 0) {
+    userMessage += `\n\nNOTA: Por favor NO recomiendes ninguno de estos pasajes que ya sugeriste anteriormente: ${excludedPassages.join(', ')}`
+  }
+
   const rawText = await claudeChat(
     SYSTEM_BIBLIA_RECOMENDACION,
-    [{ role: 'user', content: estadoAnimo }]
+    [{ role: 'user', content: userMessage }]
   )
 
   let parsed: { mensaje: string; libro: string; libroNombre: string; capitulo: number; versiculo: number }

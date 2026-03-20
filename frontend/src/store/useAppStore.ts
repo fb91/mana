@@ -37,6 +37,11 @@ interface AppState {
   togglePinnedBook: (abbr: string) => void
   lastBiblePath: string | null
   setLastBiblePath: (path: string) => void
+
+  // Recomendaciones bíblicas (caché para evitar repetir pasajes)
+  recentRecommendations: string[] // Array de referencias "Libro Capitulo:Versiculo"
+  addRecommendation: (ref: string) => void
+  clearRecommendations: () => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -96,6 +101,14 @@ export const useAppStore = create<AppState>()(
       })),
       lastBiblePath: null,
       setLastBiblePath: (path) => set({ lastBiblePath: path }),
+
+      recentRecommendations: [],
+      addRecommendation: (ref) => set((s) => {
+        const updated = [ref, ...s.recentRecommendations]
+        // Mantener solo los últimos 20 pasajes
+        return { recentRecommendations: updated.slice(0, 20) }
+      }),
+      clearRecommendations: () => set({ recentRecommendations: [] }),
     }),
     {
       name: 'mana-store',
@@ -108,6 +121,7 @@ export const useAppStore = create<AppState>()(
         pushSubscription: state.pushSubscription,
         pinnedBooks: state.pinnedBooks,
         lastBiblePath: state.lastBiblePath,
+        recentRecommendations: state.recentRecommendations,
       }),
     }
   )
