@@ -123,8 +123,15 @@ function LongPressPopup({
   onPin: () => void
   onClose: () => void
 }) {
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    // Delay registering backdrop click to avoid touch-end closing the popup immediately
+    const t = setTimeout(() => setReady(true), 300)
+    return () => clearTimeout(t)
+  }, [])
+
   return (
-    <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={() => ready && onClose()}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div
         className="relative w-full bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 py-6 pb-10 shadow-2xl animate-slide-up"
