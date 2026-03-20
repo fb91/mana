@@ -46,9 +46,10 @@ function wrapText(
 }
 
 export async function generateShareCard(data: ShareCardData): Promise<Blob | null> {
+  // Formato 9:16 para Stories de Instagram/WhatsApp
   const W = 1080
-  const H = 1080
-  const PADDING = 72
+  const H = 1920
+  const PADDING = 80
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -63,92 +64,96 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob | nul
   ctx.fillRect(0, 0, W, H)
 
   // Subtle radial vignette overlay
-  const grad = ctx.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, 700)
+  const grad = ctx.createRadialGradient(W / 2, H / 2, 300, W / 2, H / 2, 1000)
   grad.addColorStop(0, 'rgba(255,255,255,0.04)')
   grad.addColorStop(1, 'rgba(0,0,0,0.30)')
   ctx.fillStyle = grad
   ctx.fillRect(0, 0, W, H)
 
-  // ── Top divider ─────────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.accent
-  ctx.fillRect(PADDING, 68, W - PADDING * 2, 3)
+  let y = 120
 
-  // ── App name ─────────────────────────────────────────────────────────────────
+  // ── "EVANGELIO" título ────────────────────────────────────────────────────────
   ctx.fillStyle = palette.accent
-  ctx.font = `600 28px -apple-system, "Helvetica Neue", Arial, sans-serif`
+  ctx.font = `700 48px Garamond, Georgia, "Times New Roman", serif`
   ctx.letterSpacing = '4px'
-  ctx.fillText('MANÁ', PADDING, 58)
-  ctx.letterSpacing = '0px'
-
-  // ── Liturgical label (small) ─────────────────────────────────────────────────
-  ctx.fillStyle = palette.sub
-  ctx.font = `400 30px -apple-system, "Helvetica Neue", Arial, sans-serif`
-  ctx.fillText(data.liturgicalLabel.toUpperCase(), PADDING, 130)
-
-  // ── Celebration name (main title) ────────────────────────────────────────────
-  ctx.fillStyle = palette.text
-  ctx.font = `700 64px Georgia, "Times New Roman", serif`
-  const celebrationLines = splitIntoLines(ctx, data.celebrationName, W - PADDING * 2, 64)
-  let y = 200
-  for (const line of celebrationLines) {
-    ctx.fillText(line, PADDING, y)
-    y += 76
-  }
-
-  // ── Date ─────────────────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.sub
-  ctx.font = `400 32px -apple-system, "Helvetica Neue", Arial, sans-serif`
-  ctx.fillText(data.dateStr, PADDING, y + 16)
-  y += 70
-
-  // ── Divider ──────────────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.accent + '60'  // semi-transparent
-  ctx.fillRect(PADDING, y, W - PADDING * 2, 1)
-  y += 48
-
-  // ── "Evangelio" label ────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.accent
-  ctx.font = `600 26px -apple-system, "Helvetica Neue", Arial, sans-serif`
-  ctx.letterSpacing = '3px'
-  ctx.fillText('EVANGELIO', PADDING, y)
-  ctx.letterSpacing = '0px'
-  y += 40
-
-  // ── Gospel reference ─────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.text
-  ctx.font = `600 38px Georgia, "Times New Roman", serif`
-  ctx.fillText(data.gospelRef, PADDING, y)
-  y += 60
-
-  // ── Gospel text (excerpt) ─────────────────────────────────────────────────────
-  if (data.gospelText) {
-    // Trim text to a reasonable length
-    const maxChars = 320
-    const excerpt = data.gospelText.length > maxChars
-      ? data.gospelText.slice(0, maxChars).trim() + '…'
-      : data.gospelText
-
-    ctx.fillStyle = palette.text + 'CC'  // slightly transparent
-    ctx.font = `400 34px Georgia, "Times New Roman", serif`
-    wrapText(ctx, `"${excerpt}"`, PADDING, y, W - PADDING * 2, 50)
-  }
-
-  // ── Bottom cross decoration ───────────────────────────────────────────────────
-  ctx.fillStyle = palette.accent
-  drawCross(ctx, W / 2, H - 100, 28)
-
-  // ── Bottom divider ───────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.accent
-  ctx.fillRect(PADDING, H - 68, W - PADDING * 2, 3)
-
-  // ── Footer ────────────────────────────────────────────────────────────────────
-  ctx.fillStyle = palette.sub
-  ctx.font = `400 24px -apple-system, "Helvetica Neue", Arial, sans-serif`
-  ctx.letterSpacing = '1px'
   ctx.textAlign = 'center'
-  ctx.fillText('Lecturas del día · Maná', W / 2, H - 28)
+  ctx.fillText('EVANGELIO', W / 2, y)
   ctx.letterSpacing = '0px'
+  y += 80
+
+  // ── Cita del Evangelio ─────────────────────────────────────────────────────────
+  ctx.fillStyle = palette.text
+  ctx.font = `600 44px Garamond, Georgia, "Times New Roman", serif`
+  ctx.textAlign = 'center'
+  ctx.fillText(data.gospelRef, W / 2, y)
   ctx.textAlign = 'left'
+  y += 100
+
+  // ── Texto completo del Evangelio ─────────────────────────────────────────────────
+  if (data.gospelText) {
+    const maxWidth = W - PADDING * 2
+    const availableHeight = H - y - PADDING
+    
+    // Intentar con tamaño máximo de 28px, reducir si no cabe
+    let fontSize = 28
+    let lineHeight = fontSize * 1.6
+    let textFits = false
+    
+    // Función para calcular altura necesaria
+    const calculateTextHeight = (size: number): number => {
+      const lh = size * 1.6
+      ctx.font = `400 ${size}px Garamond, Georgia, "Times New Roman", serif`
+      const words = data.gospelText.split(' ')
+      let line = ''
+      let lines = 0
+
+      for (const word of words) {
+        const testLine = line + (line ? ' ' : '') + word
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          lines++
+          line = word
+        } else {
+          line = testLine
+        }
+      }
+      if (line) lines++
+      
+      return lines * lh
+    }
+
+    // Reducir tamaño si no cabe
+    while (fontSize >= 16 && !textFits) {
+      const textHeight = calculateTextHeight(fontSize)
+      if (textHeight <= availableHeight) {
+        textFits = true
+      } else {
+        fontSize -= 1
+      }
+    }
+
+    lineHeight = fontSize * 1.6
+    ctx.fillStyle = palette.text
+    ctx.font = `400 ${fontSize}px Garamond, Georgia, "Times New Roman", serif`
+    ctx.textAlign = 'left'
+
+    // Renderizar texto justificado a la izquierda
+    const words = data.gospelText.split(' ')
+    let line = ''
+
+    for (const word of words) {
+      const testLine = line + (line ? ' ' : '') + word
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        ctx.fillText(line, PADDING, y)
+        line = word
+        y += lineHeight
+      } else {
+        line = testLine
+      }
+    }
+    if (line) {
+      ctx.fillText(line, PADDING, y)
+    }
+  }
 
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
 }

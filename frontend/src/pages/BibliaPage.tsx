@@ -682,12 +682,6 @@ function VerseReader({
               {selectedVerses.size} versículo{selectedVerses.size > 1 ? 's' : ''} seleccionado{selectedVerses.size > 1 ? 's' : ''}
             </span>
             <button
-              onClick={() => setSelectedVerses(new Set())}
-              className="text-xs text-cafe-light dark:text-crema-300 hover:text-cafe-dark transition-colors px-2 py-1"
-            >
-              limpiar
-            </button>
-            <button
               onClick={() => setShowLectio(true)}
               className="flex items-center gap-1.5 bg-dorado text-crema-50
                          rounded-xl px-4 py-2 text-sm font-semibold
