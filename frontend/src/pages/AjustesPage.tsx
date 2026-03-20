@@ -12,8 +12,8 @@ const FONT_PRESET_OPTIONS = [
   { px: FONT_PRESETS.large,  garamondPx: GARAMOND_FONT_PRESETS.large,  label: 'Grande'  },
 ]
 
-const SLIDER_MIN  = 11
-const SLIDER_MAX  = 22
+const SLIDER_MIN  = 15
+const SLIDER_MAX  = 26
 const SLIDER_STEP = 0.5
 
 const FONT_FAMILY_OPTIONS: { value: FontFamily; label: string; description: string; style: React.CSSProperties }[] = [
@@ -46,8 +46,6 @@ export default function AjustesPage() {
   const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily, liturgicalAccent, setLiturgicalAccent } = useAppStore()
   const { state: installState, install } = usePWAInstall()
   const [showIOSModal, setShowIOSModal] = useState(false)
-
-  const sliderPercent = ((fontSizeValue - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100
 
   const currentLiturgicalColor = getLiturgicalAppColor(new Date())
   const currentLiturgicalHex   = LITURGICAL_COLOR_HEX[currentLiturgicalColor]
@@ -191,27 +189,34 @@ export default function AjustesPage() {
               })}
             </div>
 
-            {/* Fine-grained slider */}
-            <div className="space-y-2 px-1">
-              <input
-                type="range"
-                min={SLIDER_MIN}
-                max={SLIDER_MAX}
-                step={SLIDER_STEP}
-                value={fontSizeValue}
-                onChange={e => setFontSizeValue(Number(e.target.value))}
-                className="slider-themed w-full"
-                style={{
-                  background: `linear-gradient(to right, rgb(var(--accent)) ${sliderPercent}%, rgb(var(--slider-track)) ${sliderPercent}%)`,
-                }}
-              />
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] text-cafe-light dark:text-crema-400">{SLIDER_MIN} px</span>
-                <span className="text-xs font-semibold text-dorado tabular-nums">
+            {/* Fine-grained controls */}
+            <div className="flex items-center justify-center gap-3 px-1">
+              <button
+                onClick={() => setFontSizeValue(Math.max(SLIDER_MIN, fontSizeValue - SLIDER_STEP))}
+                disabled={fontSizeValue <= SLIDER_MIN}
+                className="w-10 h-10 rounded-lg border-2 border-crema-200 dark:border-oscuro-border bg-crema-50 dark:bg-oscuro-surface flex items-center justify-center text-cafe-dark dark:text-crema-200 disabled:opacity-40 disabled:cursor-not-allowed hover:border-dorado/50 active:scale-95 transition-all duration-150"
+              >
+                <Icon name="minus" size={16} />
+              </button>
+              
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xl font-bold text-dorado tabular-nums">
                   {Number.isInteger(fontSizeValue) ? fontSizeValue : fontSizeValue.toFixed(1)} px
                 </span>
-                <span className="text-[10px] text-cafe-light dark:text-crema-400">{SLIDER_MAX} px</span>
+                <div className="flex items-center gap-1 text-[10px] text-cafe-light dark:text-crema-400">
+                  <span>{SLIDER_MIN} px</span>
+                  <span>—</span>
+                  <span>{SLIDER_MAX} px</span>
+                </div>
               </div>
+              
+              <button
+                onClick={() => setFontSizeValue(Math.min(SLIDER_MAX, fontSizeValue + SLIDER_STEP))}
+                disabled={fontSizeValue >= SLIDER_MAX}
+                className="w-10 h-10 rounded-lg border-2 border-crema-200 dark:border-oscuro-border bg-crema-50 dark:bg-oscuro-surface flex items-center justify-center text-cafe-dark dark:text-crema-200 disabled:opacity-40 disabled:cursor-not-allowed hover:border-dorado/50 active:scale-95 transition-all duration-150"
+              >
+                <Icon name="plus" size={16} />
+              </button>
             </div>
 
           </div>

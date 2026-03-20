@@ -5,8 +5,8 @@ import { getLiturgicalAppColor } from '../lib/lectionaryResolver'
 export type Theme      = 'claro' | 'oscuro'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
-export const FONT_PRESETS          = { small: 14, normal: 16, large: 18 } as const
-export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 21 } as const
+export const FONT_PRESETS          = { small: 17, normal: 19, large: 22 } as const
+export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 22 } as const
 
 export const VALID_THEMES: Theme[] = ['claro', 'oscuro']
 

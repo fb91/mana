@@ -29,6 +29,8 @@ export type IconName =
   | 'copy'
   | 'eye'
   | 'pin'
+  | 'plus'
+  | 'minus'
 
 const PATHS: Record<IconName, JSX.Element> = {
   home: (
@@ -196,6 +198,12 @@ const PATHS: Record<IconName, JSX.Element> = {
       strokeWidth={1.75}
       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
     />
+  ),
+  plus: (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v14m-7-7h14" />
+  ),
+  minus: (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
   ),
 }
 

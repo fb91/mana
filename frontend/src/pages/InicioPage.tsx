@@ -119,17 +119,17 @@ export default function InicioPage() {
 
       {/* Header personalizado */}
       <header className="sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
-                          border-b border-crema-200 dark:border-oscuro-border px-5 py-4">
+                          border-b border-crema-200 dark:border-oscuro-border px-5 py-4 pr-14">
         <div className="flex items-center gap-3">
-          <h1 className="font-serif text-2xl font-semibold text-cafe-dark dark:text-crema-200 leading-none">
+          <h1 className="font-serif text-5xl font-semibold text-cafe-dark dark:text-crema-200 leading-none">
             Maná
           </h1>
           <div className="w-px h-8 bg-crema-300 dark:bg-oscuro-border" />
-          <p className="text-xs text-cafe-light dark:text-crema-300 leading-snug max-w-[220px] italic">
+          <p className="text-sm text-cafe-light dark:text-crema-300 leading-snug max-w-[180px] break-words italic">
             {quote.text}
             <button
               onClick={() => navigate(`/biblia/${quote.abbr}/${quote.chapter}?verso=${quote.verse}`)}
-              className="not-italic font-semibold block mt-0.5 text-dorado hover:underline active:opacity-70"
+              className="not-italic font-semibold block mt-0.5 text-xs text-dorado hover:underline active:opacity-70"
             >
               — {quote.cite}
             </button>
