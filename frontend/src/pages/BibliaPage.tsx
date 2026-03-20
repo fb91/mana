@@ -503,7 +503,7 @@ function VerseReader({
   function navigate(delta: number) {
     const next = chapter.chapter + delta
     if (next < 1 || next > maxChapter) return
-    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0
     setSlideDir(delta > 0 ? 'next' : 'prev')
     setAnimKey(k => k + 1)
     setTimeout(() => {
