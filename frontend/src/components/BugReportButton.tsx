@@ -7,7 +7,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/biblia': 'Biblia',
   '/lecturas-del-dia': 'Lecturas del día',
   '/recomendacion': 'Recomendación espiritual',
-  '/santo': 'Un Santo Para Vos',
+  '/santo': '¿Con qué santo conectás?',
   '/novenas': 'Novenas',
   '/examen': 'Examen de Conciencia',
   '/ajustes': 'Ajustes',

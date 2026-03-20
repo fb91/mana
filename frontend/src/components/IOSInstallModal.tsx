@@ -37,9 +37,6 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
           <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200 mb-2">
             Instalá Maná en tu iPhone
           </h2>
-          <p className="text-sm text-cafe-light dark:text-crema-300 leading-relaxed">
-            Accedé a la Biblia y lecturas del día <strong>sin internet</strong>, directamente desde tu pantalla de inicio.
-          </p>
         </div>
 
         {/* Beneficios */}
@@ -94,28 +91,6 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
                     </p>
                   </div>
                 </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dorado text-crema-50 flex items-center justify-center font-bold text-sm">
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-cafe-dark dark:text-crema-200">
-                      Presioná <strong>"Añadir"</strong> para confirmar
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vista previa del icono en pantalla */}
-              <div className="bg-gradient-to-b from-blue-500/10 to-purple-500/10 rounded-xl p-6 text-center">
-                <p className="text-xs text-cafe-light dark:text-crema-300 mb-3">Así aparecerá en tu pantalla:</p>
-                <div className="inline-block">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-dorado to-[#965519] flex items-center justify-center shadow-lg mb-2">
-                    <span className="text-2xl font-serif font-bold text-crema-50">M</span>
-                  </div>
-                  <p className="text-xs font-medium text-cafe-dark dark:text-crema-200">Maná</p>
-                </div>
               </div>
             </div>
           )}
@@ -129,16 +104,10 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium mb-2">
-                      Presioná el botón <strong>Compartir</strong>
+                      Presioná los <strong>3 puntos (...)</strong> en la barra inferior
                     </p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-oscuro-bg flex items-center justify-center border border-crema-200 dark:border-oscuro-border">
-                        <Icon name="share" size={16} className="text-blue-500" />
-                      </div>
-                      <span className="text-xs text-cafe-light dark:text-crema-300">(botón con flecha hacia arriba)</span>
-                    </div>
-                    <p className="text-xs text-cafe-light dark:text-crema-300 mt-2 italic">
-                      Nota: En algunas versiones de Safari, primero deberás presionar los <strong>3 puntos (...)</strong> antes de ver el botón Compartir.
+                    <p className="text-xs text-cafe-light dark:text-crema-300 mt-1">
+                      Luego presioná el botón <strong>Compartir</strong> (cuadrado con flecha hacia arriba)
                     </p>
                   </div>
                 </div>
@@ -156,28 +125,6 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
                     </p>
                   </div>
                 </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-dorado text-crema-50 flex items-center justify-center font-bold text-sm">
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-cafe-dark dark:text-crema-200">
-                      Tocá <strong>"Agregar"</strong> en la esquina superior derecha
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vista previa del icono en pantalla */}
-              <div className="bg-gradient-to-b from-blue-500/10 to-purple-500/10 rounded-xl p-6 text-center">
-                <p className="text-xs text-cafe-light dark:text-crema-300 mb-3">Así aparecerá en tu pantalla:</p>
-                <div className="inline-block">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-dorado to-[#965519] flex items-center justify-center shadow-lg mb-2">
-                    <span className="text-2xl font-serif font-bold text-crema-50">M</span>
-                  </div>
-                  <p className="text-xs font-medium text-cafe-dark dark:text-crema-200">Maná</p>
-                </div>
               </div>
             </div>
           )}
@@ -192,14 +139,8 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
           )}
         </div>
 
-        {/* Botones */}
-        <div className="mt-6 space-y-2">
-          <button
-            onClick={onClose}
-            className="w-full btn-primary"
-          >
-            Entendido
-          </button>
+        {/* Botón cerrar */}
+        <div className="mt-6">
           <button
             onClick={onClose}
             className="w-full text-center text-sm text-cafe-light dark:text-crema-300 py-2"

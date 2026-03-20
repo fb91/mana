@@ -7,10 +7,10 @@ import { api, SantoSugerido } from '../services/api'
 import { quickProfileAxes, extendedProfileAxes, intentOptions } from '../data/santoAxes'
 import { BugReportLink } from '../components/BugReportButton'
 
-type Phase = 'intro' | 'quick_rating' | 'resultado' | 'extended_rating'
+type Phase = 'quick_rating' | 'resultado' | 'extended_rating'
 
 export default function SantoPage() {
-  const [phase, setPhase] = useState<Phase>('intro')
+  const [phase, setPhase] = useState<Phase>('quick_rating')
   const [quickScores, setQuickScores] = useState<Record<string, number>>({})
   const [extendedScores, setExtendedScores] = useState<Record<string, number>>({})
   const [intent, setIntent] = useState<string | null>(null)
@@ -44,7 +44,7 @@ export default function SantoPage() {
   }, [quickScores, extendedScores, intent])
 
   const handleReset = useCallback(() => {
-    setPhase('intro')
+    setPhase('quick_rating')
     setQuickScores({})
     setExtendedScores({})
     setIntent(null)
@@ -57,53 +57,22 @@ export default function SantoPage() {
     <div className="flex flex-col h-screen">
       <PageHeader
         icon={<Icon name="star" size={18} />}
-        title="Un Santo Para Vos"
+        title="¿Con qué santo conectás?"
         subtitle="Descubrí tu compañero en la fe"
-        onReset={phase !== 'intro' ? handleReset : undefined}
+        onReset={phase !== 'quick_rating' ? handleReset : undefined}
       />
-
-      {/* ── INTRO ── */}
-      {phase === 'intro' && (
-        <div className="flex-1 overflow-y-auto px-4 py-8 pb-28 flex flex-col items-center justify-center animate-fade-in">
-          <div className="max-w-sm w-full text-center">
-            <div className="text-6xl mb-6">✨</div>
-            <h2 className="font-serif text-2xl text-cafe-dark dark:text-crema-200 mb-3">
-              ¿Con qué santo conectás?
-            </h2>
-            <p className="text-cafe-light dark:text-crema-300 text-sm leading-relaxed mb-8">
-              Respondé 5 preguntas sobre tu vida y te recomendamos los santos
-              que mejor conectan con vos ahora mismo.
-            </p>
-
-            <div className="grid grid-cols-3 gap-3 mb-8 text-sm text-cafe-light dark:text-crema-300">
-              {[
-                { icon: '👨‍👩‍👧', label: 'Familia' },
-                { icon: '💼', label: 'Trabajo' },
-                { icon: '😔', label: 'Sufrimiento' },
-                { icon: '📚', label: 'Estudios' },
-                { icon: '🌍', label: 'Misión' },
-                { icon: '🙏', label: 'Oración' },
-              ].map(({ icon, label }) => (
-                <div key={label} className="card py-3 text-center">
-                  <span className="text-2xl">{icon}</span>
-                  <p className="text-xs mt-1">{label}</p>
-                </div>
-              ))}
-            </div>
-
-            <button onClick={() => setPhase('quick_rating')} className="btn-primary w-full">
-              Empezar la búsqueda
-            </button>
-          </div>
-
-          <BugReportLink />
-
-        </div>
-      )}
 
       {/* ── QUICK RATING ── */}
       {phase === 'quick_rating' && (
         <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 animate-fade-in">
+          {/* Brief explanation */}
+          <div className="mb-5 rounded-2xl bg-dorado/8 dark:bg-dorado/12 border border-dorado/20 px-4 py-3">
+            <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">
+              Respondé 5 preguntas sobre tu vida
+              y te recomendamos los santos que mejor conectan con vos ahora mismo.
+            </p>
+          </div>
+
           <p className="text-xs uppercase tracking-wider text-cafe-light dark:text-crema-400 font-semibold mb-4">
             Valorá cada aspecto de tu vida ahora mismo
           </p>

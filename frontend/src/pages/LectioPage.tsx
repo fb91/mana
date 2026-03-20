@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import ChatInterface from '../components/ChatInterface'
@@ -18,11 +19,21 @@ const PASAJES_SUGERIDOS = [
 ]
 
 export default function LectioPage() {
+  const [searchParams] = useSearchParams()
   const [phase, setPhase] = useState<Phase>('select')
   const [pasaje, setPasaje] = useState('')
   const [customPasaje, setCustomPasaje] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(false)
+
+  // Auto-start if pasaje is in URL
+  useEffect(() => {
+    const urlPasaje = searchParams.get('pasaje')
+    if (urlPasaje) {
+      handleStart(urlPasaje)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleStart = useCallback(async (p: string) => {
     const finalPasaje = p || customPasaje

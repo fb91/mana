@@ -11,6 +11,7 @@ import LiturgiaPage from './pages/LiturgiaPage'
 import BibliaPage from './pages/BibliaPage'
 import InicioPage from './pages/InicioPage'
 import RecomendacionPage from './pages/RecomendacionPage'
+import LectioPage from './pages/LectioPage'
 import AjustesPage from './pages/AjustesPage'
 import { BugReportProvider } from './components/BugReportButton'
 import { useAppStore, applyTheme, applyFontSize, applyFontFamily, VALID_THEMES } from './store/useAppStore'
@@ -55,6 +56,7 @@ export default function App() {
                 <Route path="/inicio" element={<InicioPage />} />
                 <Route path="/lecturas-del-dia" element={<LiturgiaPage />} />
                 <Route path="/recomendacion" element={<RecomendacionPage />} />
+                <Route path="/lectio" element={<LectioPage />} />
                 <Route path="/ajustes" element={<AjustesPage />} />
                 <Route path="/biblia" element={<BibliaPage />} />
                 <Route path="/biblia/:book/:chapter" element={<BibliaPage />} />

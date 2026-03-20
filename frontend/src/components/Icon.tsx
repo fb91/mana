@@ -31,6 +31,8 @@ export type IconName =
   | 'pin'
   | 'plus'
   | 'minus'
+  | 'pencil'
+  | 'info'
 
 const PATHS: Record<IconName, JSX.Element> = {
   home: (
@@ -204,6 +206,20 @@ const PATHS: Record<IconName, JSX.Element> = {
   ),
   minus: (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
+  ),
+  pencil: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.75}
+      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+    />
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="10" strokeWidth={1.75} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 16v-4m0-4h.01" />
+    </>
   ),
 }
 

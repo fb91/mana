@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon, { IconName } from '../components/Icon'
 import { useAppStore } from '../store/useAppStore'
 import { BugReportLink } from '../components/BugReportButton'
+import { api, BibliaRecomendacion, BibleBook } from '../services/api'
+import { getBibleVerse, getBibleBooks, getBibleChapter, BOOK_NAME } from '../lib/bible'
 
 
 interface Quote {
@@ -28,6 +30,19 @@ const QUOTES: Quote[] = [
   { text: '«Yo estaré siempre con ustedes.»',            cite: 'Mt 28,20',   abbr: 'Mt',   chapter: 28,  verse: 20  },
   { text: '«Les doy mi paz.»',                           cite: 'Jn 14,27',   abbr: 'Jn',   chapter: 14,  verse: 27  },
   { text: '«Confía en el Señor.»',                       cite: 'Prov 3,5',   abbr: 'Prov', chapter: 3,   verse: 5   },
+]
+
+const EMOTIONS = [
+  'Angustiado',
+  'Triste',
+  'Ansioso',
+  'Cansado',
+  'Perdido',
+  'Solo',
+  'Agradecido',
+  'Esperanzado',
+  'Alegre',
+  'Confiado',
 ]
 
 interface Tool {
@@ -68,24 +83,12 @@ function formatBiblePath(path: string): string {
 
 const IS_PROD = import.meta.env.PROD
 
-const tools: Tool[] = [
+const recursos: Tool[] = [
   {
     icon: 'book-open',
     title: 'La Biblia',
     description: 'Leé cualquier libro y capítulo. Hacé Lectio Divina sobre los pasajes que te toquen.',
     to: '/biblia',
-  },
-  {
-    icon: 'sparkles',
-    title: 'Recomendación espiritual',
-    description: 'Contanos cómo te sentís y te sugerimos un pasaje bíblico que puede acompañarte.',
-    to: '/recomendacion',
-  },
-  {
-    icon: 'star',
-    title: '¿Con qué santo conectás?',
-    description: 'Descubrí los santos de la Iglesia que mejor conectan con tu vida y espiritualidad.',
-    to: '/santo',
   },
   {
     icon: 'beads',
@@ -110,17 +113,161 @@ const tools: Tool[] = [
   },
 ]
 
+const herramientas: Tool[] = [
+  {
+    icon: 'book-open',
+    title: 'Lectio Divina',
+    description: 'Meditá profundamente sobre cualquier pasaje bíblico con guía de IA.',
+    to: '#lectio',
+  },
+  {
+    icon: 'star',
+    title: '¿Con qué santo conectás?',
+    description: 'Descubrí los santos de la Iglesia que mejor conectan con tu vida y espiritualidad.',
+    to: '/santo',
+  },
+]
+
 export default function InicioPage() {
   const navigate = useNavigate()
   const lastBiblePath = useAppStore(s => s.lastBiblePath)
   const [quote] = useState<Quote>(() => QUOTES[Math.floor(Math.random() * QUOTES.length)])
+
+  // About modal
+  const [showAbout, setShowAbout] = useState(false)
+
+  // Emotion and recommendation
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null)
+  const [customFeeling, setCustomFeeling] = useState('')
+  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [loadingRec, setLoadingRec] = useState(false)
+  const [recommendation, setRecommendation] = useState<BibliaRecomendacion | null>(null)
+  const [errorRec, setErrorRec] = useState('')
+  const [recHistory, setRecHistory] = useState<Record<string, number>>({}) // Track repetitions
+
+  // Lectio Divina selector
+  const [showLectioSelector, setShowLectioSelector] = useState(false)
+  const [bibleBooks, setBibleBooks] = useState<BibleBook[]>([])
+  const [selectedBook, setSelectedBook] = useState('')
+  const [selectedChapter, setSelectedChapter] = useState(0)
+  const [verseFrom, setVerseFrom] = useState(0)
+  const [verseTo, setVerseTo] = useState(0)
+  const [versesPreview, setVersesPreview] = useState<string[]>([])
+  const [maxVerses, setMaxVerses] = useState(0)
+
+  // Load bible books for lectio selector
+  useEffect(() => {
+    getBibleBooks().then(setBibleBooks)
+  }, [])
+
+  async function handleGetRecommendation() {
+    const feeling = customFeeling.trim() || selectedEmotion
+    if (!feeling || loadingRec) return
+
+    setLoadingRec(true)
+    setErrorRec('')
+    setRecommendation(null)
+
+    try {
+      // Add variation hint if same emotion requested multiple times
+      const count = recHistory[feeling] || 0
+      const prompt = count > 0 ? `${feeling} (buscar pasaje diferente, intento ${count + 1})` : feeling
+
+      const rec = await api.getBibliaRecomendacion(prompt)
+      const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
+      setRecommendation({ ...rec, textoVersiculo: verseText ?? '' })
+      
+      // Track this request
+      setRecHistory(prev => ({ ...prev, [feeling]: count + 1 }))
+    } catch (err) {
+      if (err instanceof Error && err.message === 'INVALID_INPUT') {
+        setErrorRec('Contanos algo sobre cómo te sentís para buscarte un pasaje que te acompañe.')
+      } else {
+        setErrorRec('No se pudo obtener una recomendación. Intentá de nuevo.')
+      }
+    } finally {
+      setLoadingRec(false)
+    }
+  }
+
+  function handleEmotionClick(emotion: string) {
+    if (selectedEmotion === emotion) {
+      setSelectedEmotion(null)
+    } else {
+      setSelectedEmotion(emotion)
+      setShowCustomInput(false)
+      setCustomFeeling('')
+    }
+  }
+
+  function handleCustomClick() {
+    setShowCustomInput(!showCustomInput)
+    setSelectedEmotion(null)
+  }
+
+  function handleGoToPassage() {
+    if (!recommendation) return
+    navigate(`/biblia/${recommendation.libro}/${recommendation.capitulo}?verso=${recommendation.versiculo}`)
+  }
+
+  // When book changes, load chapter count
+  async function handleBookChange(bookAbbr: string) {
+    setSelectedBook(bookAbbr)
+    setSelectedChapter(0)
+    setVerseFrom(0)
+    setVerseTo(0)
+    setVersesPreview([])
+    setMaxVerses(0)
+  }
+
+  // When chapter changes, load verse count
+  async function handleChapterChange(chapter: number) {
+    setSelectedChapter(chapter)
+    setVerseFrom(0)
+    setVerseTo(0)
+    setVersesPreview([])
+    if (selectedBook && chapter > 0) {
+      try {
+        const chapterData = await getBibleChapter(selectedBook, chapter)
+        setMaxVerses(chapterData.verses.length)
+      } catch {
+        setMaxVerses(0)
+      }
+    }
+  }
+
+  // When verses change, update preview
+  async function handleVerseChange(from: number, to: number) {
+    setVerseFrom(from)
+    setVerseTo(to)
+    if (selectedBook && selectedChapter && from > 0 && to >= from) {
+      try {
+        const chapterData = await getBibleChapter(selectedBook, selectedChapter)
+        const preview = chapterData.verses
+          .filter(v => v.number >= from && v.number <= to)
+          .map(v => `${v.number}. ${v.text}`)
+        setVersesPreview(preview)
+      } catch {
+        setVersesPreview([])
+      }
+    } else {
+      setVersesPreview([])
+    }
+  }
+
+  function handleStartLectioDivina() {
+    if (!selectedBook || !selectedChapter || !verseFrom || !verseTo) return
+    const bookName = BOOK_NAME[selectedBook] || selectedBook
+    const pasaje = `${bookName} ${selectedChapter}:${verseFrom}-${verseTo}`
+    navigate(`/lectio?pasaje=${encodeURIComponent(pasaje)}`)
+  }
 
   return (
     <div className="flex flex-col h-screen">
 
       {/* Header personalizado */}
       <header className="sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
-                          border-b border-crema-200 dark:border-oscuro-border px-5 py-4 pr-14">
+                          border-b border-crema-200 dark:border-oscuro-border px-5 py-4 relative">
         <div className="flex items-center gap-3">
           <h1 className="font-serif text-5xl font-semibold text-cafe-dark dark:text-crema-200 leading-none">
             Maná
@@ -136,27 +283,115 @@ export default function InicioPage() {
             </button>
           </p>
         </div>
+        
+        {/* About button - icon only */}
+        <button
+          onClick={() => setShowAbout(true)}
+          className="absolute top-1/2 -translate-y-1/2 right-4 w-9 h-9 rounded-full
+                     bg-dorado/10 hover:bg-dorado/20 active:scale-95 transition-all
+                     flex items-center justify-center"
+          aria-label="Acerca de Maná"
+        >
+          <Icon name="info" size={18} className="text-dorado" />
+        </button>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in">
 
-        {/* Descripción de la app */}
-        <div className="mb-5 rounded-3xl bg-dorado/8 dark:bg-dorado/12 border border-dorado/20
-                        px-5 py-4 flex gap-4 items-start">
-          <div className="mt-0.5 w-8 h-8 rounded-xl bg-dorado/15 flex items-center justify-center flex-shrink-0 text-dorado">
-            <Icon name="sparkles" size={16} />
+        {/* ¿Cómo te sientes hoy? */}
+        <div className="mb-6 rounded-3xl bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                        px-5 py-5 shadow-sm">
+          <h2 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 text-lg mb-3">
+            ¿Cómo te sientes hoy?
+          </h2>
+
+          {/* Emotion pills */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {EMOTIONS.map(emotion => (
+              <button
+                key={emotion}
+                onClick={() => handleEmotionClick(emotion)}
+                className={[
+                  'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                  selectedEmotion === emotion
+                    ? 'bg-dorado text-white shadow-md'
+                    : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
+                ].join(' ')}
+              >
+                {emotion}
+              </button>
+            ))}
+            <button
+              onClick={handleCustomClick}
+              className={[
+                'px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2',
+                showCustomInput
+                  ? 'bg-dorado text-white shadow-md'
+                  : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
+              ].join(' ')}
+            >
+              <Icon name="pencil" size={14} />
+            </button>
           </div>
-          <div>
-            <h2 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight mb-1.5">
-              Tu compañero espiritual diario
-            </h2>
-            <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
-              Maná combina la Biblia católica completa con las lecturas litúrgicas diarias, 
-              disponibles <span className="font-semibold">100% offline</span>. 
-              Además, incorpora inteligencia artificial para generar Lectios Divinas personalizadas, 
-              recomendarte pasajes bíblicos según tu momento espiritual, y mucho más.
-            </p>
-          </div>
+
+          {/* Custom feeling input */}
+          {showCustomInput && (
+            <div className="mb-4 animate-fade-in">
+              <textarea
+                value={customFeeling}
+                onChange={e => setCustomFeeling(e.target.value)}
+                placeholder="Describe cómo te sientes..."
+                rows={3}
+                className="input-field text-sm w-full resize-none"
+                autoFocus
+              />
+            </div>
+          )}
+
+          {/* CTA button */}
+          <button
+            onClick={handleGetRecommendation}
+            disabled={(!selectedEmotion && !customFeeling.trim()) || loadingRec}
+            className="btn-primary w-full"
+          >
+            {loadingRec ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-pulse-soft">✨</span>
+                Buscando pasaje...
+              </span>
+            ) : (
+              'Recomiéndame un pasaje'
+            )}
+          </button>
+
+          {errorRec && (
+            <p className="text-xs text-red-500 mt-3">{errorRec}</p>
+          )}
+
+          {/* Recommendation result */}
+          {recommendation && (
+            <div className="mt-5 pt-5 border-t border-crema-200 dark:border-oscuro-border animate-fade-in">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-3">
+                {recommendation.mensaje}
+              </p>
+
+              <div className="rounded-2xl bg-dorado/10 dark:bg-dorado/15 border border-dorado/30 p-4">
+                <p className="text-xs font-semibold text-dorado mb-2">
+                  {recommendation.libroNombre} {recommendation.capitulo}:{recommendation.versiculo}
+                </p>
+                <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed italic">
+                  «{recommendation.textoVersiculo}»
+                </p>
+              </div>
+
+              <button
+                onClick={handleGoToPassage}
+                className="mt-3 w-full btn-secondary"
+              >
+                Leer en contexto
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Continuar leyendo */}
@@ -180,8 +415,13 @@ export default function InicioPage() {
           </button>
         )}
 
-        <div className="grid grid-cols-1 gap-3">
-          {tools.map((tool) => (
+        {/* RECURSOS Section */}
+        <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />
+        <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-sm uppercase tracking-widest mb-4">
+          RECURSOS
+        </h2>
+        <div className="grid grid-cols-1 gap-3 mb-6">
+          {recursos.map((tool) => (
             <button
               key={tool.title}
               onClick={() => !tool.soon && navigate(tool.to)}
@@ -221,11 +461,222 @@ export default function InicioPage() {
           ))}
         </div>
 
+        {/* HERRAMIENTAS Section */}
+        <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />
+        <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-sm uppercase tracking-widest mb-2">
+          HERRAMIENTAS
+        </h2>
+        <p className="text-[11px] text-cafe-light/70 dark:text-crema-400/70 leading-snug mb-4">
+          El contenido de estas herramientas está generado con IA, a excepción de las citas bíblicas que son literales.
+          La IA puede cometer errores.
+        </p>
+        <div className="grid grid-cols-1 gap-3">
+          {herramientas.map((tool) => (
+            <div key={tool.title}>
+              <button
+                onClick={() => {
+                  if (tool.to === '#lectio') {
+                    setShowLectioSelector(!showLectioSelector)
+                  } else {
+                    navigate(tool.to)
+                  }
+                }}
+                className={[
+                  'card text-left flex items-start gap-4 transition-all duration-200 w-full',
+                  showLectioSelector && tool.to === '#lectio'
+                    ? 'border-dorado/50 shadow-md rounded-b-none'
+                    : 'hover:border-dorado/50 hover:shadow-md active:scale-[0.98]'
+                ].join(' ')}
+              >
+                <div className="w-12 h-12 rounded-2xl bg-dorado/10 dark:bg-dorado/15 flex items-center justify-center flex-shrink-0 text-dorado">
+                  <Icon name={tool.icon} size={22} />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight mb-1">
+                    {tool.title}
+                  </p>
+                  <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
+                    {tool.description}
+                  </p>
+                </div>
+
+                <Icon 
+                  name={showLectioSelector && tool.to === '#lectio' ? 'chevron-up' : 'chevron-right'} 
+                  size={18} 
+                  className="text-dorado/50 flex-shrink-0 mt-0.5 transition-transform" 
+                />
+              </button>
+
+              {/* Lectio Divina selector - accordion style */}
+              {tool.to === '#lectio' && showLectioSelector && (
+                <div className="bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                                border-t-0 rounded-b-2xl px-5 py-5 animate-fade-in">
+                  <h3 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 mb-3">
+                    Seleccioná un pasaje
+                  </h3>
+
+            {/* Book selector */}
+            <div className="mb-3">
+              <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
+                Libro
+              </label>
+              <select
+                value={selectedBook}
+                onChange={e => handleBookChange(e.target.value)}
+                className="input-field text-sm w-full"
+              >
+                <option value="">Seleccionar libro...</option>
+                {bibleBooks.map(book => (
+                  <option key={book.abbr} value={book.abbr}>
+                    {book.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Chapter selector */}
+            {selectedBook && (
+              <div className="mb-3">
+                <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
+                  Capítulo
+                </label>
+                <select
+                  value={selectedChapter}
+                  onChange={e => handleChapterChange(Number(e.target.value))}
+                  className="input-field text-sm w-full"
+                >
+                  <option value="0">Seleccionar capítulo...</option>
+                  {Array.from(
+                    { length: bibleBooks.find(b => b.abbr === selectedBook)?.chaptersCount || 0 },
+                    (_, i) => i + 1
+                  ).map(ch => (
+                    <option key={ch} value={ch}>
+                      Capítulo {ch}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Verse range */}
+            {selectedChapter > 0 && maxVerses > 0 && (
+              <>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
+                      Desde versículo
+                    </label>
+                    <select
+                      value={verseFrom}
+                      onChange={e => handleVerseChange(Number(e.target.value), verseTo)}
+                      className="input-field text-sm w-full"
+                    >
+                      <option value="0">--</option>
+                      {Array.from({ length: maxVerses }, (_, i) => i + 1).map(v => (
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
+                      Hasta versículo
+                    </label>
+                    <select
+                      value={verseTo}
+                      onChange={e => handleVerseChange(verseFrom, Number(e.target.value))}
+                      className="input-field text-sm w-full"
+                      disabled={verseFrom === 0}
+                    >
+                      <option value="0">--</option>
+                      {Array.from({ length: maxVerses }, (_, i) => i + 1)
+                        .filter(v => v >= verseFrom)
+                        .map(v => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                {versesPreview.length > 0 && (
+                  <div className="mb-3 p-3 rounded-2xl bg-crema-100 dark:bg-oscuro-bg max-h-48 overflow-y-auto">
+                    <p className="text-xs font-semibold text-dorado mb-2">Vista previa:</p>
+                    {versesPreview.map((verse, i) => (
+                      <p key={i} className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed mb-1">
+                        {verse}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleStartLectioDivina}
+                  disabled={!verseFrom || !verseTo}
+                  className="btn-primary w-full"
+                >
+                  Generar Lectio Divina
+                </button>
+              </>
+            )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
         <BugReportLink />
 
         <div className="pb-28" />
 
       </div>
+
+      {/* About Modal */}
+      {showAbout && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={() => setShowAbout(false)}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-md bg-crema dark:bg-oscuro-bg rounded-3xl px-6 py-6 shadow-2xl animate-fade-in"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-dorado/15 flex items-center justify-center text-dorado">
+                <Icon name="sparkles" size={20} />
+              </div>
+              <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-xl">
+                Acerca de Maná
+              </h2>
+            </div>
+
+            <div className="space-y-3 text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-5">
+              <p>
+                <strong>Maná</strong> es tu compañero espiritual diario. Combina la Biblia católica completa
+                con las lecturas litúrgicas diarias, disponibles <strong className="text-dorado">100% offline</strong>.
+              </p>
+              <p>
+                Incorpora inteligencia artificial para generar <em>Lectios Divinas</em> personalizadas,
+                recomendarte pasajes bíblicos según tu momento espiritual, y conectarte con santos que
+                resuenen con tu vida.
+              </p>
+              <p>
+                Personalizá la experiencia desde <strong>Ajustes</strong>: elegí colores, tamaño de letra,
+                y configurá notificaciones para acompañarte en tu jornada de fe.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowAbout(false)}
+              className="btn-secondary w-full"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
