@@ -4,6 +4,7 @@ import Icon from '../components/Icon'
 import { useAppStore, Theme, FontFamily, FONT_PRESETS, GARAMOND_FONT_PRESETS } from '../store/useAppStore'
 import { getLiturgicalAppColor, LITURGICAL_COLOR_LABELS, LITURGICAL_COLOR_HEX } from '../lib/lectionaryResolver'
 import { usePWAInstall } from '../hooks/usePWAInstall'
+import IOSInstallModal from '../components/IOSInstallModal'
 
 const FONT_PRESET_OPTIONS = [
   { px: FONT_PRESETS.small,  garamondPx: GARAMOND_FONT_PRESETS.small,  label: 'Pequeña' },
@@ -44,7 +45,7 @@ const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string }
 export default function AjustesPage() {
   const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily, liturgicalAccent, setLiturgicalAccent } = useAppStore()
   const { state: installState, install } = usePWAInstall()
-  const [showIOSInstructions, setShowIOSInstructions] = useState(false)
+  const [showIOSModal, setShowIOSModal] = useState(false)
 
   const sliderPercent = ((fontSizeValue - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100
 
@@ -296,22 +297,15 @@ export default function AjustesPage() {
               ) : installState === 'ios' ? (
                 <div className="space-y-3">
                   <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
-                    Para instalar Maná en tu iPhone o iPad, abrí esta página en <strong className="text-cafe-dark dark:text-crema-200">Safari</strong> y seguí estos pasos:
+                    Instalá Maná para acceder a la Biblia y lecturas del día sin conexión.
                   </p>
-                  {showIOSInstructions ? (
-                    <ol className="space-y-2 text-xs text-cafe-dark dark:text-crema-200">
-                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">1.</span>Tocá el botón <strong>Compartir</strong> (el cuadrado con flecha hacia arriba) en la barra de Safari</li>
-                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">2.</span>Desplazate hacia abajo y tocá <strong>Agregar a pantalla de inicio</strong></li>
-                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">3.</span>Tocá <strong>Agregar</strong> en la esquina superior derecha</li>
-                    </ol>
-                  ) : (
-                    <button
-                      onClick={() => setShowIOSInstructions(true)}
-                      className="btn-secondary w-full text-sm"
-                    >
-                      Ver instrucciones
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setShowIOSModal(true)}
+                    className="btn-primary w-full flex items-center justify-center gap-2"
+                  >
+                    <Icon name="sparkles" size={16} />
+                    Ver cómo instalar
+                  </button>
                 </div>
               ) : null}
             </div>
@@ -376,7 +370,6 @@ export default function AjustesPage() {
               </div>
               <div>
                 <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
-                  Desarrollado por <strong className="text-cafe-dark dark:text-crema-200">Fabricio Bianchi</strong>.
                   Software libre, gratuito y sin registro. Si sos desarrollador y te interesa contribuir con este proyecto visita el <a href="https://github.com/fb91/mana" className="text-dorado hover:underline" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a>.
                 </p>
               </div>
@@ -385,6 +378,9 @@ export default function AjustesPage() {
         </section>
 
       </div>
+
+      {/* iOS Install Modal */}
+      <IOSInstallModal show={showIOSModal} onClose={() => setShowIOSModal(false)} />
     </div>
   )
 }

@@ -283,7 +283,12 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob | nul
   ctx.fillStyle = palette.sub
   ctx.font = `400 32px Garamond, Georgia, "Times New Roman", serif`
   ctx.textAlign = 'center'
-  ctx.fillText(data.dateStr, W / 2, H - 60)
+  ctx.fillText(data.dateStr, W / 2, H - 90)
+  
+  // ── Enlace del sitio web ───────────────────────────────────────────────────────
+  ctx.font = `400 22px Garamond, Georgia, "Times New Roman", serif`
+  const siteUrl = typeof window !== 'undefined' ? window.location.hostname : 'app-mana.vercel.app'
+  ctx.fillText(siteUrl, W / 2, H - 50)
   ctx.textAlign = 'left'
 
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
