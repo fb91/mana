@@ -69,15 +69,9 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
                     1
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium mb-1">
-                      Presioná el botón <strong>Compartir</strong>
+                    <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium">
+                      Presioná el botón <strong>Compartir</strong> (cuadrado con flecha hacia arriba)
                     </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-oscuro-bg flex items-center justify-center border border-crema-200 dark:border-oscuro-border">
-                        <Icon name="share" size={16} className="text-blue-500" />
-                      </div>
-                      <span className="text-xs text-cafe-light dark:text-crema-300">(botón cuadrado con flecha)</span>
-                    </div>
                   </div>
                 </div>
 
@@ -103,11 +97,8 @@ export default function IOSInstallModal({ onClose, show }: IOSInstallModalProps)
                     1
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium mb-2">
-                      Presioná los <strong>3 puntos (...)</strong> en la barra inferior
-                    </p>
-                    <p className="text-xs text-cafe-light dark:text-crema-300 mt-1">
-                      Luego presioná el botón <strong>Compartir</strong> (cuadrado con flecha hacia arriba)
+                    <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium">
+                      Presioná los <strong>3 puntos (...)</strong> en la barra inferior y luego <strong>Compartir</strong>
                     </p>
                   </div>
                 </div>
