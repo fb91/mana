@@ -43,7 +43,7 @@ Tiempo litúrgico actual, santo del día y lecturas litúrgicas.
 
 ## Notas sobre IA y contenido bíblico
 
-- **Texto bíblico**: nunca generado por IA. Siempre resuelto desde `backend/data/bible_es.json`.
+- **Texto bíblico**: nunca generado por IA. Siempre resuelto desde `public/data/bible_es.json` (cacheado localmente).
 - **Prompts de IA**: todos incluyen un bloque `MAGISTERIO` que acota las respuestas a la doctrina católica oficial.
 - **Ante dudas doctrinales**: consultar con un sacerdote.
 
@@ -53,30 +53,25 @@ Tiempo litúrgico actual, santo del día y lecturas litúrgicas.
 
 ```
 mana/
-├── frontend/          # React 18 + Vite + TypeScript + TailwindCSS (PWA)
-│   └── src/
-│       ├── pages/     # Una página por ruta
-│       ├── components/
-│       ├── services/  # api.ts — todas las llamadas al backend
-│       ├── store/     # Zustand (darkMode, fontSize, etc.)
-│       └── data/      # santoAxes.ts — ejes para recomendación de santos
-├── backend/           # Kotlin + Ktor 2 + SQLite
-│   ├── src/main/kotlin/com/mana/
-│   │   ├── routes/    # AIRoutes, BibleRoutes, ExamenRoutes, NovenasRoutes, PushRoutes
-│   │   ├── services/  # ClaudeService, BibleService, PushNotificationScheduler
-│   │   └── models/    # Models.kt
-│   └── data/
-│       ├── bible_es.json                        # Biblia completa (NBJ)
-│       └── conscience_examination_guidance.json # Preguntas del examen
-└── .github/workflows/ # CI
+└── frontend/          # React 18 + Vite + TypeScript + TailwindCSS (PWA)
+    ├── api/           # Vercel serverless functions (API endpoints)
+    │   ├── _claude.ts # Claude AI integration
+    │   └── ai/        # /api/ai/* endpoints
+    ├── src/
+    │   ├── pages/     # Una página por ruta
+    │   ├── components/
+    │   ├── services/  # api.ts — llamadas a las serverless functions
+    │   ├── store/     # Zustand (darkMode, fontSize, etc.)
+    │   └── data/      # santoAxes.ts — ejes para recomendación de santos
+    └── public/data/
+        └── bible_es.json  # Biblia completa (NBJ)
 ```
 
 ---
 
 ## Requisitos
 
-- **Backend**: JDK 17+, Gradle 8+
-- **Frontend**: Node.js 18+, npm 9+
+- Node.js 18+, npm 9+
 
 ---
 
@@ -84,40 +79,24 @@ mana/
 
 ### 1. Variables de entorno
 
-`backend/.env`:
-```env
-ANTHROPIC_API_KEY=sk-ant-...
-VAPID_PUBLIC_KEY=...
-VAPID_PRIVATE_KEY=...
-VAPID_SUBJECT=mailto:tu@email.com
-PORT=8080
-```
-
 `frontend/.env.local`:
 ```env
-VITE_API_URL=http://localhost:8080
+ANTHROPIC_API_KEY=sk-ant-...
 VITE_VAPID_PUBLIC_KEY=...
 ```
 
-### 2. Backend
+En Vercel, configurar las mismas variables en el dashboard del proyecto.
 
-```bash
-cd backend && ./gradlew run
-```
-
-Producción:
-```bash
-./gradlew shadowJar
-java -jar build/libs/mana-backend-all.jar
-```
-
-### 3. Frontend
+### 2. Desarrollo local
 
 ```bash
 cd frontend && npm install && npm run dev
 ```
 
-Build de producción:
+### 3. Producción
+
+Desplegado en **Vercel** con serverless functions.
+
 ```bash
 npm run build
 ```
@@ -134,8 +113,8 @@ npx web-push generate-vapid-keys
 
 ## Arquitectura
 
-- El backend actúa como proxy seguro para la API de Claude (la API key nunca llega al frontend)
+- **Serverless functions** en Vercel como proxy seguro para la API de Claude (la API key nunca llega al cliente)
 - Estado del usuario persistido en localStorage vía Zustand (sin login, sin cuenta)
 - Notificaciones push diarias para novenas activas via Web Push API
-- Rate limiting: 20 requests por IP por hora en endpoints de IA
-- Todo el texto bíblico se resuelve server-side desde `bible_es.json`
+- Todo el texto bíblico se resuelve client-side desde `public/data/bible_es.json`
+- Caché de recomendaciones bíblicas en Vercel KV para reducir consumo de tokens

@@ -138,7 +138,7 @@ def parse_psalm_html(html_bytes):
 
 
 def main():
-    bible_path = 'backend/data/bible_es.json'
+    bible_path = 'frontend/public/data/bible_es.json'
     print(f"Loading {bible_path}...")
     with open(bible_path, encoding='utf-8') as f:
         data = json.load(f)

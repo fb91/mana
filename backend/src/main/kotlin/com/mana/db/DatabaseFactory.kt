@@ -20,7 +20,8 @@ object DatabaseFactory {
                 NovenasTable,
                 NovenaDiasTable,
                 PushSubscriptionsTable,
-                NovenasActivasTable
+                NovenasActivasTable,
+                RecomendacionesCacheTable
             )
         }
     }

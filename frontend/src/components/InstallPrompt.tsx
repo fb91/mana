@@ -10,6 +10,10 @@ export default function InstallPrompt() {
   const [showBanner, setShowBanner] = useState(false)
 
   useEffect(() => {
+    // No mostrar en PC/laptop — solo en dispositivos móviles
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent)
+    if (!isMobile) return
+
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)

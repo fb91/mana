@@ -5,11 +5,9 @@ import Icon from '../components/Icon'
 import { api, BibliaRecomendacion } from '../services/api'
 import { getBibleVerse } from '../lib/bible'
 import { BugReportLink } from '../components/BugReportButton'
-import { useAppStore } from '../store/useAppStore'
 
 export default function RecomendacionPage() {
   const navigate = useNavigate()
-  const { recentRecommendations, addRecommendation } = useAppStore()
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<BibliaRecomendacion | null>(null)
@@ -20,14 +18,11 @@ export default function RecomendacionPage() {
     setLoading(true)
     setError('')
     try {
-      const rec = await api.getBibliaRecomendacion(text.trim(), recentRecommendations)
+      const rec = await api.getBibliaRecomendacion(text.trim())
       // Resolve verse text from locally cached bible JSON
       const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
       const fullResult = { ...rec, textoVersiculo: verseText ?? '' }
       setResult(fullResult)
-      // Agregar a la caché de recomendaciones
-      const ref = `${rec.libro} ${rec.capitulo}:${rec.versiculo}`
-      addRecommendation(ref)
     } catch (err) {
       if (err instanceof Error && err.message === 'INVALID_INPUT') {
         setError('Contanos algo sobre cómo te sentís o qué te está pasando para poder buscarte un pasaje que te acompañe.')

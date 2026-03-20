@@ -1,5 +1,48 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { claudeChat, MAGISTERIO } from '../_claude.js'
+import { createClient } from '@supabase/supabase-js'
+
+type CachedRecomendacion = {
+  mensaje: string
+  libro: string
+  libroNombre: string
+  capitulo: number
+  versiculo: number
+}
+
+function getSupabase() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
+}
+
+const MOOD_KEYWORDS: Record<string, string[]> = {
+  alegre: ['alegr', 'feliz', 'content', 'gozo', 'jubilo', 'entusiasm', 'anim'],
+  triste: ['trist', 'llor', 'melan', 'deprimi', 'decaíd', 'abatid', 'pena', 'dolor', 'sufr'],
+  ansioso: ['ansios', 'ansiedad', 'nervios', 'preocup', 'inquiet', 'estres', 'agobiad'],
+  enojado: ['enojad', 'enoj', 'furios', 'iracund', 'rabia', 'ira ', 'bronca', 'frustr'],
+  temeroso: ['miedo', 'temo', 'temor', 'asust', 'pavor', 'terror', 'espant'],
+  solo: ['sol', 'soled', 'aislad', 'abandon', 'desampara'],
+  agradecido: ['agradec', 'gratitud', 'bendecid', 'afortun'],
+  confundido: ['confund', 'confus', 'perdid', 'desorient', 'duda', 'inciert'],
+  esperanzado: ['esperanz', 'ilusión', 'ilusionad', 'optimis'],
+  culpable: ['culp', 'arrepent', 'remordim', 'vergüenz', 'vergonz'],
+  cansado: ['cansad', 'agotad', 'exhaust', 'fatigad', 'sin fuerza', 'sin energi'],
+  'en paz': ['paz', 'tranquil', 'seren', 'calm'],
+  enfermo: ['enferm', 'dolor', 'salud', 'mal de', 'hospital'],
+  duelo: ['duelo', 'muerte', 'falleció', 'perdí a', 'murió', 'luto'],
+}
+
+function normalizeMood(text: string): string | null {
+  const lower = text.toLowerCase()
+  for (const [category, keywords] of Object.entries(MOOD_KEYWORDS)) {
+    if (keywords.some(kw => lower.includes(kw))) return category
+  }
+  return null
+}
+
+const CACHE_THRESHOLD = 20
 
 const SYSTEM_BIBLIA_RECOMENDACION = `
 Sos un acompañante espiritual católico. El usuario te describe brevemente cómo se siente
@@ -32,18 +75,58 @@ RESTRICCIÓN: ${MAGISTERIO}
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { estadoAnimo, excludedPassages = [] } = req.body as { 
+  const { estadoAnimo } = req.body as { 
     estadoAnimo: string
-    excludedPassages?: string[]
   }
   if (!estadoAnimo?.trim()) {
     return res.status(422).json({ error: 'INVALID_INPUT' })
   }
 
-  // Construir mensaje del usuario con restricciones de pasajes si existen
+  const supabase = getSupabase()
+  const normalizedMood = normalizeMood(estadoAnimo)
+
+  // Intentar servir desde caché si hay suficientes recomendaciones
+  if (supabase && normalizedMood) {
+    const { count } = await supabase
+      .from('recomendaciones_cache')
+      .select('*', { count: 'exact', head: true })
+      .eq('estado_animo', normalizedMood)
+
+    if (count && count >= CACHE_THRESHOLD) {
+      // Traer uno aleatorio usando offset random
+      const randomOffset = Math.floor(Math.random() * count)
+      const { data } = await supabase
+        .from('recomendaciones_cache')
+        .select('mensaje, libro, libro_nombre, capitulo, versiculo')
+        .eq('estado_animo', normalizedMood)
+        .range(randomOffset, randomOffset)
+        .single()
+
+      if (data) {
+        return res.json({
+          mensaje: data.mensaje,
+          libro: data.libro,
+          libroNombre: data.libro_nombre,
+          capitulo: data.capitulo,
+          versiculo: data.versiculo,
+          textoVersiculo: '', // resolved client-side
+        })
+      }
+    }
+  }
+
+  // No hay suficiente caché → pedir a la IA
   let userMessage = estadoAnimo
-  if (excludedPassages.length > 0) {
-    userMessage += `\n\nNOTA: Por favor NO recomiendes ninguno de estos pasajes que ya sugeriste anteriormente: ${excludedPassages.join(', ')}`
+  if (supabase && normalizedMood) {
+    const { data: cached } = await supabase
+      .from('recomendaciones_cache')
+      .select('libro, capitulo, versiculo')
+      .eq('estado_animo', normalizedMood)
+
+    if (cached && cached.length > 0) {
+      const refs = cached.map(r => `${r.libro} ${r.capitulo}:${r.versiculo}`)
+      userMessage += `\n\nNOTA: Por favor NO recomiendes ninguno de estos pasajes ya sugeridos: ${refs.join(', ')}`
+    }
   }
 
   const rawText = await claudeChat(
@@ -51,12 +134,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     [{ role: 'user', content: userMessage }]
   )
 
-  let parsed: { mensaje: string; libro: string; libroNombre: string; capitulo: number; versiculo: number }
+  let parsed: CachedRecomendacion
   try {
     const jsonStr = rawText.trim().replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/```$/, '').trim()
     parsed = JSON.parse(jsonStr)
   } catch {
     return res.status(422).json({ error: 'INVALID_INPUT' })
+  }
+
+  // Guardar en Supabase para ir llenando el caché
+  if (supabase && normalizedMood) {
+    await supabase.from('recomendaciones_cache').insert({
+      estado_animo: normalizedMood,
+      mensaje: parsed.mensaje,
+      libro: parsed.libro,
+      libro_nombre: parsed.libroNombre,
+      capitulo: parsed.capitulo,
+      versiculo: parsed.versiculo,
+    })
   }
 
   // Return without verse text — frontend resolves it from the locally cached bible JSON

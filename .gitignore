@@ -1,11 +1,4 @@
-# Backend
-backend/.gradle/
-backend/build/
-backend/.kotlin/
-*.jar
-!gradle-wrapper.jar
-
-# Frontend
+# Dependencies
 node_modules/
 frontend/dist/
 frontend/dev-dist/

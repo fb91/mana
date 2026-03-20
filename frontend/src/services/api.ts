@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || ''
+const BASE_URL = ''
 
 export type ChatMessage = {
   role: 'user' | 'assistant'
@@ -113,10 +113,10 @@ export const api = {
   getBibleChapter: (book: string, chapter: number) =>
     import('../lib/bible').then(m => m.getBibleChapter(book, chapter)),
 
-  getBibliaRecomendacion: (estadoAnimo: string, excludedPassages?: string[]) =>
+  getBibliaRecomendacion: (estadoAnimo: string) =>
     request<BibliaRecomendacion>('/api/ai/biblia-recomendacion', {
       method: 'POST',
-      body: JSON.stringify({ estadoAnimo, excludedPassages: excludedPassages || [] }),
+      body: JSON.stringify({ estadoAnimo }),
     }),
 
   getLectioBiblica: (libro: string, libroNombre: string, capitulo: number, versos: number[], textos: string[]) =>

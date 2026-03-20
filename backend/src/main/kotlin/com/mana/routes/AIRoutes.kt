@@ -4,6 +4,7 @@ import com.mana.models.*
 import com.mana.plugins.RateLimitAI
 import com.mana.services.BibleService
 import com.mana.services.ClaudeService
+import com.mana.services.RecomendacionCacheService
 import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -314,7 +315,27 @@ fun Route.aiRoutes(dotenv: Dotenv) {
                         mapOf("error" to "Estado de ánimo requerido")
                     )
                 }
-                val messages = listOf(ChatMessage("user", req.estadoAnimo))
+
+                // Intentar servir desde caché si hay suficientes recomendaciones
+                val normalizedMood = RecomendacionCacheService.normalizeMood(req.estadoAnimo)
+                if (normalizedMood != null && RecomendacionCacheService.isCacheSufficient(normalizedMood)) {
+                    val cached = RecomendacionCacheService.getRandomForMood(normalizedMood)
+                    if (cached != null) {
+                        return@post call.respond(cached)
+                    }
+                }
+
+                // No hay suficiente caché → pedir a la IA
+                val excludedRefs = if (normalizedMood != null)
+                    RecomendacionCacheService.getCachedRefsForMood(normalizedMood)
+                else emptyList()
+
+                var userMessage = req.estadoAnimo
+                if (excludedRefs.isNotEmpty()) {
+                    userMessage += "\n\nNOTA: Por favor NO recomiendes ninguno de estos pasajes ya sugeridos: ${excludedRefs.joinToString(", ")}"
+                }
+
+                val messages = listOf(ChatMessage("user", userMessage))
                 val rawText = claude.chat(SYSTEM_BIBLIA_RECOMENDACION, messages)
                 val rawRec = try {
                     val jsonStr = rawText.trim()
@@ -333,16 +354,21 @@ fun Route.aiRoutes(dotenv: Dotenv) {
                     ?: chapter?.verses?.firstOrNull()
                 val resolvedVerse = verse?.number ?: rawRec.versiculo
                 val resolvedText = verse?.text ?: ""
-                call.respond(
-                    BibliaRecomendacion(
-                        mensaje = rawRec.mensaje,
-                        libro = rawRec.libro,
-                        libroNombre = rawRec.libroNombre,
-                        capitulo = rawRec.capitulo,
-                        versiculo = resolvedVerse,
-                        textoVersiculo = resolvedText
-                    )
+                val result = BibliaRecomendacion(
+                    mensaje = rawRec.mensaje,
+                    libro = rawRec.libro,
+                    libroNombre = rawRec.libroNombre,
+                    capitulo = rawRec.capitulo,
+                    versiculo = resolvedVerse,
+                    textoVersiculo = resolvedText
                 )
+
+                // Guardar en caché si se pudo normalizar el estado de ánimo
+                if (normalizedMood != null) {
+                    RecomendacionCacheService.save(normalizedMood, result)
+                }
+
+                call.respond(result)
             }
         }
     }

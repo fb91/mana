@@ -45,3 +45,16 @@ object NovenasActivasTable : Table("novenas_activas") {
     val ultimoRecordatorio = timestamp("ultimo_recordatorio").nullable()
     override val primaryKey = PrimaryKey(id)
 }
+
+object RecomendacionesCacheTable : Table("recomendaciones_cache") {
+    val id = integer("id").autoIncrement()
+    val estadoAnimo = text("estado_animo")       // categoría normalizada: "alegre", "triste", etc.
+    val mensaje = text("mensaje")
+    val libro = text("libro")
+    val libroNombre = text("libro_nombre")
+    val capitulo = integer("capitulo")
+    val versiculo = integer("versiculo")
+    val textoVersiculo = text("texto_versiculo")
+    val creadoAt = timestamp("creado_at").defaultExpression(CurrentTimestamp)
+    override val primaryKey = PrimaryKey(id)
+}

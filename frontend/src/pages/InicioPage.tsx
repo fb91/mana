@@ -303,7 +303,6 @@ export default function InicioPage() {
   const [showAbout, setShowAbout] = useState(false)
 
   // Emotion and recommendation
-  const { recentRecommendations, addRecommendation } = useAppStore()
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
   const [customFeeling, setCustomFeeling] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
@@ -336,10 +335,9 @@ export default function InicioPage() {
     setRecommendation(null)
 
     try {
-      const rec = await api.getBibliaRecomendacion(feeling, recentRecommendations)
+      const rec = await api.getBibliaRecomendacion(feeling)
       const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
       setRecommendation({ ...rec, textoVersiculo: verseText ?? '' })
-      addRecommendation(`${rec.libro} ${rec.capitulo}:${rec.versiculo}`)
     } catch (err) {
       if (err instanceof Error && err.message === 'INVALID_INPUT') {
         setErrorRec('Contanos algo sobre cómo te sentís para buscarte un pasaje que te acompañe.')
