@@ -65,6 +65,8 @@ function formatBiblePath(path: string): string {
   return `${name} · Capítulo ${chapter}`
 }
 
+const IS_PROD = import.meta.env.PROD
+
 const tools: Tool[] = [
   {
     icon: 'book-open',
@@ -89,12 +91,14 @@ const tools: Tool[] = [
     title: 'Novenas',
     description: 'Rezá novenas con recordatorios diarios. Acompañarte con la intercesión de los santos.',
     to: '/novenas',
+    soon: IS_PROD,
   },
   {
     icon: 'clipboard',
     title: 'Examen de conciencia',
     description: 'Preparate para la confesión con preguntas adaptadas a tu perfil. Descargá tu examen.',
     to: '/examen',
+    soon: IS_PROD,
   },
   {
     icon: 'archive',
@@ -157,22 +161,20 @@ export default function InicioPage() {
         {lastBiblePath && (
           <button
             onClick={() => navigate(lastBiblePath)}
-            className="w-full card text-left flex items-center gap-4 mb-4
-                       hover:border-dorado/50 hover:shadow-md active:scale-[0.98]
-                       transition-all duration-200 border-dorado/30 bg-dorado/5 dark:bg-dorado/10"
+            className="w-full mb-4 rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                       bg-cafe-dark dark:bg-dorado/90
+                       active:scale-[0.98] transition-all duration-200 shadow-md"
           >
-            <div className="w-12 h-12 rounded-2xl bg-dorado/15 dark:bg-dorado/20 flex items-center justify-center flex-shrink-0 text-dorado">
-              <Icon name="book-open" size={22} />
-            </div>
+            <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado mb-0.5">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
                 Continuar leyendo
               </p>
-              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+              <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
                 {formatBiblePath(lastBiblePath)}
               </p>
             </div>
-            <Icon name="chevron-right" size={18} className="text-dorado/60 flex-shrink-0" />
+            <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
           </button>
         )}
 

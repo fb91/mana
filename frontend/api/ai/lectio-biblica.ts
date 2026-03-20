@@ -13,8 +13,7 @@ Respondés ÚNICAMENTE con un objeto JSON válido, sin markdown, sin texto adici
   "meditatioIntro": "<introducción a la meditación sobre ese pasaje específico, 1-2 oraciones>",
   "meditatioPreguntas": ["<pregunta profunda sobre el texto 1>", "<pregunta profunda sobre el texto 2>", "<pregunta profunda sobre el texto 3>"],
   "oratio": "<invitación a formular una oración personal nacida de este pasaje, 2-3 oraciones>",
-  "contemplatio": "<guía al silencio interior y cierre recogido, 2-3 oraciones>",
-  "preguntasProfundas": ["<pregunta para seguir profundizando 1>", "<pregunta para seguir profundizando 2>"]
+  "contemplatio": "<guía al silencio interior y cierre recogido, 2-3 oraciones>"
 }
 
 Las preguntas y el contenido deben estar directamente anclados en el texto del pasaje recibido.

@@ -407,17 +407,6 @@ function LectioModal({
             <LectioSection titulo="Contemplatio · Contemplar" color="cafe">
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.contemplatio}</p>
             </LectioSection>
-            <div className="bg-dorado/10 dark:bg-dorado/15 border border-dorado/30 rounded-2xl p-4">
-              <p className="text-xs font-semibold text-dorado uppercase tracking-wider mb-3">Para profundizar</p>
-              <ul className="space-y-3">
-                {result.preguntasProfundas.map((q, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-cafe-dark dark:text-crema-200">
-                    <span className="text-dorado font-bold shrink-0">›</span>
-                    <span className="leading-relaxed">{q}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
             <DownloadPDFButton onClick={() => downloadLectioPDF(result, chapter, selectedVerses)} />
           </div>
         ) : null}
@@ -560,7 +549,7 @@ function VerseReader({
             <span className={`font-bold text-xs mr-2 select-none align-top leading-6 ${isSelected ? 'text-dorado' : 'text-dorado/70'}`}>
               {verse.number}
             </span>
-            <span className="text-cafe-dark dark:text-crema-200 text-[15px] leading-relaxed">
+            <span className="text-cafe-dark dark:text-crema-200 text-base leading-relaxed">
               {verse.text}
             </span>
           </div>
@@ -675,7 +664,7 @@ function VerseReader({
 
       {/* Floating Lectio bar */}
       {selectedVerses.size > 0 && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] px-0 z-40 animate-slide-up">
+        <div className="fixed bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] px-0 z-40 animate-slide-up">
           <div className="flex items-center gap-2 bg-white dark:bg-oscuro-surface
                           border border-crema-200 dark:border-oscuro-border
                           rounded-2xl shadow-lg px-4 py-3">

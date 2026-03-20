@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import ChatInterface from '../components/ChatInterface'
@@ -223,7 +224,7 @@ function ReadingCard({
           ) : verses && verses.length > 0 ? (
             <div className="space-y-1">
               {verses.map((v) => (
-                <p key={v.number} className="font-serif text-[15px] text-cafe-dark dark:text-crema-200 leading-relaxed">
+                <p key={v.number} className="font-serif text-base text-cafe-dark dark:text-crema-200 leading-relaxed">
                   <span className="text-dorado font-bold text-xs mr-2 align-top leading-6 select-none">
                     {v.number}
                   </span>
@@ -435,6 +436,7 @@ function ShareModal({
 
 export default function LiturgiaPage() {
   const today = useRef(new Date()).current
+  const location = useLocation()
   const [selectedDate, setSelectedDate] = useState<Date>(today)
   const [resolvedDay, setResolvedDay] = useState<ResolvedDay | null>(null)
   const [expanded, setExpanded] = useState<Set<ReadingKey>>(new Set(['gospel']))
@@ -443,6 +445,13 @@ export default function LiturgiaPage() {
   const [showLectio, setShowLectio] = useState(false)
   const [lectioKey, setLectioKey] = useState<'gospel' | 'first'>('gospel')
   const [showShare, setShowShare] = useState(false)
+
+  // Jump to today when BottomNav "Lecturas" is pressed while already on this page
+  useEffect(() => {
+    if ((location.state as { goToToday?: number } | null)?.goToToday) {
+      setSelectedDate(new Date())
+    }
+  }, [(location.state as { goToToday?: number } | null)?.goToToday])
 
   // Resolve liturgical context whenever selected date changes
   useEffect(() => {

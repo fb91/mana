@@ -5,7 +5,8 @@ import { getLiturgicalAppColor } from '../lib/lectionaryResolver'
 export type Theme      = 'claro' | 'oscuro'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
-export const FONT_PRESETS = { small: 14, normal: 16, large: 18 } as const
+export const FONT_PRESETS          = { small: 14, normal: 16, large: 18 } as const
+export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 21 } as const
 
 export const VALID_THEMES: Theme[] = ['claro', 'oscuro']
 
@@ -56,7 +57,23 @@ export const useAppStore = create<AppState>()(
       fontFamily: 'inter',
       setFontFamily: (family) => {
         applyFontFamily(family)
-        set({ fontFamily: family })
+        // Auto-adjust font size when switching to/from Garamond
+        const current = get().fontSizeValue
+        const interVals = Object.values(FONT_PRESETS)
+        const garamondVals = Object.values(GARAMOND_FONT_PRESETS)
+        if (family === 'garamond' && interVals.includes(current as 14 | 16 | 18)) {
+          const idx = interVals.indexOf(current as 14 | 16 | 18)
+          const adjusted = garamondVals[idx]
+          applyFontSize(adjusted)
+          set({ fontFamily: family, fontSizeValue: adjusted })
+        } else if (family !== 'garamond' && garamondVals.includes(current as 17 | 19 | 21)) {
+          const idx = garamondVals.indexOf(current as 17 | 19 | 21)
+          const adjusted = interVals[idx]
+          applyFontSize(adjusted)
+          set({ fontFamily: family, fontSizeValue: adjusted })
+        } else {
+          set({ fontFamily: family })
+        }
       },
 
       estadoDeVida: null,

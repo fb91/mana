@@ -1,13 +1,15 @@
+import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
-import { useAppStore, Theme, FontFamily, FONT_PRESETS } from '../store/useAppStore'
+import { useAppStore, Theme, FontFamily, FONT_PRESETS, GARAMOND_FONT_PRESETS } from '../store/useAppStore'
 import { getLiturgicalAppColor, LITURGICAL_COLOR_LABELS, LITURGICAL_COLOR_HEX } from '../lib/lectionaryResolver'
+import { usePWAInstall } from '../hooks/usePWAInstall'
 
 const FONT_PRESET_OPTIONS = [
-  { px: FONT_PRESETS.small,  label: 'Pequeña' },
-  { px: FONT_PRESETS.normal, label: 'Normal'  },
-  { px: FONT_PRESETS.large,  label: 'Grande'  },
-] as const
+  { px: FONT_PRESETS.small,  garamondPx: GARAMOND_FONT_PRESETS.small,  label: 'Pequeña' },
+  { px: FONT_PRESETS.normal, garamondPx: GARAMOND_FONT_PRESETS.normal, label: 'Normal'  },
+  { px: FONT_PRESETS.large,  garamondPx: GARAMOND_FONT_PRESETS.large,  label: 'Grande'  },
+]
 
 const SLIDER_MIN  = 11
 const SLIDER_MAX  = 22
@@ -41,6 +43,8 @@ const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string }
 
 export default function AjustesPage() {
   const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily, liturgicalAccent, setLiturgicalAccent } = useAppStore()
+  const { state: installState, install } = usePWAInstall()
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false)
 
   const sliderPercent = ((fontSizeValue - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100
 
@@ -159,12 +163,14 @@ export default function AjustesPage() {
 
             {/* Preset buttons */}
             <div className="grid grid-cols-3 gap-2">
-              {FONT_PRESET_OPTIONS.map(({ px, label }) => {
-                const active = fontSizeValue === px
+              {FONT_PRESET_OPTIONS.map(({ px, garamondPx, label }, i) => {
+                const activePx = (fontFamily ?? 'inter') === 'garamond' ? garamondPx : px
+                const active = fontSizeValue === activePx
+                const previewSizes = ['1rem', '1.25rem', '1.5rem']
                 return (
                   <button
-                    key={px}
-                    onClick={() => setFontSizeValue(px)}
+                    key={label}
+                    onClick={() => setFontSizeValue(activePx)}
                     className={[
                       'flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all duration-150 active:scale-95',
                       active
@@ -174,7 +180,7 @@ export default function AjustesPage() {
                   >
                     <span
                       className="font-serif font-bold leading-none"
-                      style={{ fontSize: px === FONT_PRESETS.small ? '1rem' : px === FONT_PRESETS.large ? '1.5rem' : '1.25rem' }}
+                      style={{ fontSize: previewSizes[i] }}
                     >
                       Aa
                     </span>
@@ -258,12 +264,76 @@ export default function AjustesPage() {
           </div>
         </section>
 
+        {/* ── Instalar app ── */}
+        {installState !== 'unavailable' && (
+          <section>
+            <p className="text-xs uppercase tracking-wider text-cafe-light dark:text-crema-400 font-semibold mb-3">
+              Instalar aplicación
+            </p>
+            <div className="card px-4 py-4">
+              {installState === 'installed' ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
+                    <Icon name="check" size={16} />
+                  </div>
+                  <p className="text-sm text-cafe-dark dark:text-crema-200">
+                    Maná ya está instalada en tu dispositivo.
+                  </p>
+                </div>
+              ) : installState === 'prompt' ? (
+                <div className="space-y-3">
+                  <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
+                    Instalá Maná en tu dispositivo para acceder más rápido, sin abrir el navegador.
+                  </p>
+                  <button
+                    onClick={install}
+                    className="btn-primary w-full flex items-center justify-center gap-2"
+                  >
+                    <Icon name="sparkles" size={16} />
+                    Instalar Maná
+                  </button>
+                </div>
+              ) : installState === 'ios' ? (
+                <div className="space-y-3">
+                  <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
+                    Para instalar Maná en tu iPhone o iPad, abrí esta página en <strong className="text-cafe-dark dark:text-crema-200">Safari</strong> y seguí estos pasos:
+                  </p>
+                  {showIOSInstructions ? (
+                    <ol className="space-y-2 text-xs text-cafe-dark dark:text-crema-200">
+                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">1.</span>Tocá el botón <strong>Compartir</strong> (el cuadrado con flecha hacia arriba) en la barra de Safari</li>
+                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">2.</span>Desplazate hacia abajo y tocá <strong>Agregar a pantalla de inicio</strong></li>
+                      <li className="flex gap-2"><span className="text-dorado font-bold shrink-0">3.</span>Tocá <strong>Agregar</strong> en la esquina superior derecha</li>
+                    </ol>
+                  ) : (
+                    <button
+                      onClick={() => setShowIOSInstructions(true)}
+                      className="btn-secondary w-full text-sm"
+                    >
+                      Ver instrucciones
+                    </button>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </section>
+        )}
+
         {/* ── Sobre el contenido ── */}
         <section>
           <p className="text-xs uppercase tracking-wider text-cafe-light dark:text-crema-400 font-semibold mb-3">
             Sobre el contenido generado
           </p>
           <div className="card px-4 py-4 space-y-3">
+            <div className="flex gap-3 items-start">
+              <div className="w-8 h-8 rounded-lg bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
+                <Icon name="clipboard" size={16} />
+              </div>
+              <p className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed">
+                Esta aplicación es muy reciente y se encuentra en etapa de desarrollo, en caso de encontrar 
+                un error, por favor reportarlo usando el botón ubicado en el extremo superior derecho de la app. 
+                Muchas gracias!
+              </p>
+            </div>
             <div className="flex gap-3 items-start">
               <div className="w-8 h-8 rounded-lg bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
                 <Icon name="sparkles" size={16} />

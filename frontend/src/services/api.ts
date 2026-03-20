@@ -167,5 +167,4 @@ export type LectioBiblicaResponse = {
   meditatioPreguntas: string[]
   oratio: string
   contemplatio: string
-  preguntasProfundas: string[]
 }

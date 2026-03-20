@@ -203,30 +203,6 @@ export function downloadLectioPDF(
 
   // ── Preguntas para profundizar ─────────────────────────────────────────────
 
-  newPageIfNeeded(20)
-  y += 5
-  hRule(DORADO, 0.4, 0)
-
-  // Tinted box background
-  const pqY = y
-  doc.setFillColor(250, 246, 220)
-  // Draw after measuring — use left accent bar instead
-  doc.setFillColor(...DORADO)
-  doc.rect(ML, y, 1.5, 6, 'F')
-
-  y += 1.5
-  doc.setFontSize(8.5)
-  doc.setFont('helvetica', 'bold')
-  doc.setTextColor(...DORADO)
-  doc.text('PARA PROFUNDIZAR', ML + 5, y + 3)
-  y += 7
-
-  bulletList(result.preguntasProfundas)
-
-  // Left accent bar — extend to content bottom
-  doc.setFillColor(...DORADO)
-  doc.rect(ML, pqY, 1.5, y - pqY + 2, 'F')
-
   // ── Footer on every page ───────────────────────────────────────────────────
 
   const totalPages = doc.getNumberOfPages()
