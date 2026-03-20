@@ -443,6 +443,7 @@ function VerseReader({
   setFocusMode,
   onBack,
   onChapterChange,
+  scrollContainerRef,
 }: {
   chapter: BibleChapter
   maxChapter: number
@@ -451,6 +452,7 @@ function VerseReader({
   setFocusMode: (v: boolean) => void
   onBack: () => void
   onChapterChange: (delta: number) => void
+  scrollContainerRef: React.RefObject<HTMLDivElement>
 }) {
   const verseRefs = useRef<Record<number, HTMLDivElement | null>>({})
   const prevChapterRef = useRef(chapter.chapter)
@@ -501,6 +503,7 @@ function VerseReader({
   function navigate(delta: number) {
     const next = chapter.chapter + delta
     if (next < 1 || next > maxChapter) return
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'instant' })
     setSlideDir(delta > 0 ? 'next' : 'prev')
     setAnimKey(k => k + 1)
     setTimeout(() => {
@@ -716,6 +719,7 @@ export default function BibliaPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { pinnedBooks, togglePinnedBook, setLastBiblePath } = useAppStore()
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const [books, setBooks] = useState<BibleBook[]>([])
   const [loadingBooks, setLoadingBooks] = useState(true)
@@ -797,7 +801,7 @@ export default function BibliaPage() {
     <div className="flex flex-col h-screen">
       <PageHeader icon={<Icon name="book-open" size={18} />} title="Biblia" subtitle={subtitle} />
 
-      <div className="flex-1 overflow-y-auto pt-4 pb-28">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pt-4 pb-28">
         {loadingBooks ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3 animate-pulse-soft">
             <span className="text-4xl">📖</span>
@@ -841,6 +845,7 @@ export default function BibliaPage() {
               setFocusMode={setFocusMode}
               onBack={() => setView('chapters')}
               onChapterChange={handleChapterChange}
+              scrollContainerRef={scrollContainerRef}
             />
           ) : null
         ) : null}
