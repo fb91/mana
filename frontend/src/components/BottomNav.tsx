@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Icon from './Icon'
 
 export default function BottomNav() {
@@ -9,9 +9,24 @@ export default function BottomNav() {
     `flex flex-col items-center justify-center gap-0.5 px-6 py-2.5 text-xs font-medium transition-colors duration-150
      ${isActive ? 'text-dorado' : 'text-cafe-light dark:text-crema-300 hover:text-dorado'}`
 
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Also scroll any overflow container that pages use
+    document.querySelector('.flex-1.overflow-y-auto')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function handleNavClick(path: string) {
+    if (location.pathname === path) {
+      scrollToTop()
+    } else {
+      navigate(path)
+    }
+  }
+
   function handleLecturasClick() {
     if (location.pathname === '/lecturas-del-dia') {
-      // Already on the page — signal LiturgiaPage to jump back to today
+      scrollToTop()
+      // Also signal LiturgiaPage to jump back to today
       navigate('/lecturas-del-dia', { replace: true, state: { goToToday: Date.now() } })
     } else {
       navigate('/lecturas-del-dia')
@@ -29,10 +44,10 @@ export default function BottomNav() {
       <div className="flex items-end justify-around px-4 pt-2 pb-2.5">
 
         {/* Izquierda: Inicio */}
-        <NavLink to="/inicio" className={sideClass}>
+        <button onClick={() => handleNavClick('/inicio')} className={sideClass({ isActive: location.pathname === '/inicio' })}>
           <Icon name="home" size={22} />
           <span className="leading-none">Inicio</span>
-        </NavLink>
+        </button>
 
         {/* Centro: Lecturas del día (elevado) */}
         <button onClick={handleLecturasClick} className="flex flex-col items-center gap-1 -mt-6">
@@ -51,10 +66,10 @@ export default function BottomNav() {
         </button>
 
         {/* Derecha: Ajustes */}
-        <NavLink to="/ajustes" className={sideClass}>
+        <button onClick={() => handleNavClick('/ajustes')} className={sideClass({ isActive: location.pathname === '/ajustes' })}>
           <Icon name="cog" size={22} />
           <span className="leading-none">Ajustes</span>
-        </NavLink>
+        </button>
 
       </div>
     </nav>

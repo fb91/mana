@@ -12,9 +12,16 @@ import { BugReportLink } from '../components/BugReportButton'
 // ── Long-press hook ───────────────────────────────────────────────────────────
 function useLongPress(callback: () => void, delay = 500) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fired = useRef(false)
 
-  function start() {
-    timer.current = setTimeout(callback, delay)
+  function start(e: React.TouchEvent | React.MouseEvent) {
+    fired.current = false
+    // Prevent iOS text selection on long press
+    e.preventDefault()
+    timer.current = setTimeout(() => {
+      fired.current = true
+      callback()
+    }, delay)
   }
 
   function cancel() {
@@ -26,7 +33,11 @@ function useLongPress(callback: () => void, delay = 500) {
 
   return {
     onTouchStart: start,
-    onTouchEnd: cancel,
+    onTouchEnd: (e: React.TouchEvent) => {
+      cancel()
+      // If long press fired, prevent the subsequent click
+      if (fired.current) e.preventDefault()
+    },
     onTouchMove: cancel,
     onMouseDown: start,
     onMouseUp: cancel,
@@ -57,6 +68,7 @@ function BookCard({
       ref={cardRef}
       {...longPress}
       onClick={onSelect}
+      style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
       className={[
         'relative bg-white dark:bg-oscuro-surface border rounded-2xl shadow-sm text-left py-3 px-4 overflow-hidden',
         'hover:border-dorado/60 hover:shadow-md active:scale-95 transition-all duration-300 group',
@@ -504,11 +516,13 @@ function VerseReader({
   function navigate(delta: number) {
     const next = chapter.chapter + delta
     if (next < 1 || next > maxChapter) return
-    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0
     setSlideDir(delta > 0 ? 'next' : 'prev')
     setAnimKey(k => k + 1)
     setTimeout(() => {
       onChapterChange(delta)
+      // Scroll to top after chapter change
+      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0
+      window.scrollTo({ top: 0 })
     }, 220)
   }
 
