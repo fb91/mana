@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { claudeChat, parseAIJson, MAGISTERIO } from '../_claude'
+import { claudeChat, parseAIJson, MAGISTERIO } from '../_claude.js'
 
 const SYSTEM_SANTO = `
 Sos un experto en hagiografía católica y acompañamiento espiritual.

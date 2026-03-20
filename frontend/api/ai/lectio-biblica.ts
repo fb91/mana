@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { claudeChat, MAGISTERIO } from '../_claude'
+import { claudeChat, MAGISTERIO } from '../_claude.js'
 
 const SYSTEM_LECTIO_BIBLICA = `
 Sos un guía de oración católico que conduce una Lectio Divina sobre un pasaje de la Biblia.

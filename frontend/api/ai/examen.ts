@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { claudeChat, parseAIJson, MAGISTERIO, ChatMessage } from '../_claude'
+import { claudeChat, parseAIJson, MAGISTERIO, ChatMessage } from '../_claude.js'
 
 const SYSTEM_EXAMEN = `
 Sos un acompañante espiritual católico que ayuda al usuario a hacer un examen de conciencia

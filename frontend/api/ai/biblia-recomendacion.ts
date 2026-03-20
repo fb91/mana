@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { claudeChat, MAGISTERIO } from '../_claude'
+import { claudeChat, MAGISTERIO } from '../_claude.js'
 
 const SYSTEM_BIBLIA_RECOMENDACION = `
 Sos un acompañante espiritual católico. El usuario te describe brevemente cómo se siente
