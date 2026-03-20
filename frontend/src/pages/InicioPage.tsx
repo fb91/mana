@@ -320,12 +320,13 @@ export default function InicioPage() {
   const [showIOSModal, setShowIOSModal] = useState(false)
   const [installDismissed, setInstallDismissed] = useState(false)
 
-  const showInstallBanner = !installDismissed && (
-    installState === 'ios' ? shouldShowIOSInstall() : installState === 'prompt'
-  )
+  // iOS: show if device is iOS, not installed as PWA (ignore localStorage dismiss — that was for the old auto-popup)
+  // Android: show if beforeinstallprompt fired (state === 'prompt')
+  const isIOS = installState === 'ios'
+  const showInstallBanner = !installDismissed && (isIOS || installState === 'prompt')
 
   function handleInstallBannerClick() {
-    if (installState === 'ios') {
+    if (isIOS) {
       setShowIOSModal(true)
     } else if (installState === 'prompt') {
       triggerAndroidInstall().then(() => setInstallDismissed(true))
