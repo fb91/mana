@@ -346,7 +346,7 @@ function LectioModal({
   return (
     <div className="fixed inset-0 z-[60] flex flex-col justify-end">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-24
+      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-8
                       max-h-[92vh] overflow-y-auto animate-slide-up shadow-2xl">
         <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
 
@@ -408,6 +408,13 @@ function LectioModal({
               <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.contemplatio}</p>
             </LectioSection>
             <DownloadPDFButton onClick={() => downloadLectioPDF(result, chapter, selectedVerses)} />
+            <button
+              onClick={onClose}
+              className="w-full text-center text-sm text-cafe-light dark:text-crema-300 py-2
+                         active:scale-[0.98] transition-all"
+            >
+              Cerrar
+            </button>
           </div>
         ) : null}
       </div>
@@ -664,7 +671,7 @@ function VerseReader({
 
       {/* Floating Lectio bar */}
       {selectedVerses.size > 0 && (
-        <div className="fixed bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] px-0 z-40 animate-slide-up">
+        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] px-0 z-40 animate-slide-up">
           <div className="flex items-center gap-2 bg-white dark:bg-oscuro-surface
                           border border-crema-200 dark:border-oscuro-border
                           rounded-2xl shadow-lg px-4 py-3">

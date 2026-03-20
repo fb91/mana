@@ -84,19 +84,18 @@ export default function BugReportButton() {
       {/* Modal overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center"
+          className="fixed inset-0 z-[80] flex items-start justify-center sm:items-center"
           onClick={handleClose}
         >
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
           <div
             className="relative w-full sm:max-w-sm bg-crema dark:bg-oscuro-bg
-                       rounded-t-3xl sm:rounded-3xl px-5 pt-5 pb-10 sm:pb-6
-                       shadow-2xl animate-slide-up"
+                       rounded-b-3xl sm:rounded-3xl px-5 pb-6
+                       pt-[calc(env(safe-area-inset-top)+1.25rem)] sm:pt-5 sm:pb-6
+                       shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
-            {/* Handle bar (mobile) */}
-            <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5 sm:hidden" />
 
             <div className="flex items-start justify-between mb-4">
               <div>

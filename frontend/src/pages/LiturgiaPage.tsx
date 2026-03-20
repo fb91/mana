@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
-import ChatInterface from '../components/ChatInterface'
-import { api, ChatMessage, BibleVerse } from '../services/api'
+import { api, BibleVerse, LectioBiblicaResponse, BibleChapter } from '../services/api'
+import { downloadLectioPDF } from '../lib/lectio-pdf'
 import { getLiturgicalContext, addDays, isSameDay } from '../lib/liturgicalCalendar'
 import { resolveDay, ResolvedDay, COLOR_STYLES, RANK_LABEL } from '../lib/lectionaryResolver'
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
@@ -243,81 +243,153 @@ function ReadingCard({
   )
 }
 
+// ── Lectio Divina helpers ─────────────────────────────────────────────────────
+
+function LectioSection({ titulo, color, children }: { titulo: string; color: 'dorado' | 'cafe'; children: React.ReactNode }) {
+  const border = color === 'dorado' ? 'border-dorado/40' : 'border-cafe-light/40'
+  return (
+    <div className={`border-l-2 ${border} pl-4`}>
+      <p className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wider mb-2">{titulo}</p>
+      {children}
+    </div>
+  )
+}
+
+function LectioDownloadPDFButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-center gap-2.5
+                 border border-dorado/40 text-dorado rounded-2xl py-3 px-4
+                 hover:bg-dorado/10 active:scale-[0.98]
+                 transition-all duration-150 group"
+    >
+      <svg
+        className="w-4 h-4 text-dorado group-hover:translate-y-0.5 transition-transform duration-150"
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 3v12" />
+      </svg>
+      <span className="text-sm font-medium">Descargar Lectio en PDF</span>
+    </button>
+  )
+}
+
 // ── Lectio Divina Modal ───────────────────────────────────────────────────────
 
 function LectioDivinaModal({
-  pasaje,
+  gospelRef,
+  verses,
   onClose,
 }: {
-  pasaje: string
+  gospelRef: string
+  verses: BibleVerse[]
   onClose: () => void
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(true)
+  const [result, setResult] = useState<LectioBiblicaResponse | null>(null)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    api.lectio([], pasaje)
-      .then((r) => setMessages([{ role: 'assistant', content: r.response }]))
-      .catch(() => setMessages([{ role: 'assistant', content: 'No se pudo preparar la Lectio. Verificá tu conexión e intentá de nuevo.' }]))
+    const parsed = parseBibleRef(gospelRef)
+    if (parsed.length === 0 || verses.length === 0) {
+      setError('No se pudo preparar la Lectio.')
+      setLoading(false)
+      return
+    }
+    const { book, chapter } = parsed[0]
+    const bookName = getBookName(book)
+    const verseNumbers = verses.map(v => v.number)
+    const verseTexts = verses.map(v => v.text)
+    api.getLectioBiblica(book, bookName, chapter, verseNumbers, verseTexts)
+      .then(setResult)
+      .catch(() => setError('No se pudo preparar la Lectio. Intentá de nuevo.'))
       .finally(() => setLoading(false))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleSend = useCallback(async (text: string) => {
-    const userMsg: ChatMessage = { role: 'user', content: text }
-    const updated = [...messages, userMsg]
-    setMessages(updated)
-    setLoading(true)
-    try {
-      const r = await api.lectio(updated, pasaje)
-      setMessages([...updated, { role: 'assistant', content: r.response }])
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Hubo un error. Intentá de nuevo.' }])
-    } finally {
-      setLoading(false)
-    }
-  }, [messages, pasaje])
+  const parsed = parseBibleRef(gospelRef)
+  const refDisplay = formatRef(gospelRef)
+  const fakeChapter: BibleChapter = {
+    book: parsed[0]?.book ?? '',
+    bookName: parsed[0] ? getBookName(parsed[0].book) : '',
+    chapter: parsed[0]?.chapter ?? 1,
+    verses,
+  }
+  const verseNumbers = verses.map(v => v.number)
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col">
+    <div className="fixed inset-0 z-[60] flex flex-col justify-end">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative mt-auto bg-crema dark:bg-oscuro-bg rounded-t-3xl
-                      max-h-[92vh] flex flex-col shadow-2xl animate-slide-up">
-        {/* Handle */}
-        <div className="flex-shrink-0 pt-3 pb-2 px-5">
-          <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-3" />
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
-                Lectio Divina
-              </h2>
-              <p className="text-dorado text-xs font-medium mt-0.5">{pasaje}</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-xs text-cafe-light dark:text-crema-300 hover:text-cafe-dark
-                         transition-colors px-2 py-1 rounded-lg hover:bg-crema-200 dark:hover:bg-oscuro-surface"
-            >
-              cerrar ✕
-            </button>
+      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-8
+                      max-h-[92vh] overflow-y-auto animate-slide-up shadow-2xl">
+        <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
+
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
+            Lectio Divina
+          </h2>
+          <button onClick={onClose} className="text-cafe-light dark:text-crema-300 text-sm py-1 px-2">
+            cerrar ✕
+          </button>
+        </div>
+        <p className="text-dorado text-sm font-medium mb-4">{refDisplay}</p>
+
+        {/* Verses from Bible JSON */}
+        <div className="bg-dorado/10 dark:bg-dorado/15 border border-dorado/30 rounded-2xl p-4 mb-6">
+          <div className="space-y-2">
+            {verses.map(v => (
+              <p key={v.number} className="font-serif text-[15px] text-cafe-dark dark:text-crema-200 leading-relaxed">
+                <span className="text-dorado font-bold text-xs mr-2 align-top leading-6 select-none">
+                  {v.number}
+                </span>
+                {v.text}
+              </p>
+            ))}
           </div>
         </div>
 
-        {loading && messages.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 animate-pulse-soft pb-24">
+        {loading ? (
+          <div className="flex flex-col items-center py-12 gap-4 animate-pulse-soft">
             <span className="text-5xl">🕯️</span>
             <p className="text-sm text-cafe-light dark:text-crema-300">Preparando tu Lectio Divina...</p>
           </div>
-        ) : (
-          <div className="flex-1 min-h-0 pb-8">
-            <ChatInterface
-              messages={messages}
-              onSend={handleSend}
-              loading={loading}
-              placeholder="Compartí tu reflexión..."
-            />
+        ) : error ? (
+          <p className="text-sm text-red-500 text-center py-8">{error}</p>
+        ) : result ? (
+          <div className="space-y-6 animate-fade-in">
+            <LectioDownloadPDFButton onClick={() => downloadLectioPDF(result, fakeChapter, verseNumbers)} />
+            <LectioSection titulo="Lectio · Leer" color="dorado">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.lectio}</p>
+            </LectioSection>
+            <LectioSection titulo="Meditatio · Meditar" color="cafe">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-3">{result.meditatioIntro}</p>
+              <ul className="space-y-2">
+                {result.meditatioPreguntas.map((q, i) => (
+                  <li key={i} className="flex gap-2 text-sm text-cafe-dark dark:text-crema-200">
+                    <span className="text-dorado font-bold mt-0.5 shrink-0">{i + 1}.</span>
+                    <span className="leading-relaxed">{q}</span>
+                  </li>
+                ))}
+              </ul>
+            </LectioSection>
+            <LectioSection titulo="Oratio · Orar" color="dorado">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.oratio}</p>
+            </LectioSection>
+            <LectioSection titulo="Contemplatio · Contemplar" color="cafe">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.contemplatio}</p>
+            </LectioSection>
+            <LectioDownloadPDFButton onClick={() => downloadLectioPDF(result, fakeChapter, verseNumbers)} />
+            <button
+              onClick={onClose}
+              className="w-full text-center text-sm text-cafe-light dark:text-crema-300 py-2
+                         active:scale-[0.98] transition-all"
+            >
+              Cerrar
+            </button>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   )
@@ -443,7 +515,6 @@ export default function LiturgiaPage() {
   const [loadedVerses, setLoadedVerses] = useState<LoadedVerses>({})
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
-  const [lectioKey, setLectioKey] = useState<'gospel' | 'first'>('gospel')
   const [showShare, setShowShare] = useState(false)
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
@@ -518,11 +589,6 @@ export default function LiturgiaPage() {
     setExpanded(next)
   }
 
-  function handleLectio(key: 'gospel' | 'first') {
-    setLectioKey(key)
-    setShowLectio(true)
-  }
-
   const readings = resolvedDay?.readings
   const gospelRef = readings?.gospel ?? ''
   const gospelText = loadedVerses.gospel?.slice(0, 3).map(v => v.text).join(' ') ?? ''
@@ -530,10 +596,6 @@ export default function LiturgiaPage() {
   const accentClass = resolvedDay
     ? (COLOR_STYLES[resolvedDay.color]?.text ?? 'text-dorado')
     : 'text-dorado'
-
-  const lectioPassage = lectioKey === 'gospel'
-    ? (readings?.gospel ? formatRef(readings.gospel) : '')
-    : (readings?.first ? formatRef(readings.first) : '')
 
   return (
     <div className="flex flex-col h-screen">
@@ -628,10 +690,10 @@ export default function LiturgiaPage() {
             {/* Action buttons */}
             {readings && (
               <div className="px-4 space-y-2 pt-1">
-                {/* Lectio Divina */}
+                {/* Lectio Divina del Evangelio */}
                 <button
-                  onClick={() => handleLectio('gospel')}
-                  disabled={!readings.gospel}
+                  onClick={() => setShowLectio(true)}
+                  disabled={!readings.gospel || !loadedVerses.gospel}
                   className="w-full flex items-center gap-3 bg-dorado text-crema-50
                              rounded-2xl px-5 py-4 font-semibold
                              active:scale-[0.98] transition-all duration-150 disabled:opacity-50
@@ -645,22 +707,6 @@ export default function LiturgiaPage() {
                     )}
                   </div>
                 </button>
-
-                {readings.first && (
-                  <button
-                    onClick={() => handleLectio('first')}
-                    className="w-full flex items-center gap-3 border border-dorado/40 text-dorado
-                               rounded-2xl px-5 py-3.5 font-medium
-                               active:scale-[0.98] transition-all duration-150
-                               hover:bg-dorado/5"
-                  >
-                    <Icon name="book-open" size={18} />
-                    <div className="text-left">
-                      <p className="text-sm leading-tight">Lectio de la Primera Lectura</p>
-                      <p className="text-xs text-dorado/60 mt-0.5 font-normal">{formatRef(readings.first)}</p>
-                    </div>
-                  </button>
-                )}
 
                 {/* Share button */}
                 <button
@@ -683,9 +729,10 @@ export default function LiturgiaPage() {
       </div>
 
       {/* Lectio Modal */}
-      {showLectio && lectioPassage && (
+      {showLectio && readings?.gospel && loadedVerses.gospel && (
         <LectioDivinaModal
-          pasaje={lectioPassage}
+          gospelRef={readings.gospel}
+          verses={loadedVerses.gospel}
           onClose={() => setShowLectio(false)}
         />
       )}

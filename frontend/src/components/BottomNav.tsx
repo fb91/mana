@@ -21,12 +21,11 @@ export default function BottomNav() {
   const lecturasActive = location.pathname === '/lecturas-del-dia'
 
   return (
-    <nav className="fixed bottom-3 left-1/2 -translate-x-1/2
+    <nav className="fixed bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] left-1/2 -translate-x-1/2
                     w-[calc(100%-1.5rem)] sm:max-w-[calc(28rem-1.5rem)] z-50
                     bg-white/75 dark:bg-oscuro-surface/80 backdrop-blur-md
                     rounded-2xl shadow-lg shadow-black/10
-                    border border-white/60 dark:border-white/10
-                    pb-[env(safe-area-inset-bottom)]">
+                    border border-white/60 dark:border-white/10">
       <div className="flex items-end justify-around px-4 pt-2 pb-2.5">
 
         {/* Izquierda: Inicio */}
