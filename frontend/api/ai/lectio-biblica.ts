@@ -1,5 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { claudeChat, MAGISTERIO } from '../_claude.js'
+import { createClient } from '@supabase/supabase-js'
+
+function getSupabase() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
+}
 
 const SYSTEM_LECTIO_BIBLICA = `
 Sos un guía de oración católico que conduce una Lectio Divina sobre un pasaje de la Biblia.
@@ -35,6 +43,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const versoRange = versos.length === 1
     ? `${versos[0]}`
     : `${versos[0]}-${versos[versos.length - 1]}`
+
+  // Clave única para este pasaje: "Jn:1:1-5"
+  const pasajeKey = `${libro}:${capitulo}:${versoRange}`
+
+  // Intentar servir desde caché
+  const supabase = getSupabase()
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('lectio_cache')
+        .select('pasaje, lectio, meditatio_intro, meditatio_preguntas, oratio, contemplatio')
+        .eq('pasaje_key', pasajeKey)
+        .single()
+
+      if (data) {
+        return res.json({
+          pasaje: data.pasaje,
+          lectio: data.lectio,
+          meditatioIntro: data.meditatio_intro,
+          meditatioPreguntas: data.meditatio_preguntas,
+          oratio: data.oratio,
+          contemplatio: data.contemplatio,
+        })
+      }
+    } catch { /* cache miss or DB error — continue to AI */ }
+  }
+
+  // No hay caché → pedir a la IA
   const verseLines = versos.map((n, i) => `${n} ${textos[i]}`).join('\n')
   const context = `${libroNombre} ${capitulo}:${versoRange}\n\n${verseLines}`
 
@@ -46,6 +82,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     parsed = JSON.parse(jsonStr)
   } catch {
     return res.status(500).json({ error: 'Error al generar la Lectio' })
+  }
+
+  // Guardar en Supabase para futuras consultas
+  if (supabase) {
+    try {
+      await supabase.from('lectio_cache').upsert({
+        pasaje_key: pasajeKey,
+        pasaje: parsed.pasaje,
+        lectio: parsed.lectio,
+        meditatio_intro: parsed.meditatioIntro,
+        meditatio_preguntas: parsed.meditatioPreguntas,
+        oratio: parsed.oratio,
+        contemplatio: parsed.contemplatio,
+      }, { onConflict: 'pasaje_key' })
+    } catch { /* save failed — no problem, next time will generate again */ }
   }
 
   return res.json(parsed)
