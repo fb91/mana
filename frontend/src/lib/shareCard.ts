@@ -45,6 +45,55 @@ function wrapText(
   return currentY + lineHeight
 }
 
+/**
+ * Checks if the gospel text fits in the image canvas.
+ * Returns true if it fits, false if it's too long.
+ */
+export function canGospelFitInImage(verses: Array<{ number: number; text: string }>): boolean {
+  if (!verses || verses.length === 0) return true
+
+  // Create temporary canvas to measure text
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return true
+
+  const W = 1080
+  const H = 1920
+  const PADDING = 80
+  const maxWidth = W - PADDING * 2
+  
+  // Calculate available height (after title, reference, and footer)
+  const startY = 120 + 80 + 100  // Title + spacing
+  const availableHeight = H - startY - PADDING - 120
+
+  // Build text with verse numbers
+  const fullText = verses.map(v => `{{${v.number}}} ${v.text}`).join(' ')
+
+  // Minimum font size is 16px
+  const minFontSize = 16
+  const lineHeight = minFontSize * 1.6
+
+  // Calculate text height at minimum font size
+  ctx.font = `400 ${minFontSize}px Garamond, Georgia, "Times New Roman", serif`
+  const words = fullText.split(' ')
+  let line = ''
+  let lines = 0
+
+  for (const word of words) {
+    const testLine = line + (line ? ' ' : '') + word
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      lines++
+      line = word
+    } else {
+      line = testLine
+    }
+  }
+  if (line) lines++
+
+  const textHeight = lines * lineHeight
+  return textHeight <= availableHeight
+}
+
 export async function generateShareCard(data: ShareCardData): Promise<Blob | null> {
   // Formato 9:16 para Stories de Instagram/WhatsApp
   const W = 1080

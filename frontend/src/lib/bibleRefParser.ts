@@ -32,6 +32,34 @@ export function parseBibleRef(ref: string): ParsedRef[] {
   const result: ParsedRef[] = []
 
   for (const segment of segments) {
+    // Check for cross-chapter range like "26:14-27:66"
+    const crossChapterMatch = segment.match(/^(\d+):(\d+[a-z]*)-(\d+):(\d+[a-z]*)$/)
+    if (crossChapterMatch) {
+      const startChapter = parseInt(crossChapterMatch[1], 10)
+      const startVerse = parseInt(stripLetterSuffix(crossChapterMatch[2]), 10)
+      const endChapter = parseInt(crossChapterMatch[3], 10)
+      const endVerse = parseInt(stripLetterSuffix(crossChapterMatch[4]), 10)
+      
+      if (!isNaN(startChapter) && !isNaN(startVerse) && !isNaN(endChapter) && !isNaN(endVerse)) {
+        // For first chapter: generate range from startVerse to a high number (999)
+        // The actual chapter won't have that many verses, so it'll naturally stop at the end
+        const firstChapterVerses: number[] = []
+        for (let v = startVerse; v <= 999; v++) firstChapterVerses.push(v)
+        result.push({ book, chapter: startChapter, verses: firstChapterVerses })
+        
+        // Add intermediate complete chapters if any
+        for (let ch = startChapter + 1; ch < endChapter; ch++) {
+          result.push({ book, chapter: ch, verses: [] })  // empty = all verses
+        }
+        
+        // For last chapter: generate range from 1 to endVerse
+        const lastChapterVerses: number[] = []
+        for (let v = 1; v <= endVerse; v++) lastChapterVerses.push(v)
+        result.push({ book, chapter: endChapter, verses: lastChapterVerses })
+      }
+      continue
+    }
+
     const colonIdx = segment.indexOf(':')
     if (colonIdx === -1) {
       // No colon: might be just a chapter number (show full chapter)

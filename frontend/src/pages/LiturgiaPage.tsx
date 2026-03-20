@@ -7,7 +7,7 @@ import { downloadLectioPDF } from '../lib/lectio-pdf'
 import { getLiturgicalContext, addDays, isSameDay } from '../lib/liturgicalCalendar'
 import { resolveDay, ResolvedDay, COLOR_STYLES, RANK_LABEL } from '../lib/lectionaryResolver'
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
-import { shareOrDownload } from '../lib/shareCard'
+import { shareOrDownload, canGospelFitInImage } from '../lib/shareCard'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -48,7 +48,8 @@ function DayNavigator({
   onSelect: (date: Date) => void
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const todayRef = useRef<HTMLButtonElement>(null)
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
+  const hasScrolledInitially = useRef(false)
 
   // Build ±10 days window
   const days: Date[] = []
@@ -56,15 +57,36 @@ function DayNavigator({
     days.push(addDays(today, i))
   }
 
+  // Scroll to selected date on mount and when it changes
   useEffect(() => {
-    // Scroll to today's button on mount
-    setTimeout(() => {
-      todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-    }, 100)
-  }, [])
+    const scrollToDate = (date: Date) => {
+      const key = date.toISOString()
+      const button = buttonRefs.current.get(key)
+      if (button) {
+        button.scrollIntoView({ behavior: hasScrolledInitially.current ? 'smooth' : 'auto', block: 'nearest', inline: 'center' })
+        hasScrolledInitially.current = true
+      }
+    }
+
+    // Use a slight delay to ensure buttons are rendered
+    const timer = setTimeout(() => {
+      scrollToDate(selectedDate)
+    }, 50)
+
+    return () => clearTimeout(timer)
+  }, [selectedDate])
 
   const isSelected = (d: Date) => isSameDay(d, selectedDate)
   const isToday = (d: Date) => isSameDay(d, today)
+
+  const setButtonRef = (date: Date, el: HTMLButtonElement | null) => {
+    const key = date.toISOString()
+    if (el) {
+      buttonRefs.current.set(key, el)
+    } else {
+      buttonRefs.current.delete(key)
+    }
+  }
 
   return (
     <div className="relative">
@@ -79,7 +101,7 @@ function DayNavigator({
           return (
             <button
               key={day.toISOString()}
-              ref={todayDay ? todayRef : undefined}
+              ref={(el) => setButtonRef(day, el)}
               onClick={() => onSelect(day)}
               className={`flex-shrink-0 flex flex-col items-center gap-0.5 rounded-2xl px-3 py-2.5
                           transition-all duration-150 active:scale-95 min-w-[52px]
@@ -554,25 +576,20 @@ export default function LiturgiaPage() {
       const parsed = parseBibleRef(ref)
       if (parsed.length === 0) return
 
-      // Fetch first segment (most common case)
-      const { book, chapter, verses: targetVerses } = parsed[0]
-      const chapterData = await api.getBibleChapter(book, chapter)
+      let result: BibleVerse[] = []
 
-      let result: BibleVerse[]
-      if (targetVerses.length > 0) {
-        result = chapterData.verses.filter(v => targetVerses.includes(v.number))
-      } else {
-        result = chapterData.verses
-      }
+      // Fetch all segments (handles multi-chapter references)
+      for (const segment of parsed) {
+        const { book, chapter, verses: targetVerses } = segment
+        const chapterData = await api.getBibleChapter(book, chapter)
 
-      // If multi-chapter (e.g. "Is 52:13-53:12"), fetch second segment too
-      if (parsed.length > 1) {
-        const { book: b2, chapter: c2, verses: v2 } = parsed[1]
-        const chapter2 = await api.getBibleChapter(b2, c2)
-        const extra = v2.length > 0
-          ? chapter2.verses.filter(v => v2.includes(v.number))
-          : chapter2.verses
-        result = [...result, ...extra]
+        if (targetVerses.length > 0) {
+          const filtered = chapterData.verses.filter(v => targetVerses.includes(v.number))
+          result = [...result, ...filtered]
+        } else {
+          // Empty verses array means "all verses"
+          result = [...result, ...chapterData.verses]
+        }
       }
 
       setLoadedVerses(prev => ({ ...prev, [key]: result }))
@@ -597,6 +614,8 @@ export default function LiturgiaPage() {
   const readings = resolvedDay?.readings
   const gospelRef = readings?.gospel ?? ''
   const gospelText = loadedVerses.gospel?.map(v => v.text).join(' ') ?? ''
+  const gospelVerses = loadedVerses.gospel ?? []
+  const gospelFitsInImage = canGospelFitInImage(gospelVerses)
 
   const accentClass = resolvedDay
     ? (COLOR_STYLES[resolvedDay.color]?.text ?? 'text-dorado')
@@ -714,18 +733,27 @@ export default function LiturgiaPage() {
                 </button>
 
                 {/* Share button */}
-                <button
-                  onClick={() => setShowShare(true)}
-                  className="w-full flex items-center justify-center gap-2.5
-                             border border-crema-300 dark:border-oscuro-border
-                             text-cafe-light dark:text-crema-300
-                             rounded-2xl px-5 py-3.5 font-medium text-sm
-                             active:scale-[0.98] transition-all duration-150
-                             hover:bg-crema-100 dark:hover:bg-oscuro-surface"
-                >
-                  <Icon name="share" size={18} />
-                  Generar imagen para compartir
-                </button>
+                <div>
+                  <button
+                    onClick={() => setShowShare(true)}
+                    disabled={!gospelFitsInImage || !loadedVerses.gospel}
+                    className="w-full flex items-center justify-center gap-2.5
+                               border border-crema-300 dark:border-oscuro-border
+                               text-cafe-light dark:text-crema-300
+                               rounded-2xl px-5 py-3.5 font-medium text-sm
+                               active:scale-[0.98] transition-all duration-150
+                               hover:bg-crema-100 dark:hover:bg-oscuro-surface
+                               disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Icon name="share" size={18} />
+                    Generar imagen para compartir
+                  </button>
+                  {loadedVerses.gospel && !gospelFitsInImage && (
+                    <p className="text-xs text-cafe-light dark:text-crema-300 text-center mt-2 opacity-70">
+                      El texto es demasiado largo como para que quepa en una imagen :)
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 

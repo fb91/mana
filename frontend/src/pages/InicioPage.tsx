@@ -147,12 +147,13 @@ export default function InicioPage() {
           </div>
           <div>
             <h2 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight mb-1.5">
-              Tu espacio de espiritualidad
+              Tu compañero espiritual diario
             </h2>
             <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
-              Maná reúne herramientas para alimentar tu fe cada día: la Biblia católica completa,
-              meditación, lecturas litúrgicas y más. La aplicación está creciendo —
-              pronto habrá nuevas secciones para acompañarte aún más.
+              Maná combina la Biblia católica completa con las lecturas litúrgicas diarias, 
+              disponibles <span className="font-semibold">100% offline</span>. 
+              Además, incorpora inteligencia artificial para generar Lectios Divinas personalizadas, 
+              recomendarte pasajes bíblicos según tu momento espiritual, y mucho más.
             </p>
           </div>
         </div>

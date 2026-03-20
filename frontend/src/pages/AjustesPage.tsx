@@ -326,16 +326,6 @@ export default function AjustesPage() {
           <div className="card px-4 py-4 space-y-3">
             <div className="flex gap-3 items-start">
               <div className="w-8 h-8 rounded-lg bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
-                <Icon name="clipboard" size={16} />
-              </div>
-              <p className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed">
-                Esta aplicación es muy reciente y se encuentra en etapa de desarrollo, en caso de encontrar 
-                un error, por favor reportarlo usando el botón ubicado en el extremo superior derecho de la app. 
-                Muchas gracias!
-              </p>
-            </div>
-            <div className="flex gap-3 items-start">
-              <div className="w-8 h-8 rounded-lg bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
                 <Icon name="sparkles" size={16} />
               </div>
               <p className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed">
@@ -373,8 +363,10 @@ export default function AjustesPage() {
                   Maná — Aplicación Espiritual Católica
                 </p>
                 <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
-                  Un proyecto sin ánimos de lucro, desarrollado con amor para acompañar la vida
-                  espiritual de las personas.
+                  Un proyecto sin ánimos de lucro, desarrollado para acompañar la vida
+                  espiritual de las personas. Este proyecto es muy reciente y se encuentra en etapa 
+                  de desarrollo, posiblemente encuentres errores: por favor reportarlo usando el botón 
+                  ubicado en el extremo superior derecho de la app. Muchas gracias!
                 </p>
               </div>
             </div>
@@ -385,7 +377,7 @@ export default function AjustesPage() {
               <div>
                 <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
                   Desarrollado por <strong className="text-cafe-dark dark:text-crema-200">Fabricio Bianchi</strong>.
-                  Gratuito y sin registro.
+                  Software libre, gratuito y sin registro. Si sos desarrollador y te interesa contribuir con este proyecto visita el <a href="https://github.com/fb91/mana" className="text-dorado hover:underline" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a>.
                 </p>
               </div>
             </div>
