@@ -27,12 +27,26 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+        // Aumentar el tamaño máximo para incluir bible_es.json (es grande)
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./,
             handler: 'NetworkFirst',
             options: { cacheName: 'api-cache', expiration: { maxAgeSeconds: 300 } }
+          },
+          {
+            // Cachear datos locales como la biblia
+            urlPattern: /\/data\/.*\.json$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bible-data-cache',
+              expiration: {
+                maxAgeSeconds: 365 * 24 * 60 * 60, // 1 año
+                maxEntries: 10
+              }
+            }
           }
         ]
       },
