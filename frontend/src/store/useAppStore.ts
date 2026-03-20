@@ -61,13 +61,13 @@ export const useAppStore = create<AppState>()(
         const current = get().fontSizeValue
         const interVals = Object.values(FONT_PRESETS)
         const garamondVals = Object.values(GARAMOND_FONT_PRESETS)
-        if (family === 'garamond' && interVals.includes(current as 14 | 16 | 18)) {
-          const idx = interVals.indexOf(current as 14 | 16 | 18)
+        if (family === 'garamond' && interVals.includes(current as 17 | 19 | 22)) {
+          const idx = interVals.indexOf(current as 17 | 19 | 22)
           const adjusted = garamondVals[idx]
           applyFontSize(adjusted)
           set({ fontFamily: family, fontSizeValue: adjusted })
-        } else if (family !== 'garamond' && garamondVals.includes(current as 17 | 19 | 21)) {
-          const idx = garamondVals.indexOf(current as 17 | 19 | 21)
+        } else if (family !== 'garamond' && garamondVals.includes(current as 17 | 19 | 22)) {
+          const idx = garamondVals.indexOf(current as 17 | 19 | 22)
           const adjusted = interVals[idx]
           applyFontSize(adjusted)
           set({ fontFamily: family, fontSizeValue: adjusted })
