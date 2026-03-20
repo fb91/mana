@@ -7,7 +7,7 @@ export interface ShareCardData {
   liturgicalLabel: string
   dateStr: string        // e.g. "Jueves, 19 de marzo de 2026"
   gospelRef: string      // e.g. "Mt 1:16.18-21.24a"
-  gospelText: string     // First verse(s) of the gospel
+  gospelVerses: Array<{ number: number; text: string }>  // Gospel verses with numbers
   color: string          // liturgical color: 'violet' | 'white' | 'red' | 'green'
 }
 
@@ -76,34 +76,40 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob | nul
   ctx.fillStyle = palette.accent
   ctx.font = `700 48px Garamond, Georgia, "Times New Roman", serif`
   ctx.letterSpacing = '4px'
-  ctx.textAlign = 'center'
-  ctx.fillText('EVANGELIO', W / 2, y)
+  ctx.textAlign = 'left'
+  ctx.fillText('EVANGELIO', PADDING, y)
   ctx.letterSpacing = '0px'
   y += 80
 
   // ── Cita del Evangelio ─────────────────────────────────────────────────────────
   ctx.fillStyle = palette.text
   ctx.font = `600 44px Garamond, Georgia, "Times New Roman", serif`
-  ctx.textAlign = 'center'
-  ctx.fillText(data.gospelRef, W / 2, y)
   ctx.textAlign = 'left'
+  ctx.fillText(data.gospelRef, PADDING, y)
   y += 100
 
   // ── Texto completo del Evangelio ─────────────────────────────────────────────────
-  if (data.gospelText) {
+  if (data.gospelVerses && data.gospelVerses.length > 0) {
     const maxWidth = W - PADDING * 2
-    const availableHeight = H - y - PADDING
+    const availableHeight = H - y - PADDING - 120  // Espacio para la fecha al final
     
-    // Intentar con tamaño máximo de 28px, reducir si no cabe
-    let fontSize = 28
+    // Intentar con tamaño máximo de 56px, reducir si no cabe
+    let fontSize = 56
     let lineHeight = fontSize * 1.6
     let textFits = false
     
+    // Construir el texto completo con números de versículo integrados
+    const buildTextWithVerseNumbers = (): string => {
+      return data.gospelVerses.map(v => `{{${v.number}}} ${v.text}`).join(' ')
+    }
+
+    const fullText = buildTextWithVerseNumbers()
+
     // Función para calcular altura necesaria
     const calculateTextHeight = (size: number): number => {
       const lh = size * 1.6
       ctx.font = `400 ${size}px Garamond, Georgia, "Times New Roman", serif`
-      const words = data.gospelText.split(' ')
+      const words = fullText.split(' ')
       let line = ''
       let lines = 0
 
@@ -136,24 +142,100 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob | nul
     ctx.font = `400 ${fontSize}px Garamond, Georgia, "Times New Roman", serif`
     ctx.textAlign = 'left'
 
-    // Renderizar texto justificado a la izquierda
-    const words = data.gospelText.split(' ')
-    let line = ''
+    // Construir líneas para justificación
+    const words = fullText.split(' ')
+    const lines: string[] = []
+    let currentLine = ''
 
     for (const word of words) {
-      const testLine = line + (line ? ' ' : '') + word
-      if (ctx.measureText(testLine).width > maxWidth && line) {
-        ctx.fillText(line, PADDING, y)
-        line = word
-        y += lineHeight
+      const testLine = currentLine + (currentLine ? ' ' : '') + word
+      if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+        lines.push(currentLine)
+        currentLine = word
       } else {
-        line = testLine
+        currentLine = testLine
       }
     }
-    if (line) {
-      ctx.fillText(line, PADDING, y)
+    if (currentLine) lines.push(currentLine)
+
+    // Función auxiliar para renderizar texto con números de versículo
+    const renderLineWithVerseNumbers = (line: string, xStart: number, yPos: number, spaceWidth?: number) => {
+      const verseNumberSize = Math.round(fontSize * 0.65)
+      const verseNumberFont = `700 ${verseNumberSize}px Garamond, Georgia, "Times New Roman", serif`
+      const textFont = `400 ${fontSize}px Garamond, Georgia, "Times New Roman", serif`
+      
+      const words = line.split(' ')
+      let xPos = xStart
+      
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i]
+        
+        // Detectar número de versículo
+        const verseMatch = word.match(/^\{\{(\d+)\}\}$/)
+        if (verseMatch) {
+          // Renderizar número de versículo (superíndice)
+          ctx.font = verseNumberFont
+          ctx.fillStyle = palette.accent
+          const verseNum = verseMatch[1]
+          ctx.fillText(verseNum, xPos, yPos - fontSize * 0.25)  // Elevado
+          ctx.font = textFont
+          ctx.fillStyle = palette.text
+          xPos += ctx.measureText(verseNum).width + 4
+        } else {
+          // Renderizar palabra normal
+          ctx.fillText(word, xPos, yPos)
+          xPos += ctx.measureText(word).width + (spaceWidth ?? ctx.measureText(' ').width)
+        }
+      }
+    }
+
+    // Renderizar texto justificado con números de versículo
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      const isLastLine = i === lines.length - 1
+      
+      if (isLastLine) {
+        // Última línea: alineada a la izquierda sin justificar
+        renderLineWithVerseNumbers(line, PADDING, y)
+      } else {
+        // Justificar: distribuir palabras uniformemente
+        const lineWords = line.split(' ')
+        if (lineWords.length === 1) {
+          renderLineWithVerseNumbers(line, PADDING, y)
+        } else {
+          // Calcular ancho total de palabras (sin contar los marcadores de versículo)
+          let totalWordsWidth = 0
+          ctx.font = `400 ${fontSize}px Garamond, Georgia, "Times New Roman", serif`
+          const verseNumberSize = Math.round(fontSize * 0.65)
+          const verseNumberFont = `700 ${verseNumberSize}px Garamond, Georgia, "Times New Roman", serif`
+          
+          for (const word of lineWords) {
+            const verseMatch = word.match(/^\{\{(\d+)\}\}$/)
+            if (verseMatch) {
+              ctx.font = verseNumberFont
+              totalWordsWidth += ctx.measureText(verseMatch[1]).width + 4
+              ctx.font = `400 ${fontSize}px Garamond, Georgia, "Times New Roman", serif`
+            } else {
+              totalWordsWidth += ctx.measureText(word).width
+            }
+          }
+          
+          const totalSpaceWidth = maxWidth - totalWordsWidth
+          const spaceWidth = totalSpaceWidth / (lineWords.length - 1)
+          
+          renderLineWithVerseNumbers(line, PADDING, y, spaceWidth)
+        }
+      }
+      y += lineHeight
     }
   }
+
+  // ── Fecha al final ─────────────────────────────────────────────────────────────
+  ctx.fillStyle = palette.sub
+  ctx.font = `400 32px Garamond, Georgia, "Times New Roman", serif`
+  ctx.textAlign = 'center'
+  ctx.fillText(data.dateStr, W / 2, H - 60)
+  ctx.textAlign = 'left'
 
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
 }

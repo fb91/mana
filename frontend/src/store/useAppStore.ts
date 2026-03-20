@@ -42,7 +42,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      theme: 'claro',
+      theme: 'oscuro',
       setTheme: (theme) => {
         applyTheme(theme, get().liturgicalAccent)
         set({ theme })

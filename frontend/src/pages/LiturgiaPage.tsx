@@ -423,7 +423,7 @@ function ShareModal({
           liturgicalLabel: day.label,
           dateStr: formatDateLabel(date),
           gospelRef,
-          gospelText,
+          gospelVerses: loadedVerses.gospel ?? [],
           color: day.color,
         },
         `lecturas-${date.toISOString().slice(0, 10)}.png`,
@@ -591,7 +591,7 @@ export default function LiturgiaPage() {
 
   const readings = resolvedDay?.readings
   const gospelRef = readings?.gospel ?? ''
-  const gospelText = loadedVerses.gospel?.slice(0, 3).map(v => v.text).join(' ') ?? ''
+  const gospelText = loadedVerses.gospel?.map(v => v.text).join(' ') ?? ''
 
   const accentClass = resolvedDay
     ? (COLOR_STYLES[resolvedDay.color]?.text ?? 'text-dorado')

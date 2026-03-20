@@ -16,8 +16,15 @@
 
     <!-- No Flash of Unstyled Dark Mode -->
     <script>
-      const dark = localStorage.getItem('mana-dark-mode');
-      if (dark === 'true') document.documentElement.classList.add('dark');
+      // Aplicar tema oscuro por defecto
+      try {
+        const store = JSON.parse(localStorage.getItem('mana-store') || '{}');
+        const theme = store?.state?.theme || 'oscuro';
+        if (theme === 'oscuro') document.documentElement.classList.add('dark');
+      } catch {
+        // Default a oscuro si hay error
+        document.documentElement.classList.add('dark');
+      }
     </script>
 
     <title>Maná</title>
