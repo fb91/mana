@@ -4,6 +4,7 @@ import { Novena } from '../services/api'
 import novenasJson from '../data/novenas.json'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
+import { BugReportLink } from '../components/BugReportButton'
 
 const novenas = novenasJson as Novena[]
 
@@ -97,6 +98,9 @@ export default function NovenaDetallePage() {
             </div>
           </div>
         )}
+
+        <BugReportLink />
+
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import AxisRater from '../components/AxisRater'
 import SantoCard from '../components/SantoCard'
 import { api, SantoSugerido } from '../services/api'
 import { quickProfileAxes, extendedProfileAxes, intentOptions } from '../data/santoAxes'
+import { BugReportLink } from '../components/BugReportButton'
 
 type Phase = 'intro' | 'quick_rating' | 'resultado' | 'extended_rating'
 
@@ -94,6 +95,9 @@ export default function SantoPage() {
               Empezar la búsqueda
             </button>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -149,6 +153,9 @@ export default function SantoPage() {
           >
             {loading ? 'Buscando santos...' : 'Descubrir mis santos'}
           </button>
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -197,6 +204,9 @@ export default function SantoPage() {
               </div>
             </>
           )}
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -240,6 +250,9 @@ export default function SantoPage() {
               {loading ? 'Recalculando...' : 'Recalcular recomendación'}
             </button>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
     </div>

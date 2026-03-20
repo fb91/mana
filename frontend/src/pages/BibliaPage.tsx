@@ -5,6 +5,7 @@ import { downloadLectioPDF } from '../lib/lectio-pdf'
 import { useAppStore } from '../store/useAppStore'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
+import { BugReportLink } from '../components/BugReportButton'
 
 // All books show their abbreviation as decorative background text
 
@@ -843,6 +844,9 @@ export default function BibliaPage() {
             />
           ) : null
         ) : null}
+
+        <BugReportLink />
+
       </div>
 
       {/* Long-press popup (feature 1) */}

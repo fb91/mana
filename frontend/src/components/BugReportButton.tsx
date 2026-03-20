@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, createContext, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { api } from '../services/api'
 
@@ -21,7 +21,24 @@ function getPageLabel(pathname: string): string {
   return prefix ? ROUTE_LABELS[prefix] : pathname
 }
 
-export default function BugReportButton() {
+// Context para comunicar entre el link y el modal
+interface BugReportContextType {
+  openModal: () => void
+}
+
+const BugReportContext = createContext<BugReportContextType | null>(null)
+
+// Hook para usar el context
+function useBugReport() {
+  const context = useContext(BugReportContext)
+  if (!context) {
+    throw new Error('useBugReport debe usarse dentro de BugReportProvider')
+  }
+  return context
+}
+
+// Componente provider que contiene el modal (se usa en App.tsx)
+export function BugReportProvider({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
   const [description, setDescription] = useState('')
@@ -30,6 +47,7 @@ export default function BugReportButton() {
   const [error, setError] = useState('')
 
   const pageLabel = getPageLabel(pathname)
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
 
   function handleOpen() {
     setOpen(true)
@@ -47,7 +65,7 @@ export default function BugReportButton() {
     setSending(true)
     setError('')
     try {
-      await api.reportBug(pageLabel, description.trim())
+      await api.reportBug(pageLabel, description.trim(), currentUrl)
       setSent(true)
       setDescription('')
       setTimeout(() => setOpen(false), 2000)
@@ -59,28 +77,9 @@ export default function BugReportButton() {
   }
 
   return (
-    <>
-      {/* Floating trigger button */}
-      <button
-        onClick={handleOpen}
-        title="Reportar un error"
-        aria-label="Reportar un error"
-        className="fixed top-3 right-3 z-[60] w-8 h-8 rounded-full
-                   bg-white/70 dark:bg-oscuro-surface/70 backdrop-blur-sm
-                   border border-crema-200 dark:border-oscuro-border
-                   shadow-sm flex items-center justify-center
-                   text-cafe-light dark:text-crema-400 hover:text-dorado
-                   hover:border-dorado/50 transition-all duration-200
-                   active:scale-90"
-      >
-        {/* Exclamation / flag icon */}
-        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-          <path fillRule="evenodd"
-            d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"
-            clipRule="evenodd" />
-        </svg>
-      </button>
-
+    <BugReportContext.Provider value={{ openModal: handleOpen }}>
+      {children}
+      
       {/* Modal overlay */}
       {open && (
         <div
@@ -98,18 +97,22 @@ export default function BugReportButton() {
           >
 
             <div className="flex items-start justify-between mb-4">
-              <div>
+              <div className="flex-1 mr-4">
                 <h2 className="font-serif text-lg font-semibold text-cafe-dark dark:text-crema-200">
                   Reportar un error
                 </h2>
                 <p className="text-xs text-cafe-light dark:text-crema-400 mt-0.5">
-                  Página actual:&nbsp;
+                  Sección actual:&nbsp;
                   <span className="font-medium text-dorado">{pageLabel}</span>
+                </p>
+                <p className="text-xs text-cafe-light dark:text-crema-400 mt-1 break-all">
+                  Link:&nbsp;
+                  <span className="font-mono text-[10px]">{currentUrl}</span>
                 </p>
               </div>
               <button
                 onClick={handleClose}
-                className="text-cafe-light dark:text-crema-400 hover:text-cafe-dark text-sm py-1 px-2 -mr-1"
+                className="text-cafe-light dark:text-crema-400 hover:text-cafe-dark text-sm py-1 px-2 -mr-1 flex-shrink-0"
               >
                 ✕
               </button>
@@ -155,6 +158,27 @@ export default function BugReportButton() {
           </div>
         </div>
       )}
-    </>
+    </BugReportContext.Provider>
   )
 }
+
+// Link para agregar al final de cada página
+export function BugReportLink() {
+  const { openModal } = useBugReport()
+
+  return (
+    <div className="flex justify-end py-4 pr-4">
+      <button
+        onClick={openModal}
+        className="text-xs text-cafe-light dark:text-crema-400 hover:text-dorado
+                   underline underline-offset-2 decoration-1
+                   transition-colors duration-200"
+      >
+        Reportar un error
+      </button>
+    </div>
+  )
+}
+
+// Export default mantiene compatibilidad pero ahora es solo el provider
+export default BugReportProvider

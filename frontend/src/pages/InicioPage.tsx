@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon, { IconName } from '../components/Icon'
 import { useAppStore } from '../store/useAppStore'
+import { BugReportLink } from '../components/BugReportButton'
 
 
 interface Quote {
@@ -179,7 +180,7 @@ export default function InicioPage() {
           </button>
         )}
 
-        <div className="grid grid-cols-1 gap-3 pb-28">
+        <div className="grid grid-cols-1 gap-3">
           {tools.map((tool) => (
             <button
               key={tool.title}
@@ -219,6 +220,10 @@ export default function InicioPage() {
             </button>
           ))}
         </div>
+
+        <BugReportLink />
+
+        <div className="pb-28" />
 
       </div>
     </div>

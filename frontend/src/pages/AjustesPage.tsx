@@ -5,6 +5,7 @@ import { useAppStore, Theme, FontFamily, FONT_PRESETS, GARAMOND_FONT_PRESETS } f
 import { getLiturgicalAppColor, LITURGICAL_COLOR_LABELS, LITURGICAL_COLOR_HEX } from '../lib/lectionaryResolver'
 import { usePWAInstall } from '../hooks/usePWAInstall'
 import IOSInstallModal from '../components/IOSInstallModal'
+import { BugReportLink } from '../components/BugReportButton'
 
 const FONT_PRESET_OPTIONS = [
   { px: FONT_PRESETS.small,  garamondPx: GARAMOND_FONT_PRESETS.small,  label: 'Pequeña' },
@@ -364,8 +365,8 @@ export default function AjustesPage() {
                 <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
                   Un proyecto sin ánimos de lucro, desarrollado para acompañar la vida
                   espiritual de las personas. Este proyecto es muy reciente y se encuentra en etapa 
-                  de desarrollo, posiblemente encuentres errores: por favor reportarlo usando el botón 
-                  ubicado en el extremo superior derecho de la app. Muchas gracias!
+                  de desarrollo, posiblemente encuentres errores: por favor reportarlo usando el enlace 
+                  ubicado al final de cada página. Muchas gracias!
                 </p>
               </div>
             </div>
@@ -381,6 +382,8 @@ export default function AjustesPage() {
             </div>
           </div>
         </section>
+
+        <BugReportLink />
 
       </div>
 

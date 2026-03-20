@@ -4,6 +4,7 @@ import Icon from '../components/Icon'
 import ChatInterface from '../components/ChatInterface'
 import { api, ChatMessage } from '../services/api'
 import { clearChatHistory } from '../lib/db'
+import { BugReportLink } from '../components/BugReportButton'
 
 type Phase = 'select' | 'chat'
 
@@ -118,6 +119,9 @@ export default function LectioPage() {
               Comenzar Lectio
             </button>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -140,6 +144,9 @@ export default function LectioPage() {
               placeholder="Compartí tu reflexión..."
             />
           )}
+
+          <BugReportLink />
+
         </div>
       )}
     </div>

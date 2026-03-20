@@ -3,6 +3,7 @@ import PageHeader from '../components/PageHeader'
 import Icon, { IconName } from '../components/Icon'
 import { ExamenData, ExamenPerfil } from '../services/api'
 import examenJson from '../data/examen.json'
+import { BugReportLink } from '../components/BugReportButton'
 
 const EXAMEN_DATA = examenJson as ExamenData
 
@@ -145,6 +146,9 @@ export default function ExamenPage() {
               <p className="text-xs text-cafe-light dark:text-crema-300 mt-1">— 2 Corintios 13:5</p>
             </div>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -196,6 +200,9 @@ export default function ExamenPage() {
               Explorar las preguntas
             </button>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
 
@@ -272,6 +279,9 @@ export default function ExamenPage() {
               </button>
             </div>
           </div>
+
+          <BugReportLink />
+
         </div>
       )}
     </div>

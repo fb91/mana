@@ -8,6 +8,7 @@ import { getLiturgicalContext, addDays, isSameDay } from '../lib/liturgicalCalen
 import { resolveDay, ResolvedDay, COLOR_STYLES, RANK_LABEL } from '../lib/lectionaryResolver'
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
 import { shareOrDownload, canGospelFitInImage } from '../lib/shareCard'
+import { BugReportLink } from '../components/BugReportButton'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -156,7 +157,7 @@ function CelebrationBanner({ day, date }: { day: ResolvedDay; date: Date }) {
   const rankLabel = RANK_LABEL[day.rank]
 
   return (
-    <div className={`mx-4 rounded-2xl border p-4 ${styles.bg} ${styles.border}`}>
+    <div className={`rounded-2xl border p-4 ${styles.bg} ${styles.border}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           {rankLabel && (
@@ -213,7 +214,7 @@ function ReadingCard({
   const refDisplay = formatRef(reference)
 
   return (
-    <div className="card mx-4 overflow-hidden">
+    <div className="card overflow-hidden">
       {/* Header */}
       <button
         onClick={onExpand}
@@ -639,14 +640,14 @@ export default function LiturgiaPage() {
         />
 
         {resolvedDay && (
-          <div className="space-y-3 animate-fade-in">
+          <div className="px-4 space-y-3 animate-fade-in">
 
             {/* Celebration banner */}
             <CelebrationBanner day={resolvedDay} date={selectedDate} />
 
             {/* No data placeholder */}
             {!resolvedDay.hasData && (
-              <div className="card mx-4 text-center py-6">
+              <div className="card text-center py-6">
                 <span className="text-3xl">📖</span>
                 <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium mt-3">
                   {resolvedDay.celebrationName}
@@ -713,7 +714,7 @@ export default function LiturgiaPage() {
 
             {/* Action buttons */}
             {readings && (
-              <div className="px-4 space-y-2 pt-1">
+              <div className="space-y-2 pt-1">
                 {/* Lectio Divina del Evangelio */}
                 <button
                   onClick={() => setShowLectio(true)}
@@ -759,6 +760,9 @@ export default function LiturgiaPage() {
 
           </div>
         )}
+
+        <BugReportLink />
+
       </div>
 
       {/* Lectio Modal */}

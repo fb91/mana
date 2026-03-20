@@ -125,10 +125,10 @@ export const api = {
       body: JSON.stringify({ libro, libroNombre, capitulo, versos, textos }),
     }),
 
-  reportBug: (page: string, description: string) =>
+  reportBug: (page: string, description: string, url: string) =>
     request<{ ok: boolean }>('/api/report-bug', {
       method: 'POST',
-      body: JSON.stringify({ page, description }),
+      body: JSON.stringify({ page, description, url }),
     }),
 }
 

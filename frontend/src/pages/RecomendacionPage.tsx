@@ -4,6 +4,7 @@ import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { api, BibliaRecomendacion } from '../services/api'
 import { getBibleVerse } from '../lib/bible'
+import { BugReportLink } from '../components/BugReportButton'
 
 export default function RecomendacionPage() {
   const navigate = useNavigate()
@@ -126,6 +127,9 @@ export default function RecomendacionPage() {
             </div>
           )}
         </div>
+
+        <BugReportLink />
+
       </div>
     </div>
   )
