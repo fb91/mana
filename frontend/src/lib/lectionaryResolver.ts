@@ -8,6 +8,7 @@ import {
   YearCycle,
   Rank,
   buildLiturgicalLabel,
+  getLiturgicalContext,
 } from './liturgicalCalendar'
 
 import sanctoralData from '../data/lectionary/sanctoral.json'
@@ -258,6 +259,56 @@ function getSeasonColor(season: Season, specialKey?: string | null): string {
   if (season === 'LENT' || season === 'ADVENT') return 'violet'
   if (season === 'EASTER' || season === 'CHRISTMAS') return 'white'
   return 'green'
+}
+
+// ── Color UI helpers ──────────────────────────────────────────────────────────
+
+// ── Liturgical app color (for dynamic theme) ──────────────────────────────────
+
+export type LiturgicalAppColor = 'violet' | 'white' | 'red' | 'green' | 'rose'
+
+export function getLiturgicalAppColor(date: Date = new Date()): LiturgicalAppColor {
+  const ctx = getLiturgicalContext(date)
+  const { season, week, dayOfWeek, specialKey, celebrationKey } = ctx
+
+  // Sanctoral SOLEMNITY/FEAST override
+  if (celebrationKey) {
+    const feast = (sanctoral as Record<string, { rank?: string; color?: string } | undefined>)[celebrationKey]
+    if (feast && (feast.rank === 'SOLEMNITY' || feast.rank === 'FEAST')) {
+      return feast.color === 'red' ? 'red' : 'white'
+    }
+  }
+
+  // Special days
+  if (specialKey === 'GOOD_FRIDAY' || specialKey === 'PALM_SUNDAY') return 'red'
+  if (specialKey === 'HOLY_THURSDAY' || specialKey?.startsWith('EASTER_')) return 'white'
+
+  // Gaudete Sunday (3rd Advent) → rose
+  if (season === 'ADVENT' && week === 3 && dayOfWeek === 'SUNDAY') return 'rose'
+  // Laetare Sunday (4th Lent) → rose
+  if (season === 'LENT' && week === 4 && dayOfWeek === 'SUNDAY') return 'rose'
+  // Pentecost (7th Easter Sunday) → red
+  if (season === 'EASTER' && week === 7 && dayOfWeek === 'SUNDAY') return 'red'
+
+  if (season === 'ADVENT' || season === 'LENT') return 'violet'
+  if (season === 'CHRISTMAS' || season === 'EASTER') return 'white'
+  return 'green'
+}
+
+export const LITURGICAL_COLOR_LABELS: Record<LiturgicalAppColor, string> = {
+  violet: 'Cuaresma · Adviento',
+  white:  'Pascua · Navidad',
+  red:    'Pentecostés · Mártires',
+  green:  'Tiempo Ordinario',
+  rose:   'Gaudete · Laetare',
+}
+
+export const LITURGICAL_COLOR_HEX: Record<LiturgicalAppColor, string> = {
+  violet: '#6D28D9',
+  white:  '#BE940A',
+  red:    '#B91C1C',
+  green:  '#15803D',
+  rose:   '#BE185D',
 }
 
 // ── Color UI helpers ──────────────────────────────────────────────────────────

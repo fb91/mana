@@ -70,7 +70,7 @@ export default function NovenaDetallePage() {
         onReset={() => navigate('/novenas')}
       />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-28">
         {/* Info de la novena */}
         <div className="px-4 py-4 border-b border-crema-200 dark:border-oscuro-border bg-crema-100 dark:bg-oscuro-surface">
           {novena.descripcion && (

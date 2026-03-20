@@ -16,6 +16,7 @@ fun Application.configureRouting(dotenv: Dotenv) {
             novenasRoutes()
             pushRoutes(dotenv)
             adminRoutes(dotenv)
+            reportRoutes(dotenv)
         }
 
         // Health check

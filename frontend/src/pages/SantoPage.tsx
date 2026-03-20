@@ -63,7 +63,7 @@ export default function SantoPage() {
 
       {/* ── INTRO ── */}
       {phase === 'intro' && (
-        <div className="flex-1 overflow-y-auto px-4 py-8 flex flex-col items-center justify-center animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-8 pb-28 flex flex-col items-center justify-center animate-fade-in">
           <div className="max-w-sm w-full text-center">
             <div className="text-6xl mb-6">✨</div>
             <h2 className="font-serif text-2xl text-cafe-dark dark:text-crema-200 mb-3">
@@ -99,7 +99,7 @@ export default function SantoPage() {
 
       {/* ── QUICK RATING ── */}
       {phase === 'quick_rating' && (
-        <div className="flex-1 overflow-y-auto px-4 py-4 animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 animate-fade-in">
           <p className="text-xs uppercase tracking-wider text-cafe-light dark:text-crema-400 font-semibold mb-4">
             Valorá cada aspecto de tu vida ahora mismo
           </p>
@@ -154,7 +154,7 @@ export default function SantoPage() {
 
       {/* ── RESULTADO ── */}
       {phase === 'resultado' && (
-        <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-5 pb-28 animate-fade-in">
 
           {loading && (
             <div className="flex-1 flex flex-col items-center justify-center py-16">
@@ -202,7 +202,7 @@ export default function SantoPage() {
 
       {/* ── EXTENDED RATING ── */}
       {phase === 'extended_rating' && (
-        <div className="flex-1 overflow-y-auto px-4 py-4 animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 animate-fade-in">
           <p className="text-xs uppercase tracking-wider text-cafe-light dark:text-crema-400 font-semibold mb-1">
             Afinar la búsqueda
           </p>

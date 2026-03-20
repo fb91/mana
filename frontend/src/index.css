@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -61,45 +61,119 @@
 
 :root,
 html.theme-claro {
-  --accent:       139 105 20;   /* dorado cálido  #8B6914 */
-  --accent-dark:  107  79 13;   /* #6B4F0D */
-  --accent-light: 212 168 83;   /* #D4A853 */
+  --accent:        150  85  25;  /* castaño cálido #965519 */
+  --accent-dark:   110  60  15;  /* #6E3C0F */
+  --accent-light:  210 145  75;  /* #D2914B */
+  --slider-track:  210 200 188;  /* pista sin relleno, modo claro */
 }
 
 html.theme-oscuro {
-  --accent:       212 168 83;   /* dorado más brillante sobre fondo oscuro */
-  --accent-dark:  139 105 20;
-  --accent-light: 232 200 120;
+  --accent:        212 168 83;   /* dorado más brillante sobre fondo oscuro */
+  --accent-dark:   139 105 20;
+  --accent-light:  232 200 120;
+  --slider-track:   58  48  38;  /* pista sin relleno, modo oscuro */
 }
 
-html.theme-juvenil {
-  --accent:       124  58 237;  /* violeta  #7C3AED */
-  --accent-dark:  109  40 217;  /* #6D28D9 */
+/* ── Tema litúrgico — variantes según el tiempo del año ─────────────────── */
+
+/* Violeta: Cuaresma y Adviento */
+html.theme-liturgico-violet {
+  --accent:       109  40 217;  /* #6D28D9 */
+  --accent-dark:   91  33 182;  /* #5B21B6 */
   --accent-light: 167 139 250;  /* #A78BFA */
 }
 
-html.theme-colorido {
-  --accent:         8 145 178;  /* cyan     #0891B2 */
-  --accent-dark:   14 116 144;  /* #0E7490 */
-  --accent-light:  34 211 238;  /* #22D3EE */
+/* Dorado/Blanco: Pascua, Navidad, Solemnidades */
+html.theme-liturgico-white {
+  --accent:       190 148  10;  /* oro litúrgico  #BE940A */
+  --accent-dark:  150 112   0;  /* #967000 */
+  --accent-light: 225 185  70;  /* #E1B946 */
 }
 
-html.theme-rosa {
-  --accent:       219  39 119;  /* rosa     #DB2777 */
-  --accent-dark:  190  24  93;  /* #BE185D */
-  --accent-light: 244 114 182;  /* #F472B6 */
-}
-
-html.theme-rojo {
-  --accent:       220  38  38;  /* rojo     #DC2626 */
-  --accent-dark:  185  28  28;  /* #B91C1C */
+/* Rojo: Pentecostés, mártires, Pasión del Señor */
+html.theme-liturgico-red {
+  --accent:       185  28  28;  /* #B91C1C */
+  --accent-dark:  153  27  27;  /* #991B1B */
   --accent-light: 248 113 113;  /* #F87171 */
+}
+
+/* Verde: Tiempo Ordinario */
+html.theme-liturgico-green {
+  --accent:        21 128  61;  /* #15803D */
+  --accent-dark:   20  83  45;  /* #14532D */
+  --accent-light:  74 222 128;  /* #4ADE80 */
+}
+
+/* Rosa: Domingo Gaudete y Domingo Laetare */
+html.theme-liturgico-rose {
+  --accent:       190  24  93;  /* #BE185D */
+  --accent-dark:  157  23  77;  /* #9D174D */
+  --accent-light: 249 168 212;  /* #F9A8D4 */
 }
 
 /* Tamaño de letra escalable — todas las unidades rem escalan con esto */
 html.font-small { font-size: 14px; }
 html.font-large  { font-size: 18px; }
 /* font-normal es el default del navegador (16px) */
+
+/* Tipografías alternativas — se sobreescribe font-sans/serif del body */
+html.font-garamond body,
+html.font-garamond .font-sans {
+  font-family: 'EB Garamond', Georgia, serif;
+  /* Garamond has a smaller x-height than Inter at the same point size */
+  font-size: 1.1em;
+}
+html.font-garamond .font-serif {
+  font-family: 'EB Garamond', Georgia, serif;
+}
+
+html.font-cinzel body,
+html.font-cinzel .font-sans {
+  font-family: 'Cinzel', Georgia, serif;
+}
+html.font-cinzel .font-serif {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+/* ── Slider de tamaño de letra ──────────────────────────────────────────── */
+input[type="range"].slider-themed {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+input[type="range"].slider-themed::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: rgb(var(--accent));
+  border: 2.5px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+input[type="range"].slider-themed:active::-webkit-slider-thumb {
+  transform: scale(1.18);
+}
+input[type="range"].slider-themed::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: rgb(var(--accent));
+  border: 2.5px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+input[type="range"].slider-themed::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgb(var(--slider-track));
+}
 
 /* Ocultar scrollbar manteniendo scroll funcional */
 .scrollbar-hide {

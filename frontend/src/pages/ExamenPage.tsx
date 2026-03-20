@@ -124,7 +124,7 @@ export default function ExamenPage() {
 
       {/* ── SELECT PROFILE ── */}
       {phase === 'select_profile' && (
-        <div className="flex-1 overflow-y-auto px-4 py-6 animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-6 pb-28 animate-fade-in">
           {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
 
           <p className="text-center text-cafe-light dark:text-crema-300 text-sm mb-6 max-w-sm mx-auto">
@@ -166,7 +166,7 @@ export default function ExamenPage() {
 
       {/* ── INTRO ── */}
       {phase === 'intro' && perfil && (
-        <div className="flex-1 overflow-y-auto px-4 py-6 animate-fade-in">
+        <div className="flex-1 overflow-y-auto px-4 py-6 pb-28 animate-fade-in">
           <div className="max-w-sm mx-auto space-y-5">
 
             {/* Cita del Papa */}

@@ -11,38 +11,45 @@ import BibliaPage from './pages/BibliaPage'
 import InicioPage from './pages/InicioPage'
 import RecomendacionPage from './pages/RecomendacionPage'
 import AjustesPage from './pages/AjustesPage'
-import { useAppStore, applyTheme, applyFontSize } from './store/useAppStore'
+import BugReportButton from './components/BugReportButton'
+import { useAppStore, applyTheme, applyFontSize, applyFontFamily, VALID_THEMES } from './store/useAppStore'
 
 export default function App() {
-  const { theme, fontSize } = useAppStore()
+  const { theme, setTheme, fontSizeValue, fontFamily, liturgicalAccent } = useAppStore()
 
-  // Apply persisted settings on mount
+  // Apply persisted settings on mount; migrate legacy themes to 'claro'
   useEffect(() => {
-    applyTheme(theme)
-    applyFontSize(fontSize)
+    const effective = VALID_THEMES.includes(theme) ? theme : 'claro'
+    if (effective !== theme) setTheme('claro')
+    applyTheme(effective, liturgicalAccent ?? false)
+    applyFontSize(fontSizeValue ?? 16)
+    applyFontFamily(fontFamily ?? 'inter')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-crema dark:bg-oscuro-bg">
-        <main className="flex-1 overflow-y-auto pb-20">
-          <Routes>
-            <Route path="/" element={<Navigate to="/inicio" replace />} />
-            <Route path="/inicio" element={<InicioPage />} />
-            <Route path="/liturgia" element={<LiturgiaPage />} />
-            <Route path="/recomendacion" element={<RecomendacionPage />} />
-            <Route path="/ajustes" element={<AjustesPage />} />
-            <Route path="/biblia" element={<BibliaPage />} />
-            <Route path="/biblia/:book/:chapter" element={<BibliaPage />} />
-            <Route path="/examen" element={<ExamenPage />} />
-            <Route path="/santo" element={<SantoPage />} />
-            <Route path="/novenas" element={<NovenasPage />} />
-            <Route path="/novenas/:id" element={<NovenaDetallePage />} />
-          </Routes>
-        </main>
-        <BottomNav />
-        <InstallPrompt />
+      <div className="min-h-screen bg-stone-300 dark:bg-stone-900 sm:flex sm:justify-center">
+        <div className="w-full sm:max-w-md sm:shadow-2xl flex flex-col min-h-screen bg-crema dark:bg-oscuro-bg">
+          <main className="flex-1 overflow-hidden">
+            <Routes>
+              <Route path="/" element={<Navigate to="/inicio" replace />} />
+              <Route path="/inicio" element={<InicioPage />} />
+              <Route path="/lecturas-del-dia" element={<LiturgiaPage />} />
+              <Route path="/recomendacion" element={<RecomendacionPage />} />
+              <Route path="/ajustes" element={<AjustesPage />} />
+              <Route path="/biblia" element={<BibliaPage />} />
+              <Route path="/biblia/:book/:chapter" element={<BibliaPage />} />
+              <Route path="/examen" element={<ExamenPage />} />
+              <Route path="/santo" element={<SantoPage />} />
+              <Route path="/novenas" element={<NovenasPage />} />
+              <Route path="/novenas/:id" element={<NovenaDetallePage />} />
+            </Routes>
+          </main>
+          <BottomNav />
+          <InstallPrompt />
+          <BugReportButton />
+        </div>
       </div>
     </BrowserRouter>
   )

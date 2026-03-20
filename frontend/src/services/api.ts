@@ -158,6 +158,12 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ libro, libroNombre, capitulo, versos, textos }),
     }),
+
+  reportBug: (page: string, description: string) =>
+    request<{ ok: boolean }>('/api/report-bug', {
+      method: 'POST',
+      body: JSON.stringify({ page, description }),
+    }),
 }
 
 export type BibleBook = {

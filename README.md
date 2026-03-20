@@ -1,6 +1,6 @@
 # Maná — Aplicación Espiritual Católica
 
-PWA católica de uso diario. Gratuita, sin registro, sin publicidad, offline-first.
+PWA católica de uso diario. Gratuita, sin registro, offline-first.
 
 Desarrollada por **Fabricio Bianchi** como proyecto sin ánimos de lucro.
 

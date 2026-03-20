@@ -24,7 +24,7 @@ export default function NovenasPage() {
         subtitle="Nueve días de oración continua"
       />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 pb-28">
         {loading && (
           <div className="flex items-center justify-center py-12 animate-pulse-soft text-dorado">
             <Icon name="beads" size={40} />

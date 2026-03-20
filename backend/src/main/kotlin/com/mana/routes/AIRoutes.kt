@@ -323,8 +323,8 @@ fun Route.aiRoutes(dotenv: Dotenv) {
                     Json { ignoreUnknownKeys = true }.decodeFromString<BibliaRecomendacionRaw>(jsonStr)
                 } catch (e: Exception) {
                     return@post call.respond(
-                        HttpStatusCode.InternalServerError,
-                        mapOf("error" to "No se pudo procesar la recomendación")
+                        HttpStatusCode.UnprocessableEntity,
+                        mapOf("error" to "INVALID_INPUT")
                     )
                 }
                 // Always resolve verse text from bible_es.json — IA never provides it

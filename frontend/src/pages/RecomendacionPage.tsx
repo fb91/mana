@@ -18,8 +18,12 @@ export default function RecomendacionPage() {
     try {
       const rec = await api.getBibliaRecomendacion(text.trim())
       setResult(rec)
-    } catch {
-      setError('No se pudo obtener una recomendación. Intentá de nuevo.')
+    } catch (err) {
+      if (err instanceof Error && err.message === 'INVALID_INPUT') {
+        setError('Contanos algo sobre cómo te sentís o qué te está pasando para poder buscarte un pasaje que te acompañe.')
+      } else {
+        setError('No se pudo obtener una recomendación. Intentá de nuevo.')
+      }
     } finally {
       setLoading(false)
     }
@@ -38,7 +42,7 @@ export default function RecomendacionPage() {
         subtitle="Un pasaje para este momento"
       />
 
-      <div className="flex-1 overflow-y-auto px-4 py-6 animate-fade-in">
+      <div className="flex-1 overflow-y-auto px-4 py-6 pb-28 animate-fade-in">
         <div className="max-w-sm mx-auto space-y-5">
 
           {!result ? (
