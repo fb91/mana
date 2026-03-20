@@ -34,27 +34,27 @@ const QUOTES: Quote[] = [
 ]
 
 const PRIMARY_EMOTIONS = [
+  'Alegre',
   'Triste',
   'Ansioso',
-  'Agradecido',
-  'Alegre',
   'Confiado',
+  'Agradecido',
+  'Confundido',
 ]
 
 const SECONDARY_EMOTIONS = [
   'Solo',
   'Esperanzado',
-  'Cansado',
-  'Perdido',
-  'Culpable',
-  'Desanimado',
-  'Confundido',
-  'Enojado',
-  'Vacío',
   'Pleno',
+  'Desanimado',
+  'Vacío',
+  'Fortalecido',
   'Amado',
   'Acompañado',
-  'Fortalecido',
+  'Cansado',
+  'Culpable',
+  'Perdido',
+  'Enojado',
 ]
 
 interface Tool {
@@ -486,7 +486,7 @@ export default function InicioPage() {
           {/* Accordion: ver más */}
           <button
             onClick={() => setShowMoreEmotions(prev => !prev)}
-            className="flex items-center gap-1.5 text-xs text-dorado font-medium mt-1"
+            className="flex items-center gap-1.5 text-xs text-dorado font-medium py-2"
           >
             <span>{showMoreEmotions ? 'Ver menos' : 'Ver más'}</span>
             <Icon name={showMoreEmotions ? 'chevron-up' : 'chevron-down'} size={14} />

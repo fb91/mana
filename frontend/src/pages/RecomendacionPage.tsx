@@ -7,27 +7,27 @@ import { getBibleVerse } from '../lib/bible'
 import { BugReportLink } from '../components/BugReportButton'
 
 const PRIMARY_EMOTIONS = [
+  'Alegre',
   'Triste',
   'Ansioso',
-  'Agradecido',
-  'Alegre',
   'Confiado',
+  'Agradecido',
+  'Confundido',
 ]
 
 const SECONDARY_EMOTIONS = [
   'Solo',
   'Esperanzado',
-  'Cansado',
-  'Perdido',
-  'Culpable',
-  'Desanimado',
-  'Confundido',
-  'Enojado',
-  'Vacío',
   'Pleno',
+  'Desanimado',
+  'Vacío',
+  'Fortalecido',
   'Amado',
   'Acompañado',
-  'Fortalecido',
+  'Cansado',
+  'Culpable',
+  'Perdido',
+  'Enojado',
 ]
 
 export default function RecomendacionPage() {
@@ -110,7 +110,7 @@ export default function RecomendacionPage() {
               {/* Accordion: ver más */}
               <button
                 onClick={() => setShowMoreEmotions(prev => !prev)}
-                className="flex items-center gap-1.5 text-xs text-dorado font-medium"
+                className="flex items-center gap-1.5 text-xs text-dorado font-medium py-2"
               >
                 <span>{showMoreEmotions ? 'Ver menos' : 'Ver más'}</span>
                 <Icon name={showMoreEmotions ? 'chevron-up' : 'chevron-down'} size={14} />
