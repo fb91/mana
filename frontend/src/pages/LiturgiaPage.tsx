@@ -402,12 +402,14 @@ function ShareModal({
   date,
   gospelRef,
   gospelText,
+  gospelVerses,
   onClose,
 }: {
   day: ResolvedDay
   date: Date
   gospelRef: string
   gospelText: string
+  gospelVerses: BibleVerse[]
   onClose: () => void
 }) {
   const [sharing, setSharing] = useState(false)
@@ -423,13 +425,16 @@ function ShareModal({
           liturgicalLabel: day.label,
           dateStr: formatDateLabel(date),
           gospelRef,
-          gospelVerses: loadedVerses.gospel ?? [],
+          gospelVerses,
           color: day.color,
         },
         `lecturas-${date.toISOString().slice(0, 10)}.png`,
       )
       setDone(true)
       setTimeout(onClose, 1500)
+    } catch (error) {
+      console.error('Error al compartir:', error)
+      alert('Hubo un error al generar la imagen. Por favor, intentá de nuevo.')
     } finally {
       setSharing(false)
     }
@@ -442,10 +447,10 @@ function ShareModal({
         <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-4" />
 
         <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200 mb-1">
-          Compartir lecturas
+          Compartir Evangelio del día
         </h2>
         <p className="text-sm text-cafe-light dark:text-crema-300 mb-5">
-          Se generará una imagen bella con las lecturas del día.
+          Se generará una imagen con el Evangelio del día para que puedas compartirlo.
         </p>
 
         {/* Preview card */}
@@ -487,7 +492,7 @@ function ShareModal({
             ) : (
               <>
                 <Icon name="share" size={18} />
-                <span>Compartir como imagen</span>
+                <span>Generar imagen</span>
               </>
             )}
           </button>
@@ -719,7 +724,7 @@ export default function LiturgiaPage() {
                              hover:bg-crema-100 dark:hover:bg-oscuro-surface"
                 >
                   <Icon name="share" size={18} />
-                  Compartir lecturas del día
+                  Generar imagen para compartir
                 </button>
               </div>
             )}
@@ -744,6 +749,7 @@ export default function LiturgiaPage() {
           date={selectedDate}
           gospelRef={gospelRef}
           gospelText={gospelText}
+          gospelVerses={loadedVerses.gospel ?? []}
           onClose={() => setShowShare(false)}
         />
       )}
