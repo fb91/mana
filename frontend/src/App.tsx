@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
-import InstallPrompt from './components/InstallPrompt'
-import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from './components/IOSInstallModal'
+// InstallPrompt replaced by unified banner in InicioPage
 import ExamenPage from './pages/ExamenPage'
 import SantoPage from './pages/SantoPage'
 import NovenasPage from './pages/NovenasPage'
@@ -18,7 +17,6 @@ import { useAppStore, applyTheme, applyFontSize, applyFontFamily, VALID_THEMES }
 
 export default function App() {
   const { theme, setTheme, fontSizeValue, fontFamily, liturgicalAccent } = useAppStore()
-  const [showIOSModal, setShowIOSModal] = useState(false)
 
   // Apply persisted settings on mount; migrate legacy themes to 'claro'
   useEffect(() => {
@@ -29,21 +27,6 @@ export default function App() {
     applyFontFamily(fontFamily ?? 'inter')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // Show iOS install modal if needed
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (shouldShowIOSInstall()) {
-        setShowIOSModal(true)
-      }
-    }, 2000) // Show after 2 seconds
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleCloseIOSModal = () => {
-    setShowIOSModal(false)
-    dismissIOSInstallPrompt()
-  }
 
   return (
     <BrowserRouter>
@@ -67,8 +50,7 @@ export default function App() {
               </Routes>
             </main>
             <BottomNav />
-            <InstallPrompt />
-            <IOSInstallModal show={showIOSModal} onClose={handleCloseIOSModal} />
+
           </div>
         </div>
       </BugReportProvider>

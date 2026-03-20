@@ -6,6 +6,8 @@ import { BugReportLink } from '../components/BugReportButton'
 import { api, BibliaRecomendacion, BibleBook, LectioBiblicaResponse } from '../services/api'
 import { getBibleVerse, getBibleBooks, getBibleChapter, BOOK_NAME } from '../lib/bible'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
+import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from '../components/IOSInstallModal'
+import { usePWAInstall } from '../hooks/usePWAInstall'
 
 
 interface Quote {
@@ -313,6 +315,23 @@ export default function InicioPage() {
   // About modal
   const [showAbout, setShowAbout] = useState(false)
 
+  // Install banner & modal (iOS + Android)
+  const { state: installState, install: triggerAndroidInstall } = usePWAInstall()
+  const [showIOSModal, setShowIOSModal] = useState(false)
+  const [installDismissed, setInstallDismissed] = useState(false)
+
+  const showInstallBanner = !installDismissed && (
+    installState === 'ios' ? shouldShowIOSInstall() : installState === 'prompt'
+  )
+
+  function handleInstallBannerClick() {
+    if (installState === 'ios') {
+      setShowIOSModal(true)
+    } else if (installState === 'prompt') {
+      triggerAndroidInstall().then(() => setInstallDismissed(true))
+    }
+  }
+
   // Emotion and recommendation
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
   const [showMoreEmotions, setShowMoreEmotions] = useState(false)
@@ -457,6 +476,30 @@ export default function InicioPage() {
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in">
+
+        {/* Install banner (iOS + Android) */}
+        {showInstallBanner && (
+          <button
+            onClick={handleInstallBannerClick}
+            className="w-full mb-4 flex items-center gap-3 rounded-2xl px-4 py-3
+                       bg-gradient-to-r from-dorado/15 to-dorado/5 border border-dorado/30
+                       active:scale-[0.98] transition-all duration-200"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-dorado to-[#965519]
+                            flex items-center justify-center flex-shrink-0 shadow-sm">
+              <span className="text-xl font-serif font-bold text-crema-50">M</span>
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-sm font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
+                Instalá Maná como app
+              </p>
+              <p className="text-xs text-cafe-light dark:text-crema-300 leading-snug mt-0.5">
+                Offline y a pantalla completa
+              </p>
+            </div>
+            <Icon name="chevron-right" size={18} className="text-dorado/60 flex-shrink-0" />
+          </button>
+        )}
 
         {/* ¿Cómo te sientes hoy? */}
         <div className="mb-6 rounded-3xl bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
@@ -889,6 +932,18 @@ export default function InicioPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* iOS Install Modal */}
+      {showIOSModal && (
+        <IOSInstallModal
+          show={showIOSModal}
+          onClose={() => {
+            setShowIOSModal(false)
+            dismissIOSInstallPrompt()
+            setInstallDismissed(true)
+          }}
+        />
       )}
     </div>
   )
