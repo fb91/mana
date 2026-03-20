@@ -1,9 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import PageHeader from '../components/PageHeader'
 import Icon, { IconName } from '../components/Icon'
-import { api, ExamenData, ExamenPerfil } from '../services/api'
+import { ExamenData, ExamenPerfil } from '../services/api'
+import examenJson from '../data/examen.json'
 
-type Phase = 'loading' | 'select_profile' | 'intro' | 'questions'
+const EXAMEN_DATA = examenJson as ExamenData
+
+type Phase = 'select_profile' | 'intro' | 'questions'
 
 const PROFILE_ICONS: Record<string, IconName> = {
   adultos: 'user',
@@ -12,17 +15,10 @@ const PROFILE_ICONS: Record<string, IconName> = {
 }
 
 export default function ExamenPage() {
-  const [phase, setPhase] = useState<Phase>('loading')
-  const [data, setData] = useState<ExamenData | null>(null)
+  const [phase, setPhase] = useState<Phase>('select_profile')
+  const data: ExamenData = EXAMEN_DATA
   const [perfil, setPerfil] = useState<ExamenPerfil | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    api.getExamenData()
-      .then(d => { setData(d); setPhase('select_profile') })
-      .catch(() => { setError('No se pudo cargar el examen. Reintentá.'); setPhase('select_profile') })
-  }, [])
 
   const handleSelectPerfil = (p: ExamenPerfil) => {
     setPerfil(p)
@@ -109,30 +105,18 @@ export default function ExamenPage() {
         icon={<Icon name="clipboard" size={18} />}
         title="Examen de Conciencia"
         subtitle={perfil ? perfil.label : 'Preparación para la confesión'}
-        onReset={phase !== 'select_profile' && phase !== 'loading' ? handleReset : undefined}
+        onReset={phase !== 'select_profile' ? handleReset : undefined}
       />
-
-      {/* ── LOADING ── */}
-      {phase === 'loading' && (
-        <div className="flex-1 flex items-center justify-center animate-pulse-soft">
-          <div className="text-center">
-            <span className="text-4xl">🕊️</span>
-            <p className="text-cafe-light dark:text-crema-300 text-sm mt-3">Cargando...</p>
-          </div>
-        </div>
-      )}
 
       {/* ── SELECT PROFILE ── */}
       {phase === 'select_profile' && (
         <div className="flex-1 overflow-y-auto px-4 py-6 pb-28 animate-fade-in">
-          {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
-
           <p className="text-center text-cafe-light dark:text-crema-300 text-sm mb-6 max-w-sm mx-auto">
             Seleccioná tu perfil para ver las preguntas más adecuadas para vos.
           </p>
 
           <div className="space-y-3 max-w-sm mx-auto">
-            {data?.perfiles.map(p => (
+            {data.perfiles.map(p => (
               <button
                 key={p.id}
                 onClick={() => handleSelectPerfil(p)}

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Icon, { IconName } from '../components/Icon'
 import { useAppStore } from '../store/useAppStore'
 
-const IS_DEV = import.meta.env.DEV
 
 interface Quote {
   text: string
@@ -90,14 +89,12 @@ const tools: Tool[] = [
     title: 'Novenas',
     description: 'Rezá novenas con recordatorios diarios. Acompañarte con la intercesión de los santos.',
     to: '/novenas',
-    soon: !IS_DEV,
   },
   {
     icon: 'clipboard',
     title: 'Examen de conciencia',
     description: 'Preparate para la confesión con preguntas adaptadas a tu perfil. Descargá tu examen.',
     to: '/examen',
-    soon: !IS_DEV,
   },
   {
     icon: 'archive',

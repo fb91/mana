@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { api, BibliaRecomendacion } from '../services/api'
+import { getBibleVerse } from '../lib/bible'
 
 export default function RecomendacionPage() {
   const navigate = useNavigate()
@@ -17,7 +18,9 @@ export default function RecomendacionPage() {
     setError('')
     try {
       const rec = await api.getBibliaRecomendacion(text.trim())
-      setResult(rec)
+      // Resolve verse text from locally cached bible JSON
+      const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
+      setResult({ ...rec, textoVersiculo: verseText ?? '' })
     } catch (err) {
       if (err instanceof Error && err.message === 'INVALID_INPUT') {
         setError('Contanos algo sobre cómo te sentís o qué te está pasando para poder buscarte un pasaje que te acompañe.')

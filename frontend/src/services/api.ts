@@ -83,9 +83,6 @@ export type ExamenData = {
 // ── AI ──────────────────────────────────────────────────────────
 
 export const api = {
-  getExamenData: () =>
-    request<ExamenData>('/api/examen/data'),
-
   examen: (messages: ChatMessage[], estadoDeVida: string) =>
     request<AIResponseWithOptions>('/api/ai/examen', {
       method: 'POST',
@@ -108,44 +105,13 @@ export const api = {
       body: JSON.stringify({ messages, pasaje }),
     }),
 
-  // ── Novenas ────────────────────────────────────────────────────
-
-  getNovenas: () =>
-    request<Novena[]>('/api/novenas'),
-
-  getNovena: (id: number) =>
-    request<Novena>(`/api/novenas/${id}`),
-
-  // ── Push ──────────────────────────────────────────────────────
-
-  subscribePush: (sub: PushSubscriptionJSON) =>
-    request<{ message: string }>('/api/push/subscribe', {
-      method: 'POST',
-      body: JSON.stringify({
-        endpoint: sub.endpoint,
-        p256dh: (sub.keys as Record<string, string>)?.p256dh,
-        auth: (sub.keys as Record<string, string>)?.auth,
-      }),
-    }),
-
-  iniciarNovena: (subscriptionEndpoint: string, novenaId: number, hora: string) =>
-    request<{ id: number; message: string }>('/api/push/novena-activa', {
-      method: 'POST',
-      body: JSON.stringify({ subscriptionEndpoint, novenaId, horaNotificacion: hora }),
-    }),
-
-  cancelarNovena: (id: number) =>
-    request<{ message: string }>(`/api/push/novena-activa/${id}`, {
-      method: 'DELETE',
-    }),
-
-  // ── Bible ──────────────────────────────────────────────────────
+  // ── Bible (served from public/data/bible_es.json) ──────────────
 
   getBibleBooks: () =>
-    request<BibleBook[]>('/api/bible/books'),
+    import('../lib/bible').then(m => m.getBibleBooks()),
 
   getBibleChapter: (book: string, chapter: number) =>
-    request<BibleChapter>(`/api/bible/books/${book}/${chapter}`),
+    import('../lib/bible').then(m => m.getBibleChapter(book, chapter)),
 
   getBibliaRecomendacion: (estadoAnimo: string) =>
     request<BibliaRecomendacion>('/api/ai/biblia-recomendacion', {

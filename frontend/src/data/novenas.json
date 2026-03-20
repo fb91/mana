@@ -1,0 +1,258 @@
+[
+  {
+    "id": 1,
+    "nombre": "Novena al Espíritu Santo",
+    "santo": "Espíritu Santo",
+    "descripcion": "La novena más antigua de la Iglesia, rezada desde los apóstoles en el Cenáculo entre la Ascensión y Pentecostés. Nueve días de oración para recibir los dones del Espíritu Santo.",
+    "intencionSugerida": "Recibir los dones del Espíritu Santo y renovar la gracia del Bautismo",
+    "autor": "Tradición de la Iglesia",
+    "dias": [
+      {
+        "dia": 1,
+        "titulo": "Día 1 — Don de Sabiduría",
+        "reflexion": "La sabiduría nos permite ver todas las cosas desde la perspectiva de Dios y juzgar todo según sus valores eternos. Es el más excelente de los dones porque nos une al fin último.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Sabiduría, y enséñame a valorar por encima de todo las cosas del cielo, para que las de la tierra no sean un obstáculo en mi camino hacia Ti. Dame la sabiduría que viene de lo alto, para que discierna Tu voluntad en cada momento de mi vida."
+      },
+      {
+        "dia": 2,
+        "titulo": "Día 2 — Don de Entendimiento",
+        "reflexion": "El don de entendimiento ilumina la mente para que comprenda más profundamente las verdades de la fe. No es comprensión humana sino luz divina que penetra los misterios.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Entendimiento, e ilumina mi mente con Tu luz divina. Ayúdame a comprender las verdades de la fe no solo con la razón, sino con el corazón. Que pueda penetrar en los misterios de Dios y llevar esa luz a mi vida cotidiana."
+      },
+      {
+        "dia": 3,
+        "titulo": "Día 3 — Don de Consejo",
+        "reflexion": "El don de consejo nos permite discernir con rectitud en las circunstancias particulares de la vida lo que debemos hacer y decir. Es la prudencia sobrenatural.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Consejo, y guía mis pasos cuando no sepa qué camino tomar. Que en los momentos de duda y decisión pueda escuchar Tu voz interior y actuar siempre conforme a la voluntad del Padre, sin dejarme llevar por el miedo ni por el egoísmo."
+      },
+      {
+        "dia": 4,
+        "titulo": "Día 4 — Don de Fortaleza",
+        "reflexion": "El don de fortaleza nos da la energía y la valentía necesarias para superar los obstáculos en el camino hacia Dios, y para perseverar hasta el final incluso ante las pruebas más duras.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Fortaleza, y dame el valor que necesito para seguirte sin miedo. Fortalece mi voluntad cuando me sienta débil, cuando el cansancio me venza o cuando la prueba me parezca demasiado pesada. Que confíe siempre en que Tu fuerza se perfecciona en mi debilidad."
+      },
+      {
+        "dia": 5,
+        "titulo": "Día 5 — Don de Ciencia",
+        "reflexion": "El don de ciencia nos ayuda a conocer las cosas creadas en relación a Dios: a ver el mundo como reflejo de su gloria y a no apegarnos a lo pasajero como si fuera eterno.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Ciencia, y enséñame a leer el libro de la creación con ojos de fe. Que en cada criatura vea la huella del Creador, y que ninguna cosa de este mundo me aleje de Ti. Dame el don de reconocer lo que es pasajero y de aferrarme solo a lo que tiene valor eterno."
+      },
+      {
+        "dia": 6,
+        "titulo": "Día 6 — Don de Piedad",
+        "reflexion": "El don de piedad nos hace hijos de Dios en el más pleno sentido: nos inclina a tratar a Dios con el amor y la confianza de un hijo, y a ver en los demás hermanos a quienes amar.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu de Piedad, y enciende en mi corazón un amor filial hacia Dios Padre. Que pueda acercarme a Él no con temor de esclavo sino con confianza de hijo. Y que ese mismo amor se derrame sobre mis hermanos, para que los sirva con alegría y los ame como Tú me amas."
+      },
+      {
+        "dia": 7,
+        "titulo": "Día 7 — Don de Temor de Dios",
+        "reflexion": "El don de temor de Dios no es miedo servil sino reverencia filial: el reconocimiento de la grandeza de Dios y el horror al pecado por amor a Él, no por miedo al castigo.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu Santo, y dame el santo temor de Dios. Que en Tu presencia me reconozca pequeño y que esa conciencia me aleje del pecado no por miedo al castigo, sino por amor a Aquel que es todo bondad. Que nunca quiera ofender a quien tanto me ha amado."
+      },
+      {
+        "dia": 8,
+        "titulo": "Día 8 — Los frutos del Espíritu",
+        "reflexion": "Los doce frutos del Espíritu (amor, gozo, paz, paciencia, benignidad, bondad, fe, mansedumbre, modestia, continencia, castidad, longanimidad) son el resultado visible de su acción en el alma.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nVen, Espíritu Santo, y produce en mí tus frutos. Que mi vida sea testigo del amor, la alegría y la paz que solo Tú puedes dar. Que la paciencia, la mansedumbre y la bondad sean las marcas de mi trato con los demás. Que quien me vea, pueda ver en mí un reflejo de Tu presencia."
+      },
+      {
+        "dia": 9,
+        "titulo": "Día 9 — Renovación y Consagración",
+        "reflexion": "Hoy, como los apóstoles en Pentecostés, pedimos la renovación plena del Espíritu. El mismo fuego que transformó a los discípulos temerosos en testigos valientes puede transformar también nuestras vidas.",
+        "oracion": "Ven, Espíritu Santo, llena los corazones de tus fieles y enciende en ellos el fuego de tu amor.\nEnvía tu Espíritu y serán creadas todas las cosas, y renovarás la faz de la tierra.\n\nOh Dios, que por la luz del Espíritu Santo instruiste los corazones de los fieles: concédenos que por el mismo Espíritu conozcamos lo que es recto y gocemos siempre de sus consuelos.\nPor Jesucristo Nuestro Señor. Amén.\n\nEspíritu Santo, me consagro a Ti. Toma mi mente para que piense como Dios quiere. Toma mi corazón para que ame lo que Dios ama. Toma mi voluntad para que haga siempre lo que Dios manda. Renueva en mí la gracia del Bautismo y hazme testigo vivo del Evangelio. Amén.\n\nVen, Espíritu Santo, ven. Que así como llenaste el Cenáculo con tu presencia, llenes también hoy mi vida. Amén."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "Novena a la Virgen María",
+    "santo": "Virgen María",
+    "descripcion": "Novena de súplica y confianza a la Santísima Virgen María, Madre de Dios y Madre nuestra. Nueve días de oración para acercarnos a Jesús a través de su Madre.",
+    "intencionSugerida": "Consagrar nuestra vida a María y pedir su intercesión maternal",
+    "autor": "Tradición de la Iglesia",
+    "dias": [
+      {
+        "dia": 1,
+        "titulo": "Día 1 — María, llena de gracia",
+        "reflexion": "El ángel saludó a María como «llena de gracia». Ella fue preservada del pecado original para ser digna Madre de Dios. En ella la gracia divina alcanzó su plenitud en una criatura humana.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nVirgen María, madre llena de gracia: tú que estás tan cerca de tu Hijo Jesús, intercede por mí ante Él. Enséñame a decir como tú: «Hágase en mí según Tu palabra.» Que mi vida, como la tuya, sea una respuesta de amor a la voluntad de Dios."
+      },
+      {
+        "dia": 2,
+        "titulo": "Día 2 — María, Madre de Dios",
+        "reflexion": "Al aceptar ser Madre de Jesús, María se convirtió en Theotokos, la Madre de Dios. Esta dignidad incomparable la hace también nuestra Madre, pues Jesús nos la dio desde la Cruz.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nSanta María, Madre de Dios y Madre mía: desde la Cruz Jesús te dio como Madre a todos sus discípulos. Acéptame también a mí como hijo tuyo. Guíame hacia Jesús como guiaste a los Magos, como intercediste en Caná. Que bajo tu manto encuentre siempre refugio y paz."
+      },
+      {
+        "dia": 3,
+        "titulo": "Día 3 — María, modelo de fe",
+        "reflexion": "María creyó cuando todo parecía imposible. Su fe fue más grande que la de Abraham: creyó que el Hijo del Altísimo nacería de ella. San Agustín dice que concibió a Cristo primero en el alma que en el cuerpo.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nVirgen Santa, tú que creíste la Palabra de Dios cuando parecía imposible: fortalece mi fe cuando flaquee. En los momentos de oscuridad y duda, recuérdame que Dios es fiel a sus promesas. Dame la fe sencilla y total con que tú respondiste al ángel: «Hágase en mí según Tu palabra.»"
+      },
+      {
+        "dia": 4,
+        "titulo": "Día 4 — María en el sufrimiento",
+        "reflexion": "Simeón profetizó que una espada atravesaría el alma de María. Ella acompañó a su Hijo hasta el Calvario. No huyó del sufrimiento sino que lo abrazó por amor. Es nuestra compañera en el dolor.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nVirgen de los Dolores, Tú conoces el sufrimiento desde adentro. Cuando yo llevo mi propia cruz, ayúdame a ofrecerla unida a la de tu Hijo. Que ningún dolor sea estéril. Acompáñame, como acompañaste a Jesús, con tu presencia silenciosa y amorosa."
+      },
+      {
+        "dia": 5,
+        "titulo": "Día 5 — María, Reina del Cielo",
+        "reflexion": "Asunta en cuerpo y alma al Cielo y coronada como Reina, María intercede por nosotros ante el trono de Dios. Su coronación es también nuestra esperanza: el cielo es el destino de todo hijo de Dios.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nReina del Cielo, alégrate. Aleluya. El Señor a quien mereciste llevar en tu seno ha resucitado. Ruega a Dios por nosotros. Alégrate, Virgen María. Aleluya. Intercede por nosotros ante Tu Hijo, para que un día podamos contemplar con Tú el rostro de Dios cara a cara."
+      },
+      {
+        "dia": 6,
+        "titulo": "Día 6 — El Rosario, oración de María",
+        "reflexion": "El Santo Rosario es la oración mariana por excelencia: meditamos los misterios de la vida de Jesús acompañados de su Madre. San Juan Pablo II lo llamó «oración cristocéntrica» y «compendio del Evangelio».",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nVirgen del Rosario, enséñame a contemplar a Jesús con tus ojos. Que al rezar el Santo Rosario no repita solo palabras, sino que entre en los misterios de la vida de tu Hijo y los viva en mi propia historia. Que el Rosario sea cada día mi momento de encuentro contigo y con Jesús."
+      },
+      {
+        "dia": 7,
+        "titulo": "Día 7 — María, Madre de la Iglesia",
+        "reflexion": "En Pentecostés, María estaba en el Cenáculo con los apóstoles. Ella estuvo en el nacimiento de la Iglesia. El Concilio Vaticano II la proclama Madre de la Iglesia: ora sin cesar por todos sus hijos.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nMadre de la Iglesia, ruega por el Papa, por los obispos, por los sacerdotes y por todos los consagrados. Protege a tu Iglesia de toda división y error. Que todos los bautizados seamos cada día más fieles a tu Hijo. Y ruega especialmente por los que están lejos de la fe."
+      },
+      {
+        "dia": 8,
+        "titulo": "Día 8 — Consagración a María",
+        "reflexion": "San Luis María de Montfort enseñó que la consagración a María es el camino más seguro hacia Jesús. Consagrarse a ella es entregarle todo para que ella nos lleve a su Hijo.",
+        "oracion": "Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nVirgen María, Madre mía: me entrego a ti para ir a Jesús. Toma mi cuerpo y mi alma, mis bienes espirituales y materiales. Soy todo tuyo para que me lleves a tu Hijo. Que de hoy en adelante viva como verdadero hijo tuyo, siguiendo tu ejemplo de obediencia, humildad y amor."
+      },
+      {
+        "dia": 9,
+        "titulo": "Día 9 — Memorare y petición final",
+        "reflexion": "El Memorare, una de las oraciones más antiguas a María, expresa la confianza que los fieles han depositado en ella a lo largo de los siglos. Nadie que haya recurrido a ella ha quedado sin consuelo.",
+        "oracion": "Acordaos, oh piadosísima Virgen María, que jamás se ha oído decir que ninguno de los que han acudido a vuestra protección, implorando vuestro socorro y reclamando vuestro amparo, haya sido abandonado por vos. Animado con esta confianza, a vos acudo, oh Madre Virgen de las vírgenes, y aunque gimiendo bajo el peso de mis pecados, me atrevo a comparecer ante vuestra presencia soberana. No desechéis mis súplicas, oh Madre del Verbo Divino, antes bien, escuchadlas y atendedlas benignamente. Amén.\n\nDios te salve, María, llena eres de gracia; el Señor es contigo. Bendita Tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.\n\nMadre María, al terminar estos nueve días a tu lado, te pido que lleves al corazón de tu Hijo Jesús esta intención que cargo en el corazón. Tú que todo lo puedes ante Él, intercede por mí. Y si lo que pido no es para bien de mi alma, dame conformidad con la voluntad de Dios y paz en el corazón."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "nombre": "Novena a San José",
+    "santo": "San José",
+    "descripcion": "San José, esposo de María y padre adoptivo de Jesús, es patrono de la Iglesia Universal, de los trabajadores, de los padres de familia y de la buena muerte. Esta novena se reza especialmente en marzo.",
+    "intencionSugerida": "Pedir a San José protección para la familia, ayuda en el trabajo y una buena muerte",
+    "autor": "Tradición de la Iglesia",
+    "dias": [
+      {
+        "dia": 1,
+        "titulo": "Día 1 — José, varón justo",
+        "reflexion": "El Evangelio define a José con una sola palabra: «justo». La justicia bíblica es la fidelidad total a Dios en todas las circunstancias de la vida. José fue justo porque puso siempre a Dios en el primer lugar.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, tú que fuiste llamado «varón justo»: ayúdame a vivir también yo con rectitud e integridad. Que en mi trabajo, en mi familia y en mi vida pública sea siempre fiel a Dios y a los hombres. Que nunca anteponga mis intereses a la verdad y a la justicia."
+      },
+      {
+        "dia": 2,
+        "titulo": "Día 2 — José, padre de familia",
+        "reflexion": "José aceptó ser padre de Jesús sin ser su padre biológico. Su paternidad fue un don total de sí mismo: protegió, educó y amó al Hijo de Dios como si fuera suyo. Es modelo de todo padre y de toda madre.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, protector de las familias: te encomiendo a mi familia. Protégela de todo mal, de las divisiones y de las tentaciones. Que el amor de Dios sea el centro de nuestro hogar, como lo fue de la Sagrada Familia de Nazaret. Intercede especialmente por los padres y madres que cargan solos con su familia."
+      },
+      {
+        "dia": 3,
+        "titulo": "Día 3 — José en el silencio",
+        "reflexion": "José no pronuncia ni una sola palabra en los Evangelios. Su presencia es un silencio activo y amoroso. En un mundo lleno de ruido, nos enseña que lo más importante no siempre se dice, sino que se vive.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José del silencio: enséñame a escuchar a Dios en el interior. Que no necesite siempre hacer ruido para sentirme útil. Que aprenda la riqueza del silencio interior, donde Dios habla. Ayúdame a actuar con la misma serenidad y decisión con que tú respondiste a los sueños que Dios te enviaba."
+      },
+      {
+        "dia": 4,
+        "titulo": "Día 4 — José, el trabajador",
+        "reflexion": "Jesús fue llamado «el hijo del carpintero». Treinta años en Nazaret, José le enseñó a trabajar con las manos. El trabajo no es maldición sino participación en la obra creadora de Dios. José santificó el trabajo cotidiano.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, patrono de los trabajadores: santifica mi trabajo. Que lo que hago cada día con mis manos o con mi mente lo ofrezca a Dios como oración. Intercede por quienes no tienen trabajo, por los que trabajan en condiciones injustas, y por los que cargan con el peso de sostener a su familia."
+      },
+      {
+        "dia": 5,
+        "titulo": "Día 5 — José en la huida a Egipto",
+        "reflexion": "José se levantó de noche para huir a Egipto con María y el Niño. Sin preguntar ni protestar, obedeció al ángel. Su fe era una fe operativa: creyó y actuó. Es modelo para los tiempos de crisis y persecución.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, protector de los que huyen y los que sufren: intercede por todos los que están en peligro, los refugiados, los perseguidos y los que pasan por momentos de crisis. Dame también la capacidad de levantarme pronto cuando Dios me llama, sin dilaciones ni excusas."
+      },
+      {
+        "dia": 6,
+        "titulo": "Día 6 — José en Nazaret",
+        "reflexion": "Treinta años de vida oculta en Nazaret. José compartió con Jesús la monotonía santa de lo cotidiano. La santidad no está solo en los grandes gestos sino en la fidelidad a lo pequeño de cada día.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José de Nazaret: ayúdame a encontrar a Dios en la vida ordinaria. Que no espere grandes momentos para ser santo, sino que descubra que el camino de santidad pasa por el trabajo de cada día, la oración cotidiana, el servicio a la familia y la fidelidad en las cosas pequeñas."
+      },
+      {
+        "dia": 7,
+        "titulo": "Día 7 — José y la Iglesia",
+        "reflexion": "El Papa Pío IX proclamó a San José Patrono de la Iglesia Universal en 1870. San Juan Pablo II y el Papa Francisco le tienen especial devoción. Es custodio de la Iglesia como lo fue de la Sagrada Familia.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, patrono y custodio de la Iglesia: protégela con tu poderosa intercesión. Que los pastores sean fieles, que los fieles sean santos, que la Iglesia sea siempre signo de la presencia de Cristo en el mundo. Protege especialmente al Papa, a los obispos y a los sacerdotes."
+      },
+      {
+        "dia": 8,
+        "titulo": "Día 8 — José, patrono de la buena muerte",
+        "reflexion": "Se cree que José murió entre los brazos de Jesús y María. Por eso es patrono de la buena muerte: morir en gracia de Dios, acompañado, consciente. Su muerte fue el cumplimiento de una vida entregada.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, patrono de la buena muerte: cuando llegue mi hora, asísteme. Que pueda morir en paz, en gracia de Dios, con tiempo para arrepentirme y recibir los últimos sacramentos. Intercede también por los que están agonizando en este momento, especialmente los que mueren solos o sin fe."
+      },
+      {
+        "dia": 9,
+        "titulo": "Día 9 — Letanía y petición final",
+        "reflexion": "Al terminar estos nueve días con San José, le presentamos todas nuestras necesidades. Él que cuidó a Jesús y a María sabrá también cuidar de nosotros, sus hijos espirituales.",
+        "oracion": "San José, padre y protector: intercede por nosotros ante Dios.\n\nOh San José, cuya protección es tan grande, tan fuerte, tan pronta ante el trono de Dios, a ti encomiendo todos mis intereses y deseos. Oh San José, asísteme con tu poderosa intercesión y alcánzame de Dios tu Divino Hijo todas las gracias espirituales y temporales necesarias para mi alma y mi cuerpo.\n\nSan José, ruega por nosotros.\nSan José, esposo de María, ruega por nosotros.\nSan José, padre putativo de Jesús, ruega por nosotros.\nSan José, custodio de la Sagrada Familia, ruega por nosotros.\nSan José, patrono de la Iglesia, ruega por nosotros.\nSan José, patrono de los trabajadores, ruega por nosotros.\nSan José, patrono de la buena muerte, ruega por nosotros.\n\nBienaventurado San José: lleva al corazón de Dios esta intención que te presento hoy. Tú que tienes tanto poder de intercesión, alcánzame lo que necesito si es para bien de mi alma. Y si no, dame paz y conformidad con la voluntad de Dios. Amén."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "nombre": "Novena al Sagrado Corazón de Jesús",
+    "santo": "Sagrado Corazón de Jesús",
+    "descripcion": "Novena de reparación y amor al Corazón de Jesús, manantial de misericordia. Rezada especialmente en junio, mes del Sagrado Corazón, y los nueve primeros viernes de mes.",
+    "intencionSugerida": "Reparar las ofensas al Corazón de Jesús y crecer en el amor a Dios",
+    "autor": "Tradición de la Iglesia",
+    "dias": [
+      {
+        "dia": 1,
+        "titulo": "Día 1 — El Corazón herido por amor",
+        "reflexion": "En la Cruz, el costado de Jesús fue traspasado por una lanza y brotó sangre y agua. Los Padres de la Iglesia ven en esa herida el origen de la Iglesia y de los sacramentos. El Corazón de Jesús fue herido por amor a nosotros.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, Tu Corazón late de amor por mí, incluso cuando yo me olvido de Ti. Ese amor me precede, me acompaña y me espera. Que yo aprenda a corresponder aunque sea con una pequeña parte del amor infinito que me tienes. Que nunca sea yo causa de pena para Tu Corazón."
+      },
+      {
+        "dia": 2,
+        "titulo": "Día 2 — «Venid a Mí todos»",
+        "reflexion": "Jesús invita: «Venid a Mí todos los que estáis cansados y agobiados, y Yo os daré descanso.» El Sagrado Corazón es refugio para el alma cansada. Nadie que acuda a Él queda sin consuelo.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, estoy cansado. Cansado de mis propias miserias, de las luchas cotidianas, de mis caídas repetidas. Vengo a Ti que me invitas a descansar en Tu Corazón. Tómame tal como soy. No me pides que sea perfecto para recibirme, sino que venga a Ti. Aquí estoy, Señor."
+      },
+      {
+        "dia": 3,
+        "titulo": "Día 3 — Reparación",
+        "reflexion": "Santa Margarita María de Alacoque recibió de Jesús el pedido de reparar las ofensas e ingratitudes que recibe su Corazón. La reparación es un acto de amor: responder con amor donde hay desamor.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, quiero reparar las ofensas que Tu Corazón recibe cada día. Por todos los que te niegan, por los que te ofenden, por los que te ignoran, por mis propios pecados y tibiezas, me ofrezco en acto de reparación. Acepta mi pequeño amor como desagravio por tanto desamor."
+      },
+      {
+        "dia": 4,
+        "titulo": "Día 4 — Los primeros viernes",
+        "reflexion": "Jesús prometió a Santa Margarita María doce promesas para quienes honren su Corazón. La más conocida: «Yo te prometo, en la sobreabundancia de la misericordia de Mi Corazón, que su amor todopoderoso concederá a todos los que comulguen nueve primeros viernes de mes consecutivos la gracia de la perseverancia final.»",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, que prometiste gracias especiales a quienes honran Tu Corazón: fortalece en mí el amor a la Eucaristía. Que cada primera comunión del mes sea un encuentro de amor contigo. Que nunca reciba Tu Cuerpo con indiferencia, sino con fe y amor crecientes."
+      },
+      {
+        "dia": 5,
+        "titulo": "Día 5 — Misericordia",
+        "reflexion": "«Misericordia quiero, y no sacrificio.» El Corazón de Jesús es fuente inagotable de misericordia. Por eso Santa Faustina vio emanar de ese Corazón dos rayos: rojo (sangre) y blanco (agua), símbolos de la misericordia.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nJesús, en Ti confío. Confío en Tu misericordia más que en mis propios méritos. No tengo nada que ofrecer excepto mi pobreza y mi confianza. Pero Tu misericordia es más grande que todos mis pecados. Perdóname y dame un corazón misericordioso para con los demás."
+      },
+      {
+        "dia": 6,
+        "titulo": "Día 6 — «El Corazón más amante»",
+        "reflexion": "«Mira este Corazón que tanto ha amado a los hombres y que tan poco amor en cambio recibe.» Estas palabras de Jesús a Santa Margarita María siguen siendo actuales. El Corazón de Jesús sigue amando y esperando respuesta.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, que tanto has amado y que tan poco eres amado: que yo sea al menos uno que te corresponde. No con grandes obras, que no tengo. Solo con mi pequeño amor cotidiano: rezando, evitando el pecado, ayudando al prójimo. Recibe este amor pobre pero sincero."
+      },
+      {
+        "dia": 7,
+        "titulo": "Día 7 — La Hora Santa",
+        "reflexion": "Jesús pasó una hora en agonía en el Huerto. Pidió a sus discípulos que velaran con Él. La devoción de la Hora Santa (adoración nocturna del primer jueves) es respuesta a esa petición.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, en el Huerto preguntaste: «¿No habéis podido velar una hora conmigo?» Perdona mis sueños espirituales, mi pereza en la oración, los ratos que debería dedicarte y los desperdicio en cosas sin importancia. Quiero acompañarte. Quiero velar contigo. Dame el don de la oración."
+      },
+      {
+        "dia": 8,
+        "titulo": "Día 8 — Eucaristía, Corazón de la Iglesia",
+        "reflexion": "En la Eucaristía, el Corazón de Jesús se hace presente. Cada Misa es un encuentro con ese Corazón que late de amor. La comunión frecuente y devota es la forma más íntima de honrar el Sagrado Corazón.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nSeñor Jesús, presente en la Eucaristía: enséñame a asistir a la Misa con fe y amor renovados. Que nunca sea una rutina sino un verdadero encuentro contigo. Y cuando comulgue, que mi corazón sea digna morada para Tu Corazón. Que la Comunión me transforme cada vez más en Ti."
+      },
+      {
+        "dia": 9,
+        "titulo": "Día 9 — Consagración al Sagrado Corazón",
+        "reflexion": "Muchas familias, países e instituciones se han consagrado al Sagrado Corazón. Esta consagración es reconocer que Cristo es el Rey y Señor de todo, y que solo en Él encontramos la verdadera paz.",
+        "oracion": "¡Oh Jesús mío, perdona nuestros pecados! Líbranos del fuego del infierno. Lleva al cielo a todas las almas, especialmente a las más necesitadas de Tu misericordia.\n\nSagrado Corazón de Jesús, en Vos confío.\n\nDulcísimo Jesús: me consagro a Tu Sagrado Corazón. Me ofrezco con todo lo que soy y tengo: mis alegrías y mis penas, mis virtudes y mis miserias, mi pasado, mi presente y mi futuro. Reina en mi corazón. Que Tu voluntad sea siempre la mía. Que Tu amor sea el motor de mi vida. Sagrado Corazón de Jesús, en Vos confío. Amén."
+      }
+    ]
+  }
+]

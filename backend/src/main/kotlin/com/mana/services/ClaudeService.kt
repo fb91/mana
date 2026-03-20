@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 @Serializable
 private data class ClaudeRequest(
     val model: String = "claude-haiku-4-5-20251001",
-    val max_tokens: Int = 2048,
+    val max_tokens: Int = 200,
     val system: String,
     val messages: List<ClaudeMessage>
 )
