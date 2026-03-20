@@ -6,26 +6,58 @@ import { api, BibliaRecomendacion } from '../services/api'
 import { getBibleVerse } from '../lib/bible'
 import { BugReportLink } from '../components/BugReportButton'
 
+const PRIMARY_EMOTIONS = [
+  'Triste',
+  'Ansioso',
+  'Agradecido',
+  'Alegre',
+  'Confiado',
+]
+
+const SECONDARY_EMOTIONS = [
+  'Solo',
+  'Esperanzado',
+  'Cansado',
+  'Perdido',
+  'Culpable',
+  'Desanimado',
+  'Confundido',
+  'Enojado',
+  'Vacío',
+  'Pleno',
+  'Amado',
+  'Acompañado',
+  'Fortalecido',
+]
+
 export default function RecomendacionPage() {
   const navigate = useNavigate()
-  const [text, setText] = useState('')
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
+  const [showMoreEmotions, setShowMoreEmotions] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<BibliaRecomendacion | null>(null)
   const [error, setError] = useState('')
 
+  function handleEmotionClick(emotion: string) {
+    setSelectedEmotions(prev =>
+      prev.includes(emotion)
+        ? prev.filter(e => e !== emotion)
+        : [...prev, emotion]
+    )
+  }
+
   async function handleSubmit() {
-    if (!text.trim() || loading) return
+    if (selectedEmotions.length === 0 || loading) return
+    const feeling = [...selectedEmotions].sort((a, b) => a.localeCompare(b)).map(e => e.toLowerCase()).join(',')
     setLoading(true)
     setError('')
     try {
-      const rec = await api.getBibliaRecomendacion(text.trim())
-      // Resolve verse text from locally cached bible JSON
+      const rec = await api.getBibliaRecomendacion(feeling)
       const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
-      const fullResult = { ...rec, textoVersiculo: verseText ?? '' }
-      setResult(fullResult)
+      setResult({ ...rec, textoVersiculo: verseText ?? '' })
     } catch (err) {
       if (err instanceof Error && err.message === 'INVALID_INPUT') {
-        setError('Contanos algo sobre cómo te sentís o qué te está pasando para poder buscarte un pasaje que te acompañe.')
+        setError('Seleccioná al menos un estado de ánimo para buscarte un pasaje que te acompañe.')
       } else {
         setError('No se pudo obtener una recomendación. Intentá de nuevo.')
       }
@@ -53,37 +85,81 @@ export default function RecomendacionPage() {
           {!result ? (
             <>
               <p className="text-sm text-cafe-light dark:text-crema-300 leading-relaxed">
-                Contanos brevemente cómo te sentís o qué te preocupa. La IA buscará un pasaje
-                bíblico que pueda acompañarte en este momento.
+                Seleccioná cómo te sentís. Podés elegir más de uno.
+                Vamos a buscarte un pasaje bíblico que te acompañe.
               </p>
 
-              <textarea
-                value={text}
-                onChange={e => setText(e.target.value)}
-                placeholder="Estoy ansioso por una prueba que se me viene..."
-                rows={4}
-                className="input-field text-sm w-full resize-none"
-                autoFocus
-              />
+              {/* Emotion pills - primary */}
+              <div className="flex flex-wrap gap-2">
+                {PRIMARY_EMOTIONS.map(emotion => (
+                  <button
+                    key={emotion}
+                    onClick={() => handleEmotionClick(emotion)}
+                    className={[
+                      'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                      selectedEmotions.includes(emotion)
+                        ? 'bg-dorado text-white shadow-md'
+                        : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
+                    ].join(' ')}
+                  >
+                    {emotion}
+                  </button>
+                ))}
+              </div>
+
+              {/* Accordion: ver más */}
+              <button
+                onClick={() => setShowMoreEmotions(prev => !prev)}
+                className="flex items-center gap-1.5 text-xs text-dorado font-medium"
+              >
+                <span>{showMoreEmotions ? 'Ver menos' : 'Ver más'}</span>
+                <Icon name={showMoreEmotions ? 'chevron-up' : 'chevron-down'} size={14} />
+              </button>
+
+              {showMoreEmotions && (
+                <div className="flex flex-wrap gap-2 animate-fade-in">
+                  {SECONDARY_EMOTIONS.map(emotion => (
+                    <button
+                      key={emotion}
+                      onClick={() => handleEmotionClick(emotion)}
+                      className={[
+                        'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                        selectedEmotions.includes(emotion)
+                          ? 'bg-dorado text-white shadow-md'
+                          : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
+                      ].join(' ')}
+                    >
+                      {emotion}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {error && (
                 <p className="text-xs text-red-500">{error}</p>
               )}
 
-              <button
-                onClick={handleSubmit}
-                disabled={!text.trim() || loading}
-                className="btn-primary w-full"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-pulse-soft">✨</span>
-                    Buscando pasaje...
-                  </span>
-                ) : (
-                  'Recibir recomendación'
-                )}
-              </button>
+              {/* CTA / Loading animation */}
+              {loading ? (
+                <div className="flex flex-col items-center gap-3 py-6 animate-fade-in">
+                  <div className="relative w-14 h-14">
+                    <div className="absolute inset-0 rounded-full border-2 border-dorado/20" />
+                    <div className="absolute inset-0 rounded-full border-2 border-dorado border-t-transparent animate-spin" />
+                    <span className="absolute inset-0 flex items-center justify-center text-xl animate-pulse-soft">✨</span>
+                  </div>
+                  <p className="text-sm text-cafe-light dark:text-crema-300 animate-pulse-soft">
+                    Buscando tu pasaje...
+                  </p>
+                </div>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  disabled={selectedEmotions.length === 0}
+                  className="btn-primary w-full"
+                >
+                  Recibir recomendación
+                </button>
+              )}
 
               {/* Disclaimer */}
               <p className="text-[11px] text-cafe-light/70 dark:text-crema-400/70 text-center leading-snug">
@@ -119,7 +195,7 @@ export default function RecomendacionPage() {
               </button>
 
               <button
-                onClick={() => { setResult(null); setText('') }}
+                onClick={() => { setResult(null); setSelectedEmotions([]); setShowMoreEmotions(false) }}
                 className="btn-secondary w-full text-sm"
               >
                 Pedir otra recomendación

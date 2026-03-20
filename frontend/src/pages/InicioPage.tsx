@@ -33,17 +33,28 @@ const QUOTES: Quote[] = [
   { text: '«Confía en el Señor.»',                       cite: 'Prov 3,5',   abbr: 'Prov', chapter: 3,   verse: 5   },
 ]
 
-const EMOTIONS = [
-  'Angustiado',
+const PRIMARY_EMOTIONS = [
   'Triste',
   'Ansioso',
-  'Cansado',
-  'Perdido',
-  'Solo',
   'Agradecido',
-  'Esperanzado',
   'Alegre',
   'Confiado',
+]
+
+const SECONDARY_EMOTIONS = [
+  'Solo',
+  'Esperanzado',
+  'Cansado',
+  'Perdido',
+  'Culpable',
+  'Desanimado',
+  'Confundido',
+  'Enojado',
+  'Vacío',
+  'Pleno',
+  'Amado',
+  'Acompañado',
+  'Fortalecido',
 ]
 
 interface Tool {
@@ -304,8 +315,7 @@ export default function InicioPage() {
 
   // Emotion and recommendation
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
-  const [customFeeling, setCustomFeeling] = useState('')
-  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [showMoreEmotions, setShowMoreEmotions] = useState(false)
   const [loadingRec, setLoadingRec] = useState(false)
   const [recommendation, setRecommendation] = useState<BibliaRecomendacion | null>(null)
   const [errorRec, setErrorRec] = useState('')
@@ -327,8 +337,8 @@ export default function InicioPage() {
   }, [])
 
   async function handleGetRecommendation() {
-    const feeling = customFeeling.trim() || selectedEmotions.join(', ')
-    if (!feeling || loadingRec) return
+    if (selectedEmotions.length === 0 || loadingRec) return
+    const feeling = [...selectedEmotions].sort((a, b) => a.localeCompare(b)).map(e => e.toLowerCase()).join(',')
 
     setLoadingRec(true)
     setErrorRec('')
@@ -355,13 +365,6 @@ export default function InicioPage() {
         ? prev.filter(e => e !== emotion)
         : [...prev, emotion]
     )
-    setShowCustomInput(false)
-    setCustomFeeling('')
-  }
-
-  function handleCustomClick() {
-    setShowCustomInput(!showCustomInput)
-    setSelectedEmotions([])
   }
 
   function handleGoToPassage() {
@@ -462,9 +465,9 @@ export default function InicioPage() {
             ¿Cómo te sientes hoy?
           </h2>
 
-          {/* Emotion pills */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {EMOTIONS.map(emotion => (
+          {/* Emotion pills - primary */}
+          <div className="flex flex-wrap gap-2">
+            {PRIMARY_EMOTIONS.map(emotion => (
               <button
                 key={emotion}
                 onClick={() => handleEmotionClick(emotion)}
@@ -478,48 +481,57 @@ export default function InicioPage() {
                 {emotion}
               </button>
             ))}
-            <button
-              onClick={handleCustomClick}
-              className={[
-                'px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2',
-                showCustomInput
-                  ? 'bg-dorado text-white shadow-md'
-                  : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
-              ].join(' ')}
-            >
-              <Icon name="pencil" size={14} />
-            </button>
           </div>
 
-          {/* Custom feeling input */}
-          {showCustomInput && (
-            <div className="mb-4 animate-fade-in">
-              <textarea
-                value={customFeeling}
-                onChange={e => setCustomFeeling(e.target.value)}
-                placeholder="Describe cómo te sientes..."
-                rows={3}
-                className="input-field text-sm w-full resize-none"
-                autoFocus
-              />
+          {/* Accordion: ver más */}
+          <button
+            onClick={() => setShowMoreEmotions(prev => !prev)}
+            className="flex items-center gap-1.5 text-xs text-dorado font-medium mt-1"
+          >
+            <span>{showMoreEmotions ? 'Ver menos' : 'Ver más'}</span>
+            <Icon name={showMoreEmotions ? 'chevron-up' : 'chevron-down'} size={14} />
+          </button>
+
+          {showMoreEmotions && (
+            <div className="flex flex-wrap gap-2 animate-fade-in">
+              {SECONDARY_EMOTIONS.map(emotion => (
+                <button
+                  key={emotion}
+                  onClick={() => handleEmotionClick(emotion)}
+                  className={[
+                    'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                    selectedEmotions.includes(emotion)
+                      ? 'bg-dorado text-white shadow-md'
+                      : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
+                  ].join(' ')}
+                >
+                  {emotion}
+                </button>
+              ))}
             </div>
           )}
 
-          {/* CTA button */}
-          <button
-            onClick={handleGetRecommendation}
-            disabled={(selectedEmotions.length === 0 && !customFeeling.trim()) || loadingRec}
-            className="btn-primary w-full"
-          >
-            {loadingRec ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="animate-pulse-soft">✨</span>
-                Buscando pasaje...
-              </span>
-            ) : (
-              'Recomiéndame un pasaje'
-            )}
-          </button>
+          {/* CTA button / Loading animation */}
+          {loadingRec ? (
+            <div className="flex flex-col items-center gap-3 py-4 animate-fade-in">
+              <div className="relative w-12 h-12">
+                <div className="absolute inset-0 rounded-full border-2 border-dorado/20" />
+                <div className="absolute inset-0 rounded-full border-2 border-dorado border-t-transparent animate-spin" />
+                <span className="absolute inset-0 flex items-center justify-center text-lg animate-pulse-soft">✨</span>
+              </div>
+              <p className="text-sm text-cafe-light dark:text-crema-300 animate-pulse-soft">
+                Buscando tu pasaje...
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={handleGetRecommendation}
+              disabled={selectedEmotions.length === 0}
+              className="btn-primary w-full mt-2"
+            >
+              Recomiéndame un pasaje
+            </button>
+          )}
 
           {errorRec && (
             <p className="text-xs text-red-500 mt-3">{errorRec}</p>

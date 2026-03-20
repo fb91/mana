@@ -17,29 +17,17 @@ function getSupabase() {
   return createClient(url, key)
 }
 
-const MOOD_KEYWORDS: Record<string, string[]> = {
-  alegre: ['alegr', 'feliz', 'content', 'gozo', 'jubilo', 'entusiasm', 'anim'],
-  triste: ['trist', 'llor', 'melan', 'deprimi', 'decaíd', 'abatid', 'pena', 'dolor', 'sufr'],
-  ansioso: ['ansios', 'ansiedad', 'nervios', 'preocup', 'inquiet', 'estres', 'agobiad'],
-  enojado: ['enojad', 'enoj', 'furios', 'iracund', 'rabia', 'ira ', 'bronca', 'frustr'],
-  temeroso: ['miedo', 'temo', 'temor', 'asust', 'pavor', 'terror', 'espant'],
-  solo: ['sol', 'soled', 'aislad', 'abandon', 'desampara'],
-  agradecido: ['agradec', 'gratitud', 'bendecid', 'afortun'],
-  confundido: ['confund', 'confus', 'perdid', 'desorient', 'duda', 'inciert'],
-  esperanzado: ['esperanz', 'ilusión', 'ilusionad', 'optimis'],
-  culpable: ['culp', 'arrepent', 'remordim', 'vergüenz', 'vergonz'],
-  cansado: ['cansad', 'agotad', 'exhaust', 'fatigad', 'sin fuerza', 'sin energi'],
-  'en paz': ['paz', 'tranquil', 'seren', 'calm'],
-  enfermo: ['enferm', 'dolor', 'salud', 'mal de', 'hospital'],
-  duelo: ['duelo', 'muerte', 'falleció', 'perdí a', 'murió', 'luto'],
-}
+const VALID_MOODS = new Set([
+  'triste', 'ansioso', 'agradecido', 'alegre', 'confiado',
+  'solo', 'esperanzado', 'cansado', 'perdido', 'culpable',
+  'desanimado', 'confundido', 'enojado', 'vacío', 'pleno',
+  'amado', 'acompañado', 'fortalecido',
+])
 
-function normalizeMood(text: string): string | null {
-  const lower = text.toLowerCase()
-  for (const [category, keywords] of Object.entries(MOOD_KEYWORDS)) {
-    if (keywords.some(kw => lower.includes(kw))) return category
-  }
-  return null
+function normalizeMood(raw: string): string | null {
+  const parts = raw.split(',').map(s => s.trim().toLowerCase()).filter(s => VALID_MOODS.has(s))
+  if (parts.length === 0) return null
+  return [...new Set(parts)].sort((a, b) => a.localeCompare(b)).join(',')
 }
 
 const CACHE_THRESHOLD = 20
@@ -116,7 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // No hay suficiente caché → pedir a la IA
-  let userMessage = estadoAnimo
+  let userMessage = `Me siento: ${normalizedMood ? normalizedMood.split(',').join(', ') : estadoAnimo}`
   if (supabase && normalizedMood) {
     const { data: cached } = await supabase
       .from('recomendaciones_cache')
