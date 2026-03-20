@@ -303,13 +303,13 @@ export default function InicioPage() {
   const [showAbout, setShowAbout] = useState(false)
 
   // Emotion and recommendation
-  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null)
+  const { recentRecommendations, addRecommendation } = useAppStore()
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
   const [customFeeling, setCustomFeeling] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
   const [loadingRec, setLoadingRec] = useState(false)
   const [recommendation, setRecommendation] = useState<BibliaRecomendacion | null>(null)
   const [errorRec, setErrorRec] = useState('')
-  const [recHistory, setRecHistory] = useState<Record<string, number>>({}) // Track repetitions
 
   // Lectio Divina selector
   const [showLectioSelector, setShowLectioSelector] = useState(false)
@@ -328,7 +328,7 @@ export default function InicioPage() {
   }, [])
 
   async function handleGetRecommendation() {
-    const feeling = customFeeling.trim() || selectedEmotion
+    const feeling = customFeeling.trim() || selectedEmotions.join(', ')
     if (!feeling || loadingRec) return
 
     setLoadingRec(true)
@@ -336,16 +336,10 @@ export default function InicioPage() {
     setRecommendation(null)
 
     try {
-      // Add variation hint if same emotion requested multiple times
-      const count = recHistory[feeling] || 0
-      const prompt = count > 0 ? `${feeling} (buscar pasaje diferente, intento ${count + 1})` : feeling
-
-      const rec = await api.getBibliaRecomendacion(prompt)
+      const rec = await api.getBibliaRecomendacion(feeling, recentRecommendations)
       const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
       setRecommendation({ ...rec, textoVersiculo: verseText ?? '' })
-      
-      // Track this request
-      setRecHistory(prev => ({ ...prev, [feeling]: count + 1 }))
+      addRecommendation(`${rec.libro} ${rec.capitulo}:${rec.versiculo}`)
     } catch (err) {
       if (err instanceof Error && err.message === 'INVALID_INPUT') {
         setErrorRec('Contanos algo sobre cómo te sentís para buscarte un pasaje que te acompañe.')
@@ -358,18 +352,18 @@ export default function InicioPage() {
   }
 
   function handleEmotionClick(emotion: string) {
-    if (selectedEmotion === emotion) {
-      setSelectedEmotion(null)
-    } else {
-      setSelectedEmotion(emotion)
-      setShowCustomInput(false)
-      setCustomFeeling('')
-    }
+    setSelectedEmotions(prev =>
+      prev.includes(emotion)
+        ? prev.filter(e => e !== emotion)
+        : [...prev, emotion]
+    )
+    setShowCustomInput(false)
+    setCustomFeeling('')
   }
 
   function handleCustomClick() {
     setShowCustomInput(!showCustomInput)
-    setSelectedEmotion(null)
+    setSelectedEmotions([])
   }
 
   function handleGoToPassage() {
@@ -478,7 +472,7 @@ export default function InicioPage() {
                 onClick={() => handleEmotionClick(emotion)}
                 className={[
                   'px-4 py-2 rounded-full text-sm font-medium transition-all',
-                  selectedEmotion === emotion
+                  selectedEmotions.includes(emotion)
                     ? 'bg-dorado text-white shadow-md'
                     : 'bg-crema-100 dark:bg-oscuro-bg text-cafe-dark dark:text-crema-200 hover:bg-dorado/20'
                 ].join(' ')}
@@ -516,7 +510,7 @@ export default function InicioPage() {
           {/* CTA button */}
           <button
             onClick={handleGetRecommendation}
-            disabled={(!selectedEmotion && !customFeeling.trim()) || loadingRec}
+            disabled={(selectedEmotions.length === 0 && !customFeeling.trim()) || loadingRec}
             className="btn-primary w-full"
           >
             {loadingRec ? (
