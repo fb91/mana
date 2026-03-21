@@ -135,7 +135,7 @@ function DayNavigator({
       </div>
 
       {/* Calendar picker + back to today */}
-      <div className="flex justify-center gap-2 pb-1">
+      <div className="flex gap-2 pb-1 px-4">
         {/* Hidden native date input */}
         <input
           ref={dateInputRef}
