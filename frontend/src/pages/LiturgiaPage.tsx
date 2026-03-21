@@ -9,6 +9,7 @@ import { resolveDay, ResolvedDay, COLOR_STYLES, RANK_LABEL } from '../lib/lectio
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
 import { shareOrDownload, canGospelFitInImage } from '../lib/shareCard'
 import { BugReportLink } from '../components/BugReportButton'
+import CalendarPicker from '../components/CalendarPicker'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -43,15 +44,16 @@ function DayNavigator({
   selectedDate,
   today,
   onSelect,
+  onOpenCalendar,
 }: {
   selectedDate: Date
   today: Date
   onSelect: (date: Date) => void
+  onOpenCalendar: () => void
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const hasScrolledInitially = useRef(false)
-  const dateInputRef = useRef<HTMLInputElement>(null)
 
   // Build ±10 days window centered on selectedDate
   const center = selectedDate
@@ -136,22 +138,8 @@ function DayNavigator({
 
       {/* Calendar picker + back to today */}
       <div className="flex gap-2 pb-1 px-4">
-        {/* Hidden native date input */}
-        <input
-          ref={dateInputRef}
-          type="date"
-          className="sr-only"
-          tabIndex={-1}
-          value={selectedDate.toISOString().slice(0, 10)}
-          onChange={(e) => {
-            if (e.target.value) {
-              const [y, m, d] = e.target.value.split('-').map(Number)
-              onSelect(new Date(y, m - 1, d))
-            }
-          }}
-        />
         <button
-          onClick={() => dateInputRef.current?.showPicker()}
+          onClick={onOpenCalendar}
           className="flex items-center gap-1.5 text-xs text-dorado font-semibold
                      bg-dorado/10 border border-dorado/30 rounded-full px-3 py-1.5
                      active:scale-95 transition-all"
@@ -569,6 +557,7 @@ export default function LiturgiaPage() {
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
   const [showShare, setShowShare] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false)
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
   useEffect(() => {
@@ -662,6 +651,7 @@ export default function LiturgiaPage() {
           selectedDate={selectedDate}
           today={today}
           onSelect={setSelectedDate}
+          onOpenCalendar={() => setShowCalendar(true)}
         />
 
         {resolvedDay && (
@@ -808,6 +798,16 @@ export default function LiturgiaPage() {
           gospelText={gospelText}
           gospelVerses={loadedVerses.gospel ?? []}
           onClose={() => setShowShare(false)}
+        />
+      )}
+
+      {/* Calendar Picker */}
+      {showCalendar && (
+        <CalendarPicker
+          selectedDate={selectedDate}
+          today={today}
+          onSelect={setSelectedDate}
+          onClose={() => setShowCalendar(false)}
         />
       )}
     </div>
