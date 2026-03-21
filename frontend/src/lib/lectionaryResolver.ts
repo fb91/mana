@@ -14,6 +14,7 @@ import {
 import sanctoralData from '../data/lectionary/sanctoral.json'
 import temporalData from '../data/lectionary/temporal.json'
 import ordinaryData from '../data/lectionary/ordinary.json'
+import ordinaryWeekdayData from '../data/lectionary/ordinary-weekday.json'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,8 @@ const temporal = temporalData as any
 const sanctoral = sanctoralData as any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ordinary = ordinaryData as any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ordinaryWeekday = ordinaryWeekdayData as any
 
 // ── Resolver ──────────────────────────────────────────────────────────────────
 
@@ -224,8 +227,15 @@ export function resolveDay(ctx: LiturgicalContext): ResolvedDay {
       readings = cycleData?.[sundayCycle] ?? null
       return mkResult(ctx, celebrationName, rank, 'green', readings)
     }
-    // Weekday ordinary time: no data yet for v1 (future: load weekday ordinary JSON)
-    return mkResult(ctx, celebrationName, rank, 'green', null)
+    // Weekday ordinary time: lookup by week + dayOfWeek + yearCycle (I/II)
+    const weekdayWeek = ordinaryWeekday[week.toString()]
+    if (weekdayWeek) {
+      const dayData = weekdayWeek[dayOfWeek]
+      if (dayData) {
+        readings = dayData[yearCycle] ?? null
+      }
+    }
+    return mkResult(ctx, celebrationName, rank, 'green', readings)
   }
 
   return mkResult(ctx, celebrationName, rank, color, null)

@@ -51,11 +51,13 @@ function DayNavigator({
   const scrollRef = useRef<HTMLDivElement>(null)
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const hasScrolledInitially = useRef(false)
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
-  // Build ±10 days window
+  // Build ±10 days window centered on selectedDate
+  const center = selectedDate
   const days: Date[] = []
   for (let i = -10; i <= 10; i++) {
-    days.push(addDays(today, i))
+    days.push(addDays(center, i))
   }
 
   // Scroll to selected date on mount and when it changes
@@ -132,20 +134,43 @@ function DayNavigator({
         })}
       </div>
 
-      {/* Back to today button */}
-      {!isSameDay(selectedDate, today) && (
-        <div className="flex justify-center pb-1">
+      {/* Calendar picker + back to today */}
+      <div className="flex justify-center gap-2 pb-1">
+        {/* Hidden native date input */}
+        <input
+          ref={dateInputRef}
+          type="date"
+          className="sr-only"
+          tabIndex={-1}
+          value={selectedDate.toISOString().slice(0, 10)}
+          onChange={(e) => {
+            if (e.target.value) {
+              const [y, m, d] = e.target.value.split('-').map(Number)
+              onSelect(new Date(y, m - 1, d))
+            }
+          }}
+        />
+        <button
+          onClick={() => dateInputRef.current?.showPicker()}
+          className="flex items-center gap-1.5 text-xs text-dorado font-semibold
+                     bg-dorado/10 border border-dorado/30 rounded-full px-3 py-1.5
+                     active:scale-95 transition-all"
+        >
+          <Icon name="calendar" size={13} />
+          Elegir fecha
+        </button>
+        {!isSameDay(selectedDate, today) && (
           <button
             onClick={() => onSelect(today)}
             className="flex items-center gap-1.5 text-xs text-dorado font-semibold
                        bg-dorado/10 border border-dorado/30 rounded-full px-3 py-1.5
                        active:scale-95 transition-all"
           >
-            <Icon name="calendar" size={13} />
+            <Icon name="refresh" size={13} />
             Volver a hoy
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

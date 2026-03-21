@@ -1,0 +1,886 @@
+{
+  "1": {
+    "MONDAY": {
+      "I": { "first": "Heb 1:1-6", "psalm": "Sal 97:1-2.6-7", "gospel": "Mc 1:14-20" },
+      "II": { "first": "1Sam 1:1-8", "psalm": "Sal 116:12-19", "gospel": "Mc 1:14-20" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Heb 2:5-12", "psalm": "Sal 8:2.5-9", "gospel": "Mc 1:21-28" },
+      "II": { "first": "1Sam 1:9-20", "psalm": "Sal 1Sam 2:1.4-8", "gospel": "Mc 1:21-28" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Heb 2:14-18", "psalm": "Sal 105:1-4.6-9", "gospel": "Mc 1:29-39" },
+      "II": { "first": "1Sam 3:1-10.19-20", "psalm": "Sal 40:2.5.7-10", "gospel": "Mc 1:29-39" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Heb 3:7-14", "psalm": "Sal 95:6-11", "gospel": "Mc 1:40-45" },
+      "II": { "first": "1Sam 4:1-11", "psalm": "Sal 44:10-11.14-15.24-25", "gospel": "Mc 1:40-45" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Heb 4:1-5.11", "psalm": "Sal 78:3-4.6-8", "gospel": "Mc 2:1-12" },
+      "II": { "first": "1Sam 8:4-7.10-22a", "psalm": "Sal 89:16-19", "gospel": "Mc 2:1-12" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Heb 4:12-16", "psalm": "Sal 19:8-10.15", "gospel": "Mc 2:13-17" },
+      "II": { "first": "1Sam 9:1-4.17-19;10:1", "psalm": "Sal 21:2-7", "gospel": "Mc 2:13-17" }
+    }
+  },
+  "2": {
+    "MONDAY": {
+      "I": { "first": "Heb 5:1-10", "psalm": "Sal 110:1-4", "gospel": "Mc 2:18-22" },
+      "II": { "first": "1Sam 15:16-23", "psalm": "Sal 50:8-9.16-17.21.23", "gospel": "Mc 2:18-22" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Heb 6:10-20", "psalm": "Sal 111:1-2.4-5.9-10", "gospel": "Mc 2:23-28" },
+      "II": { "first": "1Sam 16:1-13", "psalm": "Sal 89:20-22.27-28", "gospel": "Mc 2:23-28" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Heb 7:1-3.15-17", "psalm": "Sal 110:1-4", "gospel": "Mc 3:1-6" },
+      "II": { "first": "1Sam 17:32-33.37.40-51", "psalm": "Sal 144:1-2.9-10", "gospel": "Mc 3:1-6" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Heb 7:25-8:6", "psalm": "Sal 40:7-10.17", "gospel": "Mc 3:7-12" },
+      "II": { "first": "1Sam 18:6-9;19:1-7", "psalm": "Sal 56:2-3.9-13", "gospel": "Mc 3:7-12" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Heb 8:6-13", "psalm": "Sal 85:8.10-14", "gospel": "Mc 3:13-19" },
+      "II": { "first": "1Sam 24:3-21", "psalm": "Sal 57:2-4.6.11", "gospel": "Mc 3:13-19" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Heb 9:2-3.11-14", "psalm": "Sal 47:2-3.6-9", "gospel": "Mc 3:20-21" },
+      "II": { "first": "2Sam 1:1-4.11-12.19.23-27", "psalm": "Sal 80:2-3.5-7", "gospel": "Mc 3:20-21" }
+    }
+  },
+  "3": {
+    "MONDAY": {
+      "I": { "first": "Heb 9:15.24-28", "psalm": "Sal 98:1-6", "gospel": "Mc 3:22-30" },
+      "II": { "first": "2Sam 5:1-7.10", "psalm": "Sal 89:20-22.25-26", "gospel": "Mc 3:22-30" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Heb 10:1-10", "psalm": "Sal 40:2.4.7-8.10-11", "gospel": "Mc 3:31-35" },
+      "II": { "first": "2Sam 6:12b-15.17-19", "psalm": "Sal 24:7-10", "gospel": "Mc 3:31-35" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Heb 10:11-18", "psalm": "Sal 110:1-4", "gospel": "Mc 4:1-20" },
+      "II": { "first": "2Sam 7:4-17", "psalm": "Sal 89:4-5.27-30", "gospel": "Mc 4:1-20" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Heb 10:19-25", "psalm": "Sal 24:1-6", "gospel": "Mc 4:21-25" },
+      "II": { "first": "2Sam 7:18-19.24-29", "psalm": "Sal 132:1-5.11-14", "gospel": "Mc 4:21-25" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Heb 10:32-39", "psalm": "Sal 37:3-6.23-24.39-40", "gospel": "Mc 4:26-34" },
+      "II": { "first": "2Sam 11:1-4a.5-10a.13-17", "psalm": "Sal 51:3-7.10-11", "gospel": "Mc 4:26-34" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Heb 11:1-2.8-19", "psalm": "Sal Lc 1:69-75", "gospel": "Mc 4:35-41" },
+      "II": { "first": "2Sam 12:1-7a.10-17", "psalm": "Sal 51:12-17", "gospel": "Mc 4:35-41" }
+    }
+  },
+  "4": {
+    "MONDAY": {
+      "I": { "first": "Heb 11:32-40", "psalm": "Sal 31:20-24", "gospel": "Mc 5:1-20" },
+      "II": { "first": "2Sam 15:13-14.30;16:5-13", "psalm": "Sal 3:2-7", "gospel": "Mc 5:1-20" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Heb 12:1-4", "psalm": "Sal 22:26-28.30-32", "gospel": "Mc 5:21-43" },
+      "II": { "first": "2Sam 18:9-10.14b.24-25a.30-19:3", "psalm": "Sal 86:1-6", "gospel": "Mc 5:21-43" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Heb 12:4-7.11-15", "psalm": "Sal 103:1-2.13-14.17-18", "gospel": "Mc 6:1-6" },
+      "II": { "first": "2Sam 24:2.9-17", "psalm": "Sal 32:1-2.5-7", "gospel": "Mc 6:1-6" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Heb 12:18-19.21-24", "psalm": "Sal 48:2-4.9-11", "gospel": "Mc 6:7-13" },
+      "II": { "first": "1Re 2:1-4.10-12", "psalm": "Sal 1Cro 29:10-12", "gospel": "Mc 6:7-13" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Heb 13:1-8", "psalm": "Sal 27:1.3.5.8-9", "gospel": "Mc 6:14-29" },
+      "II": { "first": "Sir 47:2-11", "psalm": "Sal 18:31.47.50-51", "gospel": "Mc 6:14-29" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Heb 13:15-17.20-21", "psalm": "Sal 23:1-6", "gospel": "Mc 6:30-34" },
+      "II": { "first": "1Re 3:4-13", "psalm": "Sal 119:9-14", "gospel": "Mc 6:30-34" }
+    }
+  },
+  "5": {
+    "MONDAY": {
+      "I": { "first": "Gn 1:1-19", "psalm": "Sal 104:1-2.5-6.10.12.24.35", "gospel": "Mc 6:53-56" },
+      "II": { "first": "1Re 8:1-7.9-13", "psalm": "Sal 132:6-10", "gospel": "Mc 6:53-56" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Gn 1:20-2:4a", "psalm": "Sal 8:4-9", "gospel": "Mc 7:1-13" },
+      "II": { "first": "1Re 8:22-23.27-30", "psalm": "Sal 84:3-5.10-11", "gospel": "Mc 7:1-13" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Gn 2:4b-9.15-17", "psalm": "Sal 104:1-2.27-30", "gospel": "Mc 7:14-23" },
+      "II": { "first": "1Re 10:1-10", "psalm": "Sal 37:5-6.30-31.39-40", "gospel": "Mc 7:14-23" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Gn 2:18-25", "psalm": "Sal 128:1-5", "gospel": "Mc 7:24-30" },
+      "II": { "first": "1Re 11:4-13", "psalm": "Sal 106:3-4.35-37.40", "gospel": "Mc 7:24-30" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Gn 3:1-8", "psalm": "Sal 32:1-2.5-7", "gospel": "Mc 7:31-37" },
+      "II": { "first": "1Re 11:29-32;12:19", "psalm": "Sal 81:10-15", "gospel": "Mc 7:31-37" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Gn 3:9-24", "psalm": "Sal 90:2-6.12-13", "gospel": "Mc 8:1-10" },
+      "II": { "first": "1Re 12:26-32;13:33-34", "psalm": "Sal 106:6-7.19-22", "gospel": "Mc 8:1-10" }
+    }
+  },
+  "6": {
+    "MONDAY": {
+      "I": { "first": "Gn 4:1-15.25", "psalm": "Sal 50:1.8.16-17.20-21", "gospel": "Mc 8:11-13" },
+      "II": { "first": "Sant 1:1-11", "psalm": "Sal 119:67-68.71-72.75-76", "gospel": "Mc 8:11-13" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Gn 6:5-8;7:1-5.10", "psalm": "Sal 29:1-4.9-10", "gospel": "Mc 8:14-21" },
+      "II": { "first": "Sant 1:12-18", "psalm": "Sal 94:12-15.18-19", "gospel": "Mc 8:14-21" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Gn 8:6-13.20-22", "psalm": "Sal 116:12-19", "gospel": "Mc 8:22-26" },
+      "II": { "first": "Sant 1:19-27", "psalm": "Sal 15:2-5", "gospel": "Mc 8:22-26" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Gn 9:1-13", "psalm": "Sal 102:16-21.29.22-23", "gospel": "Mc 8:27-33" },
+      "II": { "first": "Sant 2:1-9", "psalm": "Sal 34:2-7", "gospel": "Mc 8:27-33" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Gn 11:1-9", "psalm": "Sal 33:10-15", "gospel": "Mc 8:34-9:1" },
+      "II": { "first": "Sant 2:14-24.26", "psalm": "Sal 112:1-6", "gospel": "Mc 8:34-9:1" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Heb 11:1-7", "psalm": "Sal 145:2-5.10-11", "gospel": "Mc 9:2-13" },
+      "II": { "first": "Sant 3:1-10", "psalm": "Sal 12:2-5.7-8", "gospel": "Mc 9:2-13" }
+    }
+  },
+  "7": {
+    "MONDAY": {
+      "I": { "first": "Sir 1:1-10", "psalm": "Sal 93:1-2.5", "gospel": "Mc 9:14-29" },
+      "II": { "first": "Sant 3:13-18", "psalm": "Sal 19:8-10.15", "gospel": "Mc 9:14-29" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Sir 2:1-11", "psalm": "Sal 37:3-4.18-19.27-28.39-40", "gospel": "Mc 9:30-37" },
+      "II": { "first": "Sant 4:1-10", "psalm": "Sal 55:7-11.23", "gospel": "Mc 9:30-37" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Sir 4:11-19", "psalm": "Sal 119:165.168.171-172.174-175", "gospel": "Mc 9:38-40" },
+      "II": { "first": "Sant 4:13-17", "psalm": "Sal 49:2-3.6-11", "gospel": "Mc 9:38-40" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Sir 5:1-8", "psalm": "Sal 1:1-4.6", "gospel": "Mc 9:41-50" },
+      "II": { "first": "Sant 5:1-6", "psalm": "Sal 49:14-20", "gospel": "Mc 9:41-50" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Sir 6:5-17", "psalm": "Sal 119:12.16.18.27.34-35", "gospel": "Mc 10:1-12" },
+      "II": { "first": "Sant 5:9-12", "psalm": "Sal 103:1-4.8-9.11-12", "gospel": "Mc 10:1-12" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Sir 17:1-15", "psalm": "Sal 103:13-18", "gospel": "Mc 10:13-16" },
+      "II": { "first": "Sant 5:13-20", "psalm": "Sal 141:1-3.8", "gospel": "Mc 10:13-16" }
+    }
+  },
+  "8": {
+    "MONDAY": {
+      "I": { "first": "Sir 17:20-24", "psalm": "Sal 32:1-2.5-7", "gospel": "Mc 10:17-27" },
+      "II": { "first": "1Pe 1:3-9", "psalm": "Sal 111:1-2.5-6.9-10", "gospel": "Mc 10:17-27" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Sir 35:1-12", "psalm": "Sal 50:5-8.14.23", "gospel": "Mc 10:28-31" },
+      "II": { "first": "1Pe 1:10-16", "psalm": "Sal 98:1-4", "gospel": "Mc 10:28-31" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Sir 36:1-2.5-6.13-19", "psalm": "Sal 79:8-9.11.13", "gospel": "Mc 10:32-45" },
+      "II": { "first": "1Pe 1:18-25", "psalm": "Sal 147:12-15.19-20", "gospel": "Mc 10:32-45" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Sir 42:15-25", "psalm": "Sal 33:2-9", "gospel": "Mc 10:46-52" },
+      "II": { "first": "1Pe 2:2-5.9-12", "psalm": "Sal 100:2-5", "gospel": "Mc 10:46-52" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Sir 44:1.9-13", "psalm": "Sal 149:1-6.9", "gospel": "Mc 11:11-26" },
+      "II": { "first": "1Pe 4:7-13", "psalm": "Sal 96:10-13", "gospel": "Mc 11:11-26" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Sir 51:12-20", "psalm": "Sal 19:8-11", "gospel": "Mc 11:27-33" },
+      "II": { "first": "Jds 17.20-25", "psalm": "Sal 63:2-6", "gospel": "Mc 11:27-33" }
+    }
+  },
+  "9": {
+    "MONDAY": {
+      "I": { "first": "Tb 1:3;2:1a-8", "psalm": "Sal 112:1-6", "gospel": "Mc 12:1-12" },
+      "II": { "first": "2Pe 1:2-7", "psalm": "Sal 91:1-2.14-16", "gospel": "Mc 12:1-12" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Tb 2:9-14", "psalm": "Sal 112:1-2.7-9", "gospel": "Mc 12:13-17" },
+      "II": { "first": "2Pe 3:12-15a.17-18", "psalm": "Sal 90:2-4.10.14.16", "gospel": "Mc 12:13-17" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Tb 3:1-11a.16-17a", "psalm": "Sal 25:2-9", "gospel": "Mc 12:18-27" },
+      "II": { "first": "2Tim 1:1-3.6-12", "psalm": "Sal 123:1-2", "gospel": "Mc 12:18-27" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Tb 6:10-11;7:1.9-17;8:4-9a", "psalm": "Sal 128:1-5", "gospel": "Mc 12:28-34" },
+      "II": { "first": "2Tim 2:8-15", "psalm": "Sal 25:4-5.8-10.14", "gospel": "Mc 12:28-34" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Tb 11:5-17", "psalm": "Sal 146:1-2.6-10", "gospel": "Mc 12:35-37" },
+      "II": { "first": "2Tim 3:10-17", "psalm": "Sal 119:157.160-161.165-166.168", "gospel": "Mc 12:35-37" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Tb 12:1.5-15.20", "psalm": "Sal Tb 13:2.6-8", "gospel": "Mc 12:38-44" },
+      "II": { "first": "2Tim 4:1-8", "psalm": "Sal 71:8-9.14-17.22", "gospel": "Mc 12:38-44" }
+    }
+  },
+  "10": {
+    "MONDAY": {
+      "I": { "first": "2Cor 1:1-7", "psalm": "Sal 34:2-9", "gospel": "Mt 5:1-12" },
+      "II": { "first": "1Re 17:1-6", "psalm": "Sal 121:1-8", "gospel": "Mt 5:1-12" }
+    },
+    "TUESDAY": {
+      "I": { "first": "2Cor 1:18-22", "psalm": "Sal 119:129-133.135", "gospel": "Mt 5:13-16" },
+      "II": { "first": "1Re 17:7-16", "psalm": "Sal 4:2-5.7-8", "gospel": "Mt 5:13-16" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "2Cor 3:4-11", "psalm": "Sal 99:5-9", "gospel": "Mt 5:17-19" },
+      "II": { "first": "1Re 18:20-39", "psalm": "Sal 16:1-2.4-5.8.11", "gospel": "Mt 5:17-19" }
+    },
+    "THURSDAY": {
+      "I": { "first": "2Cor 3:15-4:1.3-6", "psalm": "Sal 85:9-14", "gospel": "Mt 5:20-26" },
+      "II": { "first": "1Re 18:41-46", "psalm": "Sal 65:10-13", "gospel": "Mt 5:20-26" }
+    },
+    "FRIDAY": {
+      "I": { "first": "2Cor 4:7-15", "psalm": "Sal 116:10-18", "gospel": "Mt 5:27-32" },
+      "II": { "first": "1Re 19:9a.11-16", "psalm": "Sal 27:7-9.13-14", "gospel": "Mt 5:27-32" }
+    },
+    "SATURDAY": {
+      "I": { "first": "2Cor 5:14-21", "psalm": "Sal 103:1-4.8-9.11-12", "gospel": "Mt 5:33-37" },
+      "II": { "first": "1Re 19:19-21", "psalm": "Sal 16:1-2.5.7-10", "gospel": "Mt 5:33-37" }
+    }
+  },
+  "11": {
+    "MONDAY": {
+      "I": { "first": "2Cor 6:1-10", "psalm": "Sal 98:1-4", "gospel": "Mt 5:38-42" },
+      "II": { "first": "1Re 21:1-16", "psalm": "Sal 5:2-3.5-7", "gospel": "Mt 5:38-42" }
+    },
+    "TUESDAY": {
+      "I": { "first": "2Cor 8:1-9", "psalm": "Sal 146:1-2.5-9", "gospel": "Mt 5:43-48" },
+      "II": { "first": "1Re 21:17-29", "psalm": "Sal 51:3-6.11.16", "gospel": "Mt 5:43-48" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "2Cor 9:6-11", "psalm": "Sal 112:1-4.9", "gospel": "Mt 6:1-6.16-18" },
+      "II": { "first": "2Re 2:1.6-14", "psalm": "Sal 31:20-21.24", "gospel": "Mt 6:1-6.16-18" }
+    },
+    "THURSDAY": {
+      "I": { "first": "2Cor 11:1-11", "psalm": "Sal 111:1-4.7-8", "gospel": "Mt 6:7-15" },
+      "II": { "first": "Sir 48:1-14", "psalm": "Sal 97:1-7", "gospel": "Mt 6:7-15" }
+    },
+    "FRIDAY": {
+      "I": { "first": "2Cor 11:18.21-30", "psalm": "Sal 34:2-7", "gospel": "Mt 6:19-23" },
+      "II": { "first": "2Re 11:1-4.9-18.20", "psalm": "Sal 132:11-14.17-18", "gospel": "Mt 6:19-23" }
+    },
+    "SATURDAY": {
+      "I": { "first": "2Cor 12:1-10", "psalm": "Sal 34:8-13", "gospel": "Mt 6:24-34" },
+      "II": { "first": "2Cro 24:17-25", "psalm": "Sal 89:4-5.29-34", "gospel": "Mt 6:24-34" }
+    }
+  },
+  "12": {
+    "MONDAY": {
+      "I": { "first": "Gn 12:1-9", "psalm": "Sal 33:12-13.18-20.22", "gospel": "Mt 7:1-5" },
+      "II": { "first": "2Re 17:5-8.13-15a.18", "psalm": "Sal 60:3-5.12-13", "gospel": "Mt 7:1-5" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Gn 13:2.5-18", "psalm": "Sal 15:2-5", "gospel": "Mt 7:6.12-14" },
+      "II": { "first": "2Re 19:9b-11.14-21.31-35a.36", "psalm": "Sal 48:2-4.10-11", "gospel": "Mt 7:6.12-14" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Gn 15:1-12.17-18", "psalm": "Sal 105:1-4.6-9", "gospel": "Mt 7:15-20" },
+      "II": { "first": "2Re 22:8-13;23:1-3", "psalm": "Sal 119:33-37.40", "gospel": "Mt 7:15-20" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Gn 16:1-12.15-16", "psalm": "Sal 106:1-5", "gospel": "Mt 7:21-29" },
+      "II": { "first": "2Re 24:8-17", "psalm": "Sal 79:1-5.8-9", "gospel": "Mt 7:21-29" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Gn 17:1.9-10.15-22", "psalm": "Sal 128:1-5", "gospel": "Mt 8:1-4" },
+      "II": { "first": "2Re 25:1-12", "psalm": "Sal 137:1-6", "gospel": "Mt 8:1-4" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Gn 18:1-15", "psalm": "Sal Lc 1:46-55", "gospel": "Mt 8:5-17" },
+      "II": { "first": "Lam 2:2.10-14.18-19", "psalm": "Sal 74:1-7.20-21", "gospel": "Mt 8:5-17" }
+    }
+  },
+  "13": {
+    "MONDAY": {
+      "I": { "first": "Gn 18:16-33", "psalm": "Sal 103:1-4.8-11", "gospel": "Mt 8:18-22" },
+      "II": { "first": "Am 2:6-10.13-16", "psalm": "Sal 50:16-23", "gospel": "Mt 8:18-22" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Gn 19:15-29", "psalm": "Sal 26:2-3.9-12", "gospel": "Mt 8:23-27" },
+      "II": { "first": "Am 3:1-8;4:11-12", "psalm": "Sal 5:4-8", "gospel": "Mt 8:23-27" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Gn 21:5.8-20a", "psalm": "Sal 34:7-8.10-13", "gospel": "Mt 8:28-34" },
+      "II": { "first": "Am 5:14-15.21-24", "psalm": "Sal 50:7-13.16-17", "gospel": "Mt 8:28-34" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Gn 22:1-19", "psalm": "Sal 115:1-6.8-9", "gospel": "Mt 9:1-8" },
+      "II": { "first": "Am 7:10-17", "psalm": "Sal 19:8-11", "gospel": "Mt 9:1-8" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Gn 23:1-4.19;24:1-8.62-67", "psalm": "Sal 106:1-5", "gospel": "Mt 9:9-13" },
+      "II": { "first": "Am 8:4-6.9-12", "psalm": "Sal 119:2.10.20.30.40.131", "gospel": "Mt 9:9-13" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Gn 27:1-5.15-29", "psalm": "Sal 135:1-6", "gospel": "Mt 9:14-17" },
+      "II": { "first": "Am 9:11-15", "psalm": "Sal 85:9.11-14", "gospel": "Mt 9:14-17" }
+    }
+  },
+  "14": {
+    "MONDAY": {
+      "I": { "first": "Gn 28:10-22a", "psalm": "Sal 91:1-4.14-15", "gospel": "Mt 9:18-26" },
+      "II": { "first": "Os 2:16-18.21-22", "psalm": "Sal 145:2-9", "gospel": "Mt 9:18-26" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Gn 32:23-33", "psalm": "Sal 17:1-3.6-8.15", "gospel": "Mt 9:32-38" },
+      "II": { "first": "Os 8:4-7.11-13", "psalm": "Sal 115:3-10", "gospel": "Mt 9:32-38" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Gn 41:55-57;42:5-7a.17-24a", "psalm": "Sal 33:2-3.10-11.18-19", "gospel": "Mt 10:1-7" },
+      "II": { "first": "Os 10:1-3.7-8.12", "psalm": "Sal 105:2-7", "gospel": "Mt 10:1-7" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Gn 44:18-21.23b-29;45:1-5", "psalm": "Sal 105:16-21", "gospel": "Mt 10:7-15" },
+      "II": { "first": "Os 11:1-4.8-9", "psalm": "Sal 80:2-3.15-16", "gospel": "Mt 10:7-15" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Gn 46:1-7.28-30", "psalm": "Sal 37:3-4.18-19.27-28.39-40", "gospel": "Mt 10:16-23" },
+      "II": { "first": "Os 14:2-10", "psalm": "Sal 51:3-4.8-9.12-14", "gospel": "Mt 10:16-23" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Gn 49:29-32;50:15-26a", "psalm": "Sal 105:1-4.6-7", "gospel": "Mt 10:24-33" },
+      "II": { "first": "Is 6:1-8", "psalm": "Sal 93:1-2.5", "gospel": "Mt 10:24-33" }
+    }
+  },
+  "15": {
+    "MONDAY": {
+      "I": { "first": "Ex 1:8-14.22", "psalm": "Sal 124:1-8", "gospel": "Mt 10:34-11:1" },
+      "II": { "first": "Is 1:10-17", "psalm": "Sal 50:8-9.16-17.21.23", "gospel": "Mt 10:34-11:1" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Ex 2:1-15a", "psalm": "Sal 69:3.14.30-31.33-34", "gospel": "Mt 11:20-24" },
+      "II": { "first": "Is 7:1-9", "psalm": "Sal 48:2-8", "gospel": "Mt 11:20-24" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Ex 3:1-6.9-12", "psalm": "Sal 103:1-4.6-7", "gospel": "Mt 11:25-27" },
+      "II": { "first": "Is 10:5-7.13-16", "psalm": "Sal 94:5-10.14-15", "gospel": "Mt 11:25-27" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Ex 3:13-20", "psalm": "Sal 105:1.5.8-9.24-27", "gospel": "Mt 11:28-30" },
+      "II": { "first": "Is 26:7-9.12.16-19", "psalm": "Sal 102:13-21", "gospel": "Mt 11:28-30" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Ex 11:10-12:14", "psalm": "Sal 116:12-18", "gospel": "Mt 12:1-8" },
+      "II": { "first": "Is 38:1-6.21-22.7-8", "psalm": "Sal Is 38:10-12.16", "gospel": "Mt 12:1-8" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Ex 12:37-42", "psalm": "Sal 136:1.10-15.23-24", "gospel": "Mt 12:14-21" },
+      "II": { "first": "Miq 2:1-5", "psalm": "Sal 10:1-4.7-8.14", "gospel": "Mt 12:14-21" }
+    }
+  },
+  "16": {
+    "MONDAY": {
+      "I": { "first": "Ex 14:5-18", "psalm": "Sal Ex 15:1-6", "gospel": "Mt 12:38-42" },
+      "II": { "first": "Miq 6:1-4.6-8", "psalm": "Sal 50:5-6.8-9.16-17.21.23", "gospel": "Mt 12:38-42" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Ex 14:21-15:1", "psalm": "Sal Ex 15:8-10.12.17", "gospel": "Mt 12:46-50" },
+      "II": { "first": "Miq 7:14-15.18-20", "psalm": "Sal 85:2-8", "gospel": "Mt 12:46-50" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Ex 16:1-5.9-15", "psalm": "Sal 78:18-19.23-28", "gospel": "Mt 13:1-9" },
+      "II": { "first": "Jr 1:1.4-10", "psalm": "Sal 71:1-4.5-6.15.17", "gospel": "Mt 13:1-9" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Ex 19:1-2.9-11.16-20b", "psalm": "Sal Dn 3:52-56", "gospel": "Mt 13:10-17" },
+      "II": { "first": "Jr 2:1-3.7-8.12-13", "psalm": "Sal 36:6-11", "gospel": "Mt 13:10-17" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Ex 20:1-17", "psalm": "Sal 19:8-11", "gospel": "Mt 13:18-23" },
+      "II": { "first": "Jr 3:14-17", "psalm": "Sal Jr 31:10-13", "gospel": "Mt 13:18-23" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Ex 24:3-8", "psalm": "Sal 50:1-2.5-6.14-15", "gospel": "Mt 13:24-30" },
+      "II": { "first": "Jr 7:1-11", "psalm": "Sal 84:3-6.8.11", "gospel": "Mt 13:24-30" }
+    }
+  },
+  "17": {
+    "MONDAY": {
+      "I": { "first": "Ex 32:15-24.30-34", "psalm": "Sal 106:19-23", "gospel": "Mt 13:31-35" },
+      "II": { "first": "Jr 13:1-11", "psalm": "Sal Dt 32:18-21", "gospel": "Mt 13:31-35" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Ex 33:7-11;34:5b-9.28", "psalm": "Sal 103:6-13", "gospel": "Mt 13:36-43" },
+      "II": { "first": "Jr 14:17-22", "psalm": "Sal 79:8-9.11.13", "gospel": "Mt 13:36-43" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Ex 34:29-35", "psalm": "Sal 99:5-7.9", "gospel": "Mt 13:44-46" },
+      "II": { "first": "Jr 15:10.16-21", "psalm": "Sal 59:2-4.10-11.17-18", "gospel": "Mt 13:44-46" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Ex 40:16-21.34-38", "psalm": "Sal 84:3-6.8.11", "gospel": "Mt 13:47-53" },
+      "II": { "first": "Jr 18:1-6", "psalm": "Sal 146:1-6", "gospel": "Mt 13:47-53" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Lv 23:1.4-11.15-16.27.34b-37", "psalm": "Sal 81:3-6.10-11", "gospel": "Mt 13:54-58" },
+      "II": { "first": "Jr 26:1-9", "psalm": "Sal 69:5.8-10.14", "gospel": "Mt 13:54-58" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Lv 25:1.8-17", "psalm": "Sal 67:2-3.5.7-8", "gospel": "Mt 14:1-12" },
+      "II": { "first": "Jr 26:11-16.24", "psalm": "Sal 69:15-16.30-31.33-34", "gospel": "Mt 14:1-12" }
+    }
+  },
+  "18": {
+    "MONDAY": {
+      "I": { "first": "Nm 11:4b-15", "psalm": "Sal 81:12-17", "gospel": "Mt 14:13-21" },
+      "II": { "first": "Jr 28:1-17", "psalm": "Sal 119:29.43.79-80.95.102", "gospel": "Mt 14:13-21" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Nm 12:1-13", "psalm": "Sal 51:3-7.12-13", "gospel": "Mt 14:22-36" },
+      "II": { "first": "Jr 30:1-2.12-15.18-22", "psalm": "Sal 102:16-21.29.22-23", "gospel": "Mt 14:22-36" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Nm 13:1-2.25-14:1.26-29a.34-35", "psalm": "Sal 106:6-7.13-14.21-23", "gospel": "Mt 15:21-28" },
+      "II": { "first": "Jr 31:1-7", "psalm": "Sal Jr 31:10-13", "gospel": "Mt 15:21-28" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Nm 20:1-13", "psalm": "Sal 95:1-2.6-9", "gospel": "Mt 16:13-23" },
+      "II": { "first": "Jr 31:31-34", "psalm": "Sal 51:12-15.18-19", "gospel": "Mt 16:13-23" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Dt 4:32-40", "psalm": "Sal 77:12-16.21", "gospel": "Mt 16:24-28" },
+      "II": { "first": "Neh 2:1-8", "psalm": "Sal 137:1-6", "gospel": "Mt 16:24-28" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Dt 6:4-13", "psalm": "Sal 18:2-4.47.51", "gospel": "Mt 17:14-20" },
+      "II": { "first": "Hab 1:12-2:4", "psalm": "Sal 9:8-13", "gospel": "Mt 17:14-20" }
+    }
+  },
+  "19": {
+    "MONDAY": {
+      "I": { "first": "Dt 10:12-22", "psalm": "Sal 147:12-15.19-20", "gospel": "Mt 17:22-27" },
+      "II": { "first": "Ez 1:2-5.24-28c", "psalm": "Sal 148:1-2.11-14", "gospel": "Mt 17:22-27" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Dt 31:1-8", "psalm": "Sal Dt 32:3-4.7-9.12", "gospel": "Mt 18:1-5.10.12-14" },
+      "II": { "first": "Ez 2:8-3:4", "psalm": "Sal 119:14.24.72.103.111.131", "gospel": "Mt 18:1-5.10.12-14" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Dt 34:1-12", "psalm": "Sal 66:1-3.5.8.16-17", "gospel": "Mt 18:15-20" },
+      "II": { "first": "Ez 9:1-7;10:18-22", "psalm": "Sal 113:1-6", "gospel": "Mt 18:15-20" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Jos 3:7-10a.11.13-17", "psalm": "Sal 114:1-6", "gospel": "Mt 18:21-19:1" },
+      "II": { "first": "Ez 12:1-12", "psalm": "Sal 78:56-59.61-62", "gospel": "Mt 18:21-19:1" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Jos 24:1-13", "psalm": "Sal 136:1-3.16-18.21-22.24", "gospel": "Mt 19:3-12" },
+      "II": { "first": "Ez 16:1-15.60.63", "psalm": "Sal Is 12:2-6", "gospel": "Mt 19:3-12" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Jos 24:14-29", "psalm": "Sal 16:1-2.5.7-8.11", "gospel": "Mt 19:13-15" },
+      "II": { "first": "Ez 18:1-10.13b.30-32", "psalm": "Sal 51:12-15.18-19", "gospel": "Mt 19:13-15" }
+    }
+  },
+  "20": {
+    "MONDAY": {
+      "I": { "first": "Jue 2:11-19", "psalm": "Sal 106:34-37.39-40.43-44", "gospel": "Mt 19:16-22" },
+      "II": { "first": "Ez 24:15-24", "psalm": "Sal Dt 32:18-21", "gospel": "Mt 19:16-22" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Jue 6:11-24a", "psalm": "Sal 85:9.11-14", "gospel": "Mt 19:23-30" },
+      "II": { "first": "Ez 28:1-10", "psalm": "Sal Dt 32:26-28.30.35-36", "gospel": "Mt 19:23-30" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Jue 9:6-15", "psalm": "Sal 21:2-7", "gospel": "Mt 20:1-16" },
+      "II": { "first": "Ez 34:1-11", "psalm": "Sal 23:1-6", "gospel": "Mt 20:1-16" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Jue 11:29-39a", "psalm": "Sal 40:5.7-10", "gospel": "Mt 22:1-14" },
+      "II": { "first": "Ez 36:23-28", "psalm": "Sal 51:12-15.18-19", "gospel": "Mt 22:1-14" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Rt 1:1.3-6.14b-16.22", "psalm": "Sal 146:5-10", "gospel": "Mt 22:34-40" },
+      "II": { "first": "Ez 37:1-14", "psalm": "Sal 107:2-9", "gospel": "Mt 22:34-40" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Rt 2:1-3.8-11;4:13-17", "psalm": "Sal 128:1-5", "gospel": "Mt 23:1-12" },
+      "II": { "first": "Ez 43:1-7a", "psalm": "Sal 85:9-14", "gospel": "Mt 23:1-12" }
+    }
+  },
+  "21": {
+    "MONDAY": {
+      "I": { "first": "1Tes 1:1-5.8b-10", "psalm": "Sal 149:1-6.9", "gospel": "Mt 23:13-22" },
+      "II": { "first": "2Tes 1:1-5.11-12", "psalm": "Sal 96:1-5", "gospel": "Mt 23:13-22" }
+    },
+    "TUESDAY": {
+      "I": { "first": "1Tes 2:1-8", "psalm": "Sal 139:1-3.13-14", "gospel": "Mt 23:23-26" },
+      "II": { "first": "2Tes 2:1-3a.14-17", "psalm": "Sal 96:10-13", "gospel": "Mt 23:23-26" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "1Tes 2:9-13", "psalm": "Sal 139:7-12", "gospel": "Mt 23:27-32" },
+      "II": { "first": "2Tes 3:6-10.16-18", "psalm": "Sal 128:1-2.4-5", "gospel": "Mt 23:27-32" }
+    },
+    "THURSDAY": {
+      "I": { "first": "1Tes 3:7-13", "psalm": "Sal 90:3-4.12-14.17", "gospel": "Mt 24:42-51" },
+      "II": { "first": "1Cor 1:1-9", "psalm": "Sal 145:2-7", "gospel": "Mt 24:42-51" }
+    },
+    "FRIDAY": {
+      "I": { "first": "1Tes 4:1-8", "psalm": "Sal 97:1-2.5-6.10-12", "gospel": "Mt 25:1-13" },
+      "II": { "first": "1Cor 1:17-25", "psalm": "Sal 33:1-2.4-5.10-11", "gospel": "Mt 25:1-13" }
+    },
+    "SATURDAY": {
+      "I": { "first": "1Tes 4:9-11", "psalm": "Sal 98:1.7-9", "gospel": "Mt 25:14-30" },
+      "II": { "first": "1Cor 1:26-31", "psalm": "Sal 33:12-13.18-21", "gospel": "Mt 25:14-30" }
+    }
+  },
+  "22": {
+    "MONDAY": {
+      "I": { "first": "1Tes 4:13-18", "psalm": "Sal 96:1.3-5.11-13", "gospel": "Lc 4:16-30" },
+      "II": { "first": "1Cor 2:1-5", "psalm": "Sal 119:97-102", "gospel": "Lc 4:16-30" }
+    },
+    "TUESDAY": {
+      "I": { "first": "1Tes 5:1-6.9-11", "psalm": "Sal 27:1.4.13-14", "gospel": "Lc 4:31-37" },
+      "II": { "first": "1Cor 2:10b-16", "psalm": "Sal 145:8-14", "gospel": "Lc 4:31-37" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Col 1:1-8", "psalm": "Sal 52:10-11", "gospel": "Lc 4:38-44" },
+      "II": { "first": "1Cor 3:1-9", "psalm": "Sal 33:12-15.20-21", "gospel": "Lc 4:38-44" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Col 1:9-14", "psalm": "Sal 98:2-6", "gospel": "Lc 5:1-11" },
+      "II": { "first": "1Cor 3:18-23", "psalm": "Sal 24:1-6", "gospel": "Lc 5:1-11" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Col 1:15-20", "psalm": "Sal 100:1-5", "gospel": "Lc 5:33-39" },
+      "II": { "first": "1Cor 4:1-5", "psalm": "Sal 37:3-6.27-28.39-40", "gospel": "Lc 5:33-39" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Col 1:21-23", "psalm": "Sal 54:3-4.6.8", "gospel": "Lc 6:1-5" },
+      "II": { "first": "1Cor 4:6b-15", "psalm": "Sal 145:17-21", "gospel": "Lc 6:1-5" }
+    }
+  },
+  "23": {
+    "MONDAY": {
+      "I": { "first": "Col 1:24-2:3", "psalm": "Sal 62:6-7.9", "gospel": "Lc 6:6-11" },
+      "II": { "first": "1Cor 5:1-8", "psalm": "Sal 5:5-7.12", "gospel": "Lc 6:6-11" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Col 2:6-15", "psalm": "Sal 145:1-2.8-11", "gospel": "Lc 6:12-19" },
+      "II": { "first": "1Cor 6:1-11", "psalm": "Sal 149:1-6.9", "gospel": "Lc 6:12-19" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Col 3:1-11", "psalm": "Sal 145:2-3.10-13", "gospel": "Lc 6:20-26" },
+      "II": { "first": "1Cor 7:25-31", "psalm": "Sal 45:11-12.14-17", "gospel": "Lc 6:20-26" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Col 3:12-17", "psalm": "Sal 150:1-6", "gospel": "Lc 6:27-38" },
+      "II": { "first": "1Cor 8:1b-7.11-13", "psalm": "Sal 139:1-3.13-14.23-24", "gospel": "Lc 6:27-38" }
+    },
+    "FRIDAY": {
+      "I": { "first": "1Tim 1:1-2.12-14", "psalm": "Sal 16:1-2.5.7-8.11", "gospel": "Lc 6:39-42" },
+      "II": { "first": "1Cor 9:16-19.22b-27", "psalm": "Sal 84:3-6.12", "gospel": "Lc 6:39-42" }
+    },
+    "SATURDAY": {
+      "I": { "first": "1Tim 1:15-17", "psalm": "Sal 113:1-7", "gospel": "Lc 6:43-49" },
+      "II": { "first": "1Cor 10:14-22", "psalm": "Sal 116:12-18", "gospel": "Lc 6:43-49" }
+    }
+  },
+  "24": {
+    "MONDAY": {
+      "I": { "first": "1Tim 2:1-8", "psalm": "Sal 28:2.7-9", "gospel": "Lc 7:1-10" },
+      "II": { "first": "1Cor 11:17-26.33", "psalm": "Sal 40:7-10.17", "gospel": "Lc 7:1-10" }
+    },
+    "TUESDAY": {
+      "I": { "first": "1Tim 3:1-13", "psalm": "Sal 101:1-3.5-6", "gospel": "Lc 7:11-17" },
+      "II": { "first": "1Cor 12:12-14.27-31a", "psalm": "Sal 100:1-5", "gospel": "Lc 7:11-17" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "1Tim 3:14-16", "psalm": "Sal 111:1-6", "gospel": "Lc 7:31-35" },
+      "II": { "first": "1Cor 12:31-13:13", "psalm": "Sal 33:2-5.12.22", "gospel": "Lc 7:31-35" }
+    },
+    "THURSDAY": {
+      "I": { "first": "1Tim 4:12-16", "psalm": "Sal 111:7-10", "gospel": "Lc 7:36-50" },
+      "II": { "first": "1Cor 15:1-11", "psalm": "Sal 118:1-2.16-17.28", "gospel": "Lc 7:36-50" }
+    },
+    "FRIDAY": {
+      "I": { "first": "1Tim 6:2c-12", "psalm": "Sal 49:6-10.17-20", "gospel": "Lc 8:1-3" },
+      "II": { "first": "1Cor 15:12-20", "psalm": "Sal 17:1.6-8.15", "gospel": "Lc 8:1-3" }
+    },
+    "SATURDAY": {
+      "I": { "first": "1Tim 6:13-16", "psalm": "Sal 100:1-5", "gospel": "Lc 8:4-15" },
+      "II": { "first": "1Cor 15:35-37.42-49", "psalm": "Sal 56:10-14", "gospel": "Lc 8:4-15" }
+    }
+  },
+  "25": {
+    "MONDAY": {
+      "I": { "first": "Esd 1:1-6", "psalm": "Sal 126:1-6", "gospel": "Lc 8:16-18" },
+      "II": { "first": "Prov 3:27-34", "psalm": "Sal 15:2-5", "gospel": "Lc 8:16-18" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Esd 6:7-8.12b.14-20", "psalm": "Sal 122:1-5", "gospel": "Lc 8:19-21" },
+      "II": { "first": "Prov 21:1-6.10-13", "psalm": "Sal 119:1.27.30.34-35.44", "gospel": "Lc 8:19-21" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Esd 9:5-9", "psalm": "Sal Tb 13:2.4.6-8", "gospel": "Lc 9:1-6" },
+      "II": { "first": "Prov 30:5-9", "psalm": "Sal 119:29.72.89.101.104.163", "gospel": "Lc 9:1-6" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Ag 1:1-8", "psalm": "Sal 149:1-6.9", "gospel": "Lc 9:7-9" },
+      "II": { "first": "Ecl 1:2-11", "psalm": "Sal 90:3-6.12-14.17", "gospel": "Lc 9:7-9" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Ag 2:1-9", "psalm": "Sal 43:1-4", "gospel": "Lc 9:18-22" },
+      "II": { "first": "Ecl 3:1-11", "psalm": "Sal 144:1-4", "gospel": "Lc 9:18-22" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Zac 2:5-9.14-15a", "psalm": "Sal Jr 31:10-13", "gospel": "Lc 9:43b-45" },
+      "II": { "first": "Ecl 11:9-12:8", "psalm": "Sal 90:3-6.12-14.17", "gospel": "Lc 9:43b-45" }
+    }
+  },
+  "26": {
+    "MONDAY": {
+      "I": { "first": "Zac 8:1-8", "psalm": "Sal 102:16-21.29.22-23", "gospel": "Lc 9:46-50" },
+      "II": { "first": "Job 1:6-22", "psalm": "Sal 17:1-3.6-7", "gospel": "Lc 9:46-50" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Zac 8:20-23", "psalm": "Sal 87:1-7", "gospel": "Lc 9:51-56" },
+      "II": { "first": "Job 3:1-3.11-17.20-23", "psalm": "Sal 88:2-8", "gospel": "Lc 9:51-56" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Neh 2:1-8", "psalm": "Sal 137:1-6", "gospel": "Lc 9:57-62" },
+      "II": { "first": "Job 9:1-12.14-16", "psalm": "Sal 88:10-15", "gospel": "Lc 9:57-62" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Neh 8:1-4a.5-6.7b-12", "psalm": "Sal 19:8-11", "gospel": "Lc 10:1-12" },
+      "II": { "first": "Job 19:21-27", "psalm": "Sal 27:7-9.13-14", "gospel": "Lc 10:1-12" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Bar 1:15-22", "psalm": "Sal 79:1-5.8-9", "gospel": "Lc 10:13-16" },
+      "II": { "first": "Job 38:1.12-21;40:3-5", "psalm": "Sal 139:1-3.7-10.13-14", "gospel": "Lc 10:13-16" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Bar 4:5-12.27-29", "psalm": "Sal 69:33-37", "gospel": "Lc 10:17-24" },
+      "II": { "first": "Job 42:1-3.5-6.12-17", "psalm": "Sal 119:66.71.75.91.125.130", "gospel": "Lc 10:17-24" }
+    }
+  },
+  "27": {
+    "MONDAY": {
+      "I": { "first": "Jon 1:1-2:1.11", "psalm": "Sal Jon 2:3-5.8", "gospel": "Lc 10:25-37" },
+      "II": { "first": "Gal 1:6-12", "psalm": "Sal 111:1-2.7-10", "gospel": "Lc 10:25-37" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Jon 3:1-10", "psalm": "Sal 130:1-4.7-8", "gospel": "Lc 10:38-42" },
+      "II": { "first": "Gal 1:13-24", "psalm": "Sal 139:1-3.13-15", "gospel": "Lc 10:38-42" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Jon 4:1-11", "psalm": "Sal 86:3-6.9-10", "gospel": "Lc 11:1-4" },
+      "II": { "first": "Gal 2:1-2.7-14", "psalm": "Sal 117:1-2", "gospel": "Lc 11:1-4" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Mal 3:13-20b", "psalm": "Sal 1:1-4.6", "gospel": "Lc 11:5-13" },
+      "II": { "first": "Gal 3:1-5", "psalm": "Sal Lc 1:69-75", "gospel": "Lc 11:5-13" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Jl 1:13-15;2:1-2", "psalm": "Sal 9:2-3.6.16.8-9", "gospel": "Lc 11:15-26" },
+      "II": { "first": "Gal 3:7-14", "psalm": "Sal 111:1-6", "gospel": "Lc 11:15-26" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Jl 4:12-21", "psalm": "Sal 97:1-2.5-6.11-12", "gospel": "Lc 11:27-28" },
+      "II": { "first": "Gal 3:22-29", "psalm": "Sal 105:2-7", "gospel": "Lc 11:27-28" }
+    }
+  },
+  "28": {
+    "MONDAY": {
+      "I": { "first": "Rom 1:1-7", "psalm": "Sal 98:1-4", "gospel": "Lc 11:29-32" },
+      "II": { "first": "Gal 4:22-24.26-27.31-5:1", "psalm": "Sal 113:1-5.7", "gospel": "Lc 11:29-32" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Rom 1:16-25", "psalm": "Sal 19:2-5", "gospel": "Lc 11:37-41" },
+      "II": { "first": "Gal 5:1-6", "psalm": "Sal 119:41.43-45.47-48", "gospel": "Lc 11:37-41" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Rom 2:1-11", "psalm": "Sal 62:2-3.6-7.9", "gospel": "Lc 11:42-46" },
+      "II": { "first": "Gal 5:18-25", "psalm": "Sal 1:1-4.6", "gospel": "Lc 11:42-46" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Rom 3:21-30", "psalm": "Sal 130:1-6", "gospel": "Lc 11:47-54" },
+      "II": { "first": "Ef 1:1-10", "psalm": "Sal 98:1-6", "gospel": "Lc 11:47-54" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Rom 4:1-8", "psalm": "Sal 32:1-2.5.11", "gospel": "Lc 12:1-7" },
+      "II": { "first": "Ef 1:11-14", "psalm": "Sal 33:1-2.4-5.12-13", "gospel": "Lc 12:1-7" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Rom 4:13.16-18", "psalm": "Sal 105:6-9.42-43", "gospel": "Lc 12:8-12" },
+      "II": { "first": "Ef 1:15-23", "psalm": "Sal 8:2-7", "gospel": "Lc 12:8-12" }
+    }
+  },
+  "29": {
+    "MONDAY": {
+      "I": { "first": "Rom 4:20-25", "psalm": "Sal Lc 1:69-75", "gospel": "Lc 12:13-21" },
+      "II": { "first": "Ef 2:1-10", "psalm": "Sal 100:1-5", "gospel": "Lc 12:13-21" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Rom 5:12.15b.17-19.20b-21", "psalm": "Sal 40:7-10.17", "gospel": "Lc 12:35-38" },
+      "II": { "first": "Ef 2:12-22", "psalm": "Sal 85:9-14", "gospel": "Lc 12:35-38" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Rom 6:12-18", "psalm": "Sal 124:1-8", "gospel": "Lc 12:39-48" },
+      "II": { "first": "Ef 3:2-12", "psalm": "Sal Is 12:2-6", "gospel": "Lc 12:39-48" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Rom 6:19-23", "psalm": "Sal 1:1-4.6", "gospel": "Lc 12:49-53" },
+      "II": { "first": "Ef 3:14-21", "psalm": "Sal 33:1-2.4-5.11-12.18-19", "gospel": "Lc 12:49-53" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Rom 7:18-25a", "psalm": "Sal 119:66.68.76-77.93-94", "gospel": "Lc 12:54-59" },
+      "II": { "first": "Ef 4:1-6", "psalm": "Sal 24:1-6", "gospel": "Lc 12:54-59" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Rom 8:1-11", "psalm": "Sal 24:1-6", "gospel": "Lc 13:1-9" },
+      "II": { "first": "Ef 4:7-16", "psalm": "Sal 122:1-5", "gospel": "Lc 13:1-9" }
+    }
+  },
+  "30": {
+    "MONDAY": {
+      "I": { "first": "Rom 8:12-17", "psalm": "Sal 68:2.4.6-7.20-21", "gospel": "Lc 13:10-17" },
+      "II": { "first": "Ef 4:32-5:8", "psalm": "Sal 1:1-4.6", "gospel": "Lc 13:10-17" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Rom 8:18-25", "psalm": "Sal 126:1-6", "gospel": "Lc 13:18-21" },
+      "II": { "first": "Ef 5:21-33", "psalm": "Sal 128:1-5", "gospel": "Lc 13:18-21" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Rom 8:26-30", "psalm": "Sal 13:4-6", "gospel": "Lc 13:22-30" },
+      "II": { "first": "Ef 6:1-9", "psalm": "Sal 145:10-14", "gospel": "Lc 13:22-30" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Rom 8:31b-39", "psalm": "Sal 109:21-22.26-27.30-31", "gospel": "Lc 13:31-35" },
+      "II": { "first": "Ef 6:10-20", "psalm": "Sal 144:1-2.9-10", "gospel": "Lc 13:31-35" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Rom 9:1-5", "psalm": "Sal 147:12-15.19-20", "gospel": "Lc 14:1-6" },
+      "II": { "first": "Flp 1:1-11", "psalm": "Sal 111:1-6", "gospel": "Lc 14:1-6" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Rom 11:1-2a.11-12.25-29", "psalm": "Sal 94:12-15.17-18", "gospel": "Lc 14:1.7-11" },
+      "II": { "first": "Flp 1:18b-26", "psalm": "Sal 42:2-3.5", "gospel": "Lc 14:1.7-11" }
+    }
+  },
+  "31": {
+    "MONDAY": {
+      "I": { "first": "Rom 11:29-36", "psalm": "Sal 69:30-31.33-34.36-37", "gospel": "Lc 14:12-14" },
+      "II": { "first": "Flp 2:1-4", "psalm": "Sal 131:1-3", "gospel": "Lc 14:12-14" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Rom 12:5-16b", "psalm": "Sal 131:1-3", "gospel": "Lc 14:15-24" },
+      "II": { "first": "Flp 2:5-11", "psalm": "Sal 22:26-32", "gospel": "Lc 14:15-24" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Rom 13:8-10", "psalm": "Sal 112:1-2.4-5.9", "gospel": "Lc 14:25-33" },
+      "II": { "first": "Flp 2:12-18", "psalm": "Sal 27:1.4.13-14", "gospel": "Lc 14:25-33" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Rom 14:7-12", "psalm": "Sal 27:1.4.13-14", "gospel": "Lc 15:1-10" },
+      "II": { "first": "Flp 3:3-8a", "psalm": "Sal 105:2-7", "gospel": "Lc 15:1-10" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Rom 15:14-21", "psalm": "Sal 98:1-4", "gospel": "Lc 16:1-8" },
+      "II": { "first": "Flp 3:17-4:1", "psalm": "Sal 122:1-5", "gospel": "Lc 16:1-8" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Rom 16:3-9.16.22-27", "psalm": "Sal 145:2-5.10-11", "gospel": "Lc 16:9-15" },
+      "II": { "first": "Flp 4:10-19", "psalm": "Sal 112:1-2.5-6.8-9", "gospel": "Lc 16:9-15" }
+    }
+  },
+  "32": {
+    "MONDAY": {
+      "I": { "first": "Sab 1:1-7", "psalm": "Sal 139:1-10", "gospel": "Lc 17:1-6" },
+      "II": { "first": "Tit 1:1-9", "psalm": "Sal 24:1-6", "gospel": "Lc 17:1-6" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Sab 2:23-3:9", "psalm": "Sal 34:2-3.16-19", "gospel": "Lc 17:7-10" },
+      "II": { "first": "Tit 2:1-8.11-14", "psalm": "Sal 37:3-4.18.23.27.29", "gospel": "Lc 17:7-10" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Sab 6:1-11", "psalm": "Sal 82:3-4.6-7", "gospel": "Lc 17:11-19" },
+      "II": { "first": "Tit 3:1-7", "psalm": "Sal 23:1-6", "gospel": "Lc 17:11-19" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Sab 7:22-8:1", "psalm": "Sal 119:89-91.130.135.175", "gospel": "Lc 17:20-25" },
+      "II": { "first": "Flm 7-20", "psalm": "Sal 146:7-10", "gospel": "Lc 17:20-25" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Sab 13:1-9", "psalm": "Sal 19:2-5", "gospel": "Lc 17:26-37" },
+      "II": { "first": "2Jn 4-9", "psalm": "Sal 119:1-2.10-11.17-18", "gospel": "Lc 17:26-37" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Sab 18:14-16;19:6-9", "psalm": "Sal 105:2-3.36-37.42-43", "gospel": "Lc 18:1-8" },
+      "II": { "first": "3Jn 5-8", "psalm": "Sal 112:1-6", "gospel": "Lc 18:1-8" }
+    }
+  },
+  "33": {
+    "MONDAY": {
+      "I": { "first": "1Mac 1:10-15.41-43.54-57.62-64", "psalm": "Sal 119:53.61.134.150.155.158", "gospel": "Lc 18:35-43" },
+      "II": { "first": "Ap 1:1-4;2:1-5", "psalm": "Sal 1:1-4.6", "gospel": "Lc 18:35-43" }
+    },
+    "TUESDAY": {
+      "I": { "first": "2Mac 6:18-31", "psalm": "Sal 3:2-7", "gospel": "Lc 19:1-10" },
+      "II": { "first": "Ap 3:1-6.14-22", "psalm": "Sal 15:2-5", "gospel": "Lc 19:1-10" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "2Mac 7:1.20-31", "psalm": "Sal 17:1.5-6.8.15", "gospel": "Lc 19:11-28" },
+      "II": { "first": "Ap 4:1-11", "psalm": "Sal 150:1-6", "gospel": "Lc 19:11-28" }
+    },
+    "THURSDAY": {
+      "I": { "first": "1Mac 2:15-29", "psalm": "Sal 50:1-2.5-6.14-15", "gospel": "Lc 19:41-44" },
+      "II": { "first": "Ap 5:1-10", "psalm": "Sal 149:1-6.9", "gospel": "Lc 19:41-44" }
+    },
+    "FRIDAY": {
+      "I": { "first": "1Mac 4:36-37.52-59", "psalm": "Sal 1Cro 29:10-12", "gospel": "Lc 19:45-48" },
+      "II": { "first": "Ap 10:8-11", "psalm": "Sal 119:14.24.72.103.111.131", "gospel": "Lc 19:45-48" }
+    },
+    "SATURDAY": {
+      "I": { "first": "1Mac 6:1-13", "psalm": "Sal 9:2-4.6.16.19", "gospel": "Lc 20:27-40" },
+      "II": { "first": "Ap 11:4-12", "psalm": "Sal 144:1-2.9-10", "gospel": "Lc 20:27-40" }
+    }
+  },
+  "34": {
+    "MONDAY": {
+      "I": { "first": "Dn 1:1-6.8-20", "psalm": "Sal Dn 3:52-56", "gospel": "Lc 21:1-4" },
+      "II": { "first": "Ap 14:1-3.4b-5", "psalm": "Sal 24:1-6", "gospel": "Lc 21:1-4" }
+    },
+    "TUESDAY": {
+      "I": { "first": "Dn 2:31-45", "psalm": "Sal Dn 3:57-61", "gospel": "Lc 21:5-11" },
+      "II": { "first": "Ap 14:14-19", "psalm": "Sal 96:10-13", "gospel": "Lc 21:5-11" }
+    },
+    "WEDNESDAY": {
+      "I": { "first": "Dn 5:1-6.13-14.16-17.23-28", "psalm": "Sal Dn 3:62-67", "gospel": "Lc 21:12-19" },
+      "II": { "first": "Ap 15:1-4", "psalm": "Sal 98:1-3.7-9", "gospel": "Lc 21:12-19" }
+    },
+    "THURSDAY": {
+      "I": { "first": "Dn 6:12-28", "psalm": "Sal Dn 3:68-74", "gospel": "Lc 21:20-28" },
+      "II": { "first": "Ap 18:1-2.21-23;19:1-3.9a", "psalm": "Sal 100:1-5", "gospel": "Lc 21:20-28" }
+    },
+    "FRIDAY": {
+      "I": { "first": "Dn 7:2-14", "psalm": "Sal Dn 3:75-81", "gospel": "Lc 21:29-33" },
+      "II": { "first": "Ap 20:1-4.11-21:2", "psalm": "Sal 84:3-6.8", "gospel": "Lc 21:29-33" }
+    },
+    "SATURDAY": {
+      "I": { "first": "Dn 7:15-27", "psalm": "Sal Dn 3:82-87", "gospel": "Lc 21:34-36" },
+      "II": { "first": "Ap 22:1-7", "psalm": "Sal 95:1-7", "gospel": "Lc 21:34-36" }
+    }
+  }
+}
