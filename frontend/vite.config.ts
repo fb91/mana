@@ -27,25 +27,42 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // Prefijo para los caches generados por Workbox (precache → mi-pwa-cache-v1-precache-v2)
+        cacheId: 'mi-pwa-cache-v1',
+
+        // Archivos pre-cacheados en el install del SW — la app carga offline de inmediato
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+
         // Aumentar el tamaño máximo para incluir bible_es.json (es grande)
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
+
+        // Ruta de fallback para navegación SPA cuando no hay red
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
+
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\./,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'api-cache', expiration: { maxAgeSeconds: 300 } }
-          },
-          {
-            // Cachear datos locales como la biblia
+            // Datos bíblicos: siempre desde caché (no cambian), red como respaldo
             urlPattern: /\/data\/.*\.json$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'bible-data-cache',
+              cacheName: 'mi-pwa-cache-v1-datos',
               expiration: {
                 maxAgeSeconds: 365 * 24 * 60 * 60, // 1 año
                 maxEntries: 10
-              }
+              },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            // Llamadas a la API externa: red primero, caché como respaldo offline
+            urlPattern: /^https:\/\/api\./,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'mi-pwa-cache-v1-api',
+              networkTimeoutSeconds: 5,
+              expiration: { maxAgeSeconds: 300 },
+              cacheableResponse: { statuses: [0, 200] }
             }
           }
         ]
@@ -57,5 +74,24 @@ export default defineConfig({
   ],
   server: {
     port: 5173
+  },
+
+  build: {
+    // Minificación de JS con esbuild (incluido en Vite, rápido y eficiente)
+    minify: 'esbuild',
+    // Minificación de CSS
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        // Code splitting manual: separa vendor de código de la app
+        // Esto permite que el navegador cachee react/router por separado,
+        // y solo re-descargue el código de la app cuando cambia.
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ai': ['@anthropic-ai/sdk'],
+          'vendor-db': ['@supabase/supabase-js', 'idb'],
+        }
+      }
+    }
   }
 })

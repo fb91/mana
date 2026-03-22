@@ -25,6 +25,13 @@ export default function App() {
     applyTheme(effective, liturgicalAccent ?? false)
     applyFontSize(fontSizeValue ?? 16)
     applyFontFamily(fontFamily ?? 'inter')
+
+    // Ocultar splash screen una vez que React haya montado y aplicado los estilos
+    const splash = document.getElementById('splash-screen')
+    if (splash) {
+      splash.classList.add('splash-hidden')
+      splash.addEventListener('transitionend', () => splash.remove(), { once: true })
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
