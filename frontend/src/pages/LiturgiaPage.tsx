@@ -24,18 +24,11 @@ function formatDateLabel(date: Date): string {
   })
 }
 
-function formatDayShort(date: Date): string {
-  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-  return days[date.getDay()]
-}
-
-function formatDayNum(date: Date): string {
-  return String(date.getDate())
-}
-
-function formatMonthShort(date: Date): string {
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-  return months[date.getMonth()]
+function formatDateNoYear(date: Date): string {
+  const str = date.toLocaleDateString('es-AR', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  })
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 // ── Day Navigator ─────────────────────────────────────────────────────────────
@@ -44,112 +37,71 @@ function DayNavigator({
   selectedDate,
   today,
   onSelect,
-  onOpenCalendar,
 }: {
   selectedDate: Date
   today: Date
   onSelect: (date: Date) => void
-  onOpenCalendar: () => void
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
-  const hasScrolledInitially = useRef(false)
+  const [showCalendar, setShowCalendar] = useState(false)
+  const isToday = isSameDay(selectedDate, today)
 
-  // Build ±10 days window centered on selectedDate
-  const center = selectedDate
-  const days: Date[] = []
-  for (let i = -10; i <= 10; i++) {
-    days.push(addDays(center, i))
+  function goDay(delta: number) {
+    onSelect(addDays(selectedDate, delta))
+    setShowCalendar(false)
   }
 
-  // Scroll to selected date on mount and when it changes
-  useEffect(() => {
-    const scrollToDate = (date: Date) => {
-      const key = date.toISOString()
-      const button = buttonRefs.current.get(key)
-      if (button) {
-        button.scrollIntoView({ behavior: hasScrolledInitially.current ? 'smooth' : 'auto', block: 'nearest', inline: 'center' })
-        hasScrolledInitially.current = true
-      }
-    }
+  function handleSelectFromCalendar(date: Date) {
+    onSelect(date)
+    setShowCalendar(false)
+  }
 
-    // Use a slight delay to ensure buttons are rendered
-    const timer = setTimeout(() => {
-      scrollToDate(selectedDate)
-    }, 50)
-
-    return () => clearTimeout(timer)
-  }, [selectedDate])
-
-  const isSelected = (d: Date) => isSameDay(d, selectedDate)
-  const isToday = (d: Date) => isSameDay(d, today)
-
-  const setButtonRef = (date: Date, el: HTMLButtonElement | null) => {
-    const key = date.toISOString()
-    if (el) {
-      buttonRefs.current.set(key, el)
-    } else {
-      buttonRefs.current.delete(key)
-    }
+  function goToToday() {
+    onSelect(today)
+    setShowCalendar(false)
   }
 
   return (
-    <div className="relative">
-      {/* Scroll strip */}
-      <div
-        ref={scrollRef}
-        className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 py-3"
-      >
-        {days.map((day) => {
-          const selected = isSelected(day)
-          const todayDay = isToday(day)
-          return (
-            <button
-              key={day.toISOString()}
-              ref={(el) => setButtonRef(day, el)}
-              onClick={() => onSelect(day)}
-              className={`flex-shrink-0 flex flex-col items-center gap-0.5 rounded-2xl px-3 py-2.5
-                          transition-all duration-150 active:scale-95 min-w-[52px]
-                          ${selected
-                ? 'bg-dorado text-crema-50 shadow-md'
-                : todayDay
-                  ? 'bg-dorado/15 text-dorado border border-dorado/30'
-                  : 'bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border text-cafe-dark dark:text-crema-200'
-              }`}
-            >
-              <span className={`text-[10px] font-semibold uppercase tracking-wide leading-none
-                                ${selected ? 'text-crema-50' : todayDay ? 'text-dorado' : 'text-cafe-light dark:text-crema-300'}`}>
-                {formatDayShort(day)}
-              </span>
-              <span className={`text-lg font-bold leading-none ${selected ? 'text-crema-50' : ''}`}>
-                {formatDayNum(day)}
-              </span>
-              <span className={`text-[10px] leading-none
-                                ${selected ? 'text-crema-50/80' : todayDay ? 'text-dorado' : 'text-cafe-light dark:text-crema-300'}`}>
-                {formatMonthShort(day)}
-              </span>
-              {todayDay && !selected && (
-                <span className="w-1 h-1 rounded-full bg-dorado mt-0.5" />
-              )}
-            </button>
-          )
-        })}
+    <div className="py-3">
+      {/* Main row: prev arrow | date label | next arrow */}
+      <div className="flex items-center gap-2 px-4">
+        <button
+          onClick={() => goDay(-1)}
+          className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center
+                     bg-crema-100 dark:bg-oscuro-surface active:scale-90 transition-transform"
+          aria-label="Día anterior"
+        >
+          <Icon name="chevron-left" size={20} className="text-cafe-dark dark:text-crema-200" />
+        </button>
+
+        <button
+          onClick={() => setShowCalendar(v => !v)}
+          className={`flex-1 py-2.5 px-4 rounded-2xl text-center transition-all active:scale-[0.98]
+                      ${showCalendar
+                        ? 'bg-dorado shadow-sm'
+                        : 'bg-dorado/10 border border-dorado/30'
+                      }`}
+        >
+          <span className={`text-base font-semibold leading-tight
+                            ${showCalendar ? 'text-crema-50' : 'text-cafe-dark dark:text-crema-200'}`}>
+            {formatDateNoYear(selectedDate)}
+          </span>
+        </button>
+
+        <button
+          onClick={() => goDay(1)}
+          className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center
+                     bg-crema-100 dark:bg-oscuro-surface active:scale-90 transition-transform"
+          aria-label="Día siguiente"
+        >
+          <Icon name="chevron-right" size={20} className="text-cafe-dark dark:text-crema-200" />
+        </button>
       </div>
 
-      {/* Calendar picker + back to today */}
-      <div className="flex gap-2 pb-1 px-4">
-        <button
-          onClick={onOpenCalendar}
-          className="flex items-center gap-1.5 text-xs text-dorado font-semibold
-                     bg-dorado/10 border border-dorado/30 rounded-full px-3 py-1.5
-                     active:scale-95 transition-all"
-        >
-          <Icon name="calendar" size={13} />
-          Elegir fecha
-        </button>
-        {!isSameDay(selectedDate, today) && (
+      {/* "Volver a hoy" pill — solo visible cuando no es hoy */}
+      {!isToday && (
+        <div className="flex justify-center mt-2">
           <button
-            onClick={() => onSelect(today)}
+            onClick={goToToday}
             className="flex items-center gap-1.5 text-xs text-dorado font-semibold
                        bg-dorado/10 border border-dorado/30 rounded-full px-3 py-1.5
                        active:scale-95 transition-all"
@@ -157,8 +109,21 @@ function DayNavigator({
             <Icon name="refresh" size={13} />
             Volver a hoy
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Calendario inline */}
+      {showCalendar && (
+        <div className="mt-3 px-4">
+          <CalendarPicker
+            inline
+            selectedDate={selectedDate}
+            today={today}
+            onSelect={handleSelectFromCalendar}
+            onClose={() => setShowCalendar(false)}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -557,7 +522,6 @@ export default function LiturgiaPage() {
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
   const [showShare, setShowShare] = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false)
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
   useEffect(() => {
@@ -651,7 +615,6 @@ export default function LiturgiaPage() {
           selectedDate={selectedDate}
           today={today}
           onSelect={setSelectedDate}
-          onOpenCalendar={() => setShowCalendar(true)}
         />
 
         {resolvedDay && (
@@ -801,15 +764,6 @@ export default function LiturgiaPage() {
         />
       )}
 
-      {/* Calendar Picker */}
-      {showCalendar && (
-        <CalendarPicker
-          selectedDate={selectedDate}
-          today={today}
-          onSelect={setSelectedDate}
-          onClose={() => setShowCalendar(false)}
-        />
-      )}
     </div>
   )
 }
