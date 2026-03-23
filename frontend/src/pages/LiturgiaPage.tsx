@@ -14,7 +14,8 @@ import CalendarPicker from '../components/CalendarPicker'
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type ReadingKey = 'first' | 'second' | 'psalm' | 'gospel'
-type LoadedVerses = Partial<Record<ReadingKey, BibleVerse[]>>
+// null = error al cargar (capítulo no disponible), undefined = aún no cargado, [] = cargado vacío
+type LoadedVerses = Partial<Record<ReadingKey, BibleVerse[] | null>>
 
 // ── Helper: format date for display ─────────────────────────────────────────
 
@@ -229,7 +230,7 @@ function GospelCard({
   resolvedDay,
 }: {
   reference: string
-  verses: BibleVerse[] | undefined
+  verses: BibleVerse[] | null | undefined
   loading: boolean
   resolvedDay: ResolvedDay
 }) {
@@ -273,9 +274,19 @@ function GospelCard({
             </p>
           ))}
         </div>
+      ) : verses === null ? (
+        <div className="py-4 space-y-2 text-center">
+          <p className="text-sm font-medium text-cafe-dark dark:text-crema-200">
+            Texto no disponible offline
+          </p>
+          <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed max-w-xs mx-auto">
+            Este pasaje aún no está en la base de datos local. Buscalo en tu Biblia con la referencia:
+          </p>
+          <p className="text-sm font-semibold text-dorado">{refDisplay}</p>
+        </div>
       ) : (
         <p className="text-sm text-cafe-light dark:text-crema-300 text-center py-6">
-          Texto no disponible. Referencia: <span className="font-medium">{refDisplay}</span>
+          No se encontraron versículos para <span className="font-medium">{refDisplay}</span>
         </p>
       )}
     </div>
@@ -295,7 +306,7 @@ function ReadingCard({
 }: {
   label: string
   reference: string
-  verses: BibleVerse[] | undefined
+  verses: BibleVerse[] | null | undefined
   loading: boolean
   onExpand: () => void
   expanded: boolean
@@ -347,9 +358,19 @@ function ReadingCard({
                 </p>
               ))}
             </div>
+          ) : verses === null ? (
+            <div className="py-3 space-y-1">
+              <p className="text-sm text-cafe-dark dark:text-crema-200 font-medium">
+                Texto no disponible offline
+              </p>
+              <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
+                Este pasaje aún no está en la base de datos local. Podés buscarlo en tu Biblia con la referencia:
+              </p>
+              <p className="text-xs font-semibold text-dorado mt-1">{refDisplay}</p>
+            </div>
           ) : (
             <p className="text-sm text-cafe-light dark:text-crema-300 text-center py-4">
-              Texto no disponible. Referencia: <span className="font-medium">{refDisplay}</span>
+              No se encontraron versículos para <span className="font-medium">{refDisplay}</span>
             </p>
           )}
         </div>
@@ -689,7 +710,7 @@ export default function LiturgiaPage() {
 
       setLoadedVerses(prev => ({ ...prev, [key]: result }))
     } catch {
-      setLoadedVerses(prev => ({ ...prev, [key]: [] }))
+      setLoadedVerses(prev => ({ ...prev, [key]: null }))
     } finally {
       setLoadingVerses(prev => { const s = new Set(prev); s.delete(key); return s })
     }
