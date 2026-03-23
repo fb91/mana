@@ -27,3 +27,4 @@ logs/
 # Database
 *.db
 *.sqlite
+__pycache__/
