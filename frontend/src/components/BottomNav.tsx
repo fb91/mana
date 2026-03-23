@@ -61,7 +61,7 @@ export default function BottomNav() {
             <Icon name="cross" size={20} className="text-white" />
           </div>
           <span className={`text-[10px] font-semibold leading-tight text-center ${lecturasActive ? 'text-dorado' : 'text-cafe-light dark:text-crema-300'}`}>
-            Lecturas
+            Evangelio
           </span>
         </button>
 

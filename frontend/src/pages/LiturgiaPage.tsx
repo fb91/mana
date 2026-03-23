@@ -5,7 +5,7 @@ import Icon from '../components/Icon'
 import { api, BibleVerse, LectioBiblicaResponse, BibleChapter } from '../services/api'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
 import { getLiturgicalContext, addDays, isSameDay } from '../lib/liturgicalCalendar'
-import { resolveDay, ResolvedDay, COLOR_STYLES, RANK_LABEL } from '../lib/lectionaryResolver'
+import { resolveDay, ResolvedDay, COLOR_STYLES } from '../lib/lectionaryResolver'
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
 import { shareOrDownload, canGospelFitInImage } from '../lib/shareCard'
 import { BugReportLink } from '../components/BugReportButton'
@@ -128,42 +128,156 @@ function DayNavigator({
   )
 }
 
-// ── Celebration Banner ────────────────────────────────────────────────────────
+// ── Other Readings Banner (collapsible) ──────────────────────────────────────
 
-function CelebrationBanner({ day, date }: { day: ResolvedDay; date: Date }) {
-  const styles = COLOR_STYLES[day.color] ?? COLOR_STYLES.green
-  const rankLabel = RANK_LABEL[day.rank]
+function OtherReadingsBanner({
+  readings,
+  loadedVerses,
+  loadingVerses,
+  expanded,
+  onToggleReading,
+  open,
+  onToggleOpen,
+  accentColor,
+}: {
+  readings: NonNullable<ResolvedDay['readings']>
+  loadedVerses: LoadedVerses
+  loadingVerses: Set<ReadingKey>
+  expanded: Set<ReadingKey>
+  onToggleReading: (key: ReadingKey, ref: string) => void
+  open: boolean
+  onToggleOpen: () => void
+  accentColor: string
+}) {
+  const parts: string[] = []
+  if (readings.first) parts.push('Primera Lectura')
+  if (readings.second) parts.push('Segunda Lectura')
+  if (readings.psalm) parts.push('Salmo')
+  if (parts.length === 0) return null
+
+  const label = parts.length === 1
+    ? `Ver ${parts[0]}`
+    : `Ver ${parts.slice(0, -1).join(', ')} y ${parts[parts.length - 1]}`
 
   return (
-    <div className={`rounded-2xl border p-4 ${styles.bg} ${styles.border}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          {rankLabel && (
-            <span className={`text-[10px] font-bold uppercase tracking-widest ${styles.text} opacity-70`}>
-              {rankLabel}
-            </span>
+    <div className="rounded-2xl border border-crema-200 dark:border-oscuro-border
+                    bg-white dark:bg-oscuro-surface overflow-hidden">
+      {/* Toggle header */}
+      <button
+        onClick={onToggleOpen}
+        className="w-full flex items-center justify-between px-4 py-3.5
+                   active:bg-crema-50 dark:active:bg-oscuro-bg transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-base">📖</span>
+          <span className="text-sm font-semibold text-cafe-dark dark:text-crema-200">{label}</span>
+        </div>
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform duration-200
+                         bg-crema-100 dark:bg-oscuro-bg ${open ? 'rotate-180' : ''}`}>
+          <Icon name="chevron-down" size={15} className="text-cafe-light dark:text-crema-300" />
+        </div>
+      </button>
+
+      {/* Expanded readings */}
+      {open && (
+        <div className="px-4 pb-4 pt-1 space-y-3 border-t border-crema-100 dark:border-oscuro-border animate-fade-in">
+          {readings.first && (
+            <ReadingCard
+              label="Primera Lectura"
+              reference={readings.first}
+              verses={loadedVerses.first}
+              loading={loadingVerses.has('first')}
+              expanded={expanded.has('first')}
+              onExpand={() => onToggleReading('first', readings.first!)}
+              accentColor={accentColor}
+            />
           )}
-          <h2 className={`font-serif text-lg font-semibold leading-snug mt-0.5 ${styles.text}`}>
-            {day.celebrationName}
-          </h2>
-          <p className={`text-xs mt-1 capitalize ${styles.text} opacity-70`}>
-            {formatDateLabel(date)}
-          </p>
-        </div>
-        <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${styles.bg}`}>
-          <span className={`w-2.5 h-2.5 rounded-full ${styles.dot}`} />
-        </div>
-      </div>
-      {day.label !== day.celebrationName && (
-        <div className={`mt-2 pt-2 border-t ${styles.border} opacity-70`}>
-          <p className={`text-xs ${styles.text}`}>{day.label}</p>
+          {readings.psalm && (
+            <ReadingCard
+              label="Salmo Responsorial"
+              reference={readings.psalm}
+              verses={loadedVerses.psalm}
+              loading={loadingVerses.has('psalm')}
+              expanded={expanded.has('psalm')}
+              onExpand={() => onToggleReading('psalm', readings.psalm)}
+              accentColor={accentColor}
+            />
+          )}
+          {readings.second && (
+            <ReadingCard
+              label="Segunda Lectura"
+              reference={readings.second}
+              verses={loadedVerses.second}
+              loading={loadingVerses.has('second')}
+              expanded={expanded.has('second')}
+              onExpand={() => onToggleReading('second', readings.second!)}
+              accentColor={accentColor}
+            />
+          )}
         </div>
       )}
-      <div className={`mt-2 flex gap-3 text-[10px] font-mono ${styles.text} opacity-60`}>
-        <span>Ciclo {day.sundayCycle}</span>
-        <span>·</span>
-        <span>Año {day.yearCycle}</span>
+    </div>
+  )
+}
+
+// ── Gospel Card (prominent, always visible) ───────────────────────────────────
+
+function GospelCard({
+  reference,
+  verses,
+  loading,
+  resolvedDay,
+}: {
+  reference: string
+  verses: BibleVerse[] | undefined
+  loading: boolean
+  resolvedDay: ResolvedDay
+}) {
+  const refs = parseBibleRef(reference)
+  const bookName = refs.length > 0 ? getBookName(refs[0].book) : ''
+  const refDisplay = formatRef(reference)
+  const styles = COLOR_STYLES[resolvedDay.color] ?? COLOR_STYLES.green
+
+  return (
+    <div className="card overflow-hidden">
+      {/* Header con color litúrgico */}
+      <div className={`rounded-xl p-4 mb-5 ${styles.bg} ${styles.border} border`}>
+        <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${styles.text} opacity-60`}>
+          Evangelio
+        </p>
+        <p className={`font-serif text-xl font-semibold leading-snug ${styles.text}`}>
+          {bookName}
+        </p>
+        <p className={`text-sm font-medium mt-1 ${styles.text} opacity-80`}>
+          {refDisplay}
+        </p>
+        <p className={`text-xs mt-2 ${styles.text} opacity-60 font-medium`}>
+          {resolvedDay.celebrationName}
+        </p>
       </div>
+
+      {/* Versículos */}
+      {loading ? (
+        <div className="flex flex-col items-center py-10 gap-3 animate-pulse-soft">
+          <span className="text-4xl">📖</span>
+          <p className="text-sm text-cafe-light dark:text-crema-300">Cargando evangelio...</p>
+        </div>
+      ) : verses && verses.length > 0 ? (
+        <div className="space-y-2">
+          {verses.map((v) => (
+            <p key={v.number} className="font-serif text-[17px] text-cafe-dark dark:text-crema-200 leading-relaxed">
+              <span className="text-dorado font-bold text-xs mr-2 align-top leading-7 select-none">
+                {v.number}
+              </span>
+              {v.text}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-cafe-light dark:text-crema-300 text-center py-6">
+          Texto no disponible. Referencia: <span className="font-medium">{refDisplay}</span>
+        </p>
+      )}
     </div>
   )
 }
@@ -457,7 +571,7 @@ function ShareModal({
         {/* Preview card */}
         <div className={`rounded-2xl border p-4 mb-5 ${styles.bg} ${styles.border}`}>
           <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${styles.text} opacity-60`}>
-            Maná · Lecturas del día
+            Maná · Evangelio del día
           </p>
           <p className={`font-serif font-semibold text-base ${styles.text}`}>
             {day.celebrationName}
@@ -517,7 +631,8 @@ export default function LiturgiaPage() {
   const location = useLocation()
   const [selectedDate, setSelectedDate] = useState<Date>(today)
   const [resolvedDay, setResolvedDay] = useState<ResolvedDay | null>(null)
-  const [expanded, setExpanded] = useState<Set<ReadingKey>>(new Set(['gospel']))
+  const [expanded, setExpanded] = useState<Set<ReadingKey>>(new Set())
+  const [showOtherReadings, setShowOtherReadings] = useState(false)
   const [loadedVerses, setLoadedVerses] = useState<LoadedVerses>({})
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
@@ -535,7 +650,8 @@ export default function LiturgiaPage() {
     const ctx = getLiturgicalContext(selectedDate)
     const day = resolveDay(ctx)
     setResolvedDay(day)
-    setExpanded(new Set(['gospel']))
+    setExpanded(new Set())
+    setShowOtherReadings(false)
     setLoadedVerses({})
     setLoadingVerses(new Set())
   }, [selectedDate])
@@ -604,7 +720,7 @@ export default function LiturgiaPage() {
     <div className="flex flex-col h-screen">
       <PageHeader
         icon={<Icon name="cross" size={18} />}
-        title="Lecturas del Día"
+        title="Evangelio del día"
         subtitle={resolvedDay?.label ?? ''}
       />
 
@@ -620,9 +736,6 @@ export default function LiturgiaPage() {
         {resolvedDay && (
           <div className="px-4 space-y-3 animate-fade-in">
 
-            {/* Celebration banner */}
-            <CelebrationBanner day={resolvedDay} date={selectedDate} />
-
             {/* No data placeholder */}
             {!resolvedDay.hasData && (
               <div className="card text-center py-6">
@@ -637,54 +750,29 @@ export default function LiturgiaPage() {
               </div>
             )}
 
-            {/* Readings */}
             {readings && (
               <>
-                {readings.first && (
-                  <ReadingCard
-                    label="Primera Lectura"
-                    reference={readings.first}
-                    verses={loadedVerses.first}
-                    loading={loadingVerses.has('first')}
-                    expanded={expanded.has('first')}
-                    onExpand={() => handleExpand('first', readings.first!)}
+                {/* Banner colapsable: demás lecturas */}
+                {(readings.first || readings.psalm || readings.second) && (
+                  <OtherReadingsBanner
+                    readings={readings}
+                    loadedVerses={loadedVerses}
+                    loadingVerses={loadingVerses}
+                    expanded={expanded}
+                    onToggleReading={handleExpand}
+                    open={showOtherReadings}
+                    onToggleOpen={() => setShowOtherReadings(v => !v)}
                     accentColor={accentClass}
                   />
                 )}
 
-                {readings.psalm && (
-                  <ReadingCard
-                    label="Salmo Responsorial"
-                    reference={readings.psalm}
-                    verses={loadedVerses.psalm}
-                    loading={loadingVerses.has('psalm')}
-                    expanded={expanded.has('psalm')}
-                    onExpand={() => handleExpand('psalm', readings.psalm)}
-                    accentColor={accentClass}
-                  />
-                )}
-
-                {readings.second && (
-                  <ReadingCard
-                    label="Segunda Lectura"
-                    reference={readings.second}
-                    verses={loadedVerses.second}
-                    loading={loadingVerses.has('second')}
-                    expanded={expanded.has('second')}
-                    onExpand={() => handleExpand('second', readings.second!)}
-                    accentColor={accentClass}
-                  />
-                )}
-
+                {/* Evangelio prominente */}
                 {readings.gospel && (
-                  <ReadingCard
-                    label="Evangelio"
+                  <GospelCard
                     reference={readings.gospel}
                     verses={loadedVerses.gospel}
                     loading={loadingVerses.has('gospel')}
-                    expanded={expanded.has('gospel')}
-                    onExpand={() => handleExpand('gospel', readings.gospel)}
-                    accentColor={accentClass}
+                    resolvedDay={resolvedDay}
                   />
                 )}
               </>
