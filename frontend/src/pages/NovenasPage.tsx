@@ -1,13 +1,73 @@
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { Novena } from '../services/api'
 import novenasJson from '../data/novenas.json'
 import { BugReportLink } from '../components/BugReportButton'
+import { useAppStore } from '../store/useAppStore'
 
-const novenas = novenasJson as Novena[]
+const allNovenas = (novenasJson as Novena[]).filter(n => n.estado === 'publicado')
+
+const CATEGORIAS: { value: string; label: string }[] = [
+  { value: '', label: 'Todas' },
+  { value: 'jesus', label: 'Jesús' },
+  { value: 'maria', label: 'María' },
+  { value: 'santos', label: 'Santos' },
+  { value: 'angeles', label: 'Ángeles' },
+  { value: 'especial', label: 'Especial' },
+]
+
+/** Próxima novena por fecha de festividad. Solo considera fechas "MM-DD". */
+function getProximaNovena(): Novena | null {
+  const today = new Date()
+  const mm = today.getMonth() + 1
+  const dd = today.getDate()
+  const todayNum = mm * 100 + dd
+
+  const withDate = allNovenas
+    .filter(n => /^\d{2}-\d{2}$/.test(n.fechaFestividad ?? ''))
+    .map(n => {
+      const [m, d] = (n.fechaFestividad as string).split('-').map(Number)
+      const fNum = m * 100 + d
+      const diff = fNum >= todayNum ? fNum - todayNum : 1200 + fNum - todayNum // wrap around year
+      return { novena: n, diff }
+    })
+    .sort((a, b) => a.diff - b.diff)
+
+  return withDate.length > 0 ? withDate[0].novena : null
+}
+
+function formatFecha(fechaFestividad: string | null | undefined): string {
+  if (!fechaFestividad) return ''
+  if (/^\d{2}-\d{2}$/.test(fechaFestividad)) {
+    const [m, d] = fechaFestividad.split('-').map(Number)
+    return new Date(2000, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })
+  }
+  return fechaFestividad
+}
 
 export default function NovenasPage() {
+  const novenasProgreso = useAppStore(s => s.novenasProgreso)
+  const [query, setQuery] = useState('')
+  const [categoria, setCategoria] = useState('')
+
+  const proximaNovena = useMemo(() => getProximaNovena(), [])
+
+  const novenas = useMemo(() => {
+    let list = allNovenas
+    if (categoria) list = list.filter(n => n.categoria === categoria)
+    if (query.trim()) {
+      const q = query.toLowerCase()
+      list = list.filter(n =>
+        n.nombre.toLowerCase().includes(q) ||
+        n.santo.toLowerCase().includes(q) ||
+        (n.descripcion ?? '').toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [query, categoria])
+
   return (
     <div className="flex flex-col h-screen">
       <PageHeader
@@ -16,12 +76,80 @@ export default function NovenasPage() {
         subtitle="Nueve días de oración continua"
       />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 pb-28">
-        <div className="space-y-3 animate-fade-in">
-          <p className="text-xs text-cafe-light dark:text-crema-300 mb-2">
-            {novenas.length} novenas disponibles
+      <div className="flex-1 overflow-y-auto pb-28">
+        {/* Banner novena próxima */}
+        {proximaNovena && !query && !categoria && (
+          <Link
+            to={`/novenas/${proximaNovena.id}`}
+            className="block mx-4 mt-4 p-3 rounded-xl bg-dorado/10 border border-dorado/30
+                       hover:bg-dorado/15 transition-colors"
+          >
+            <p className="text-xs font-semibold text-dorado uppercase tracking-wide mb-0.5">
+              📅 Próxima festividad — {formatFecha(proximaNovena.fechaFestividad)}
+            </p>
+            <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 text-sm">
+              {proximaNovena.nombre}
+            </p>
+            {proximaNovena.descripcion && (
+              <p className="text-xs text-cafe-light dark:text-crema-400 mt-0.5 line-clamp-1">
+                {proximaNovena.descripcion}
+              </p>
+            )}
+          </Link>
+        )}
+
+        <div className="px-4 pt-4 space-y-3 animate-fade-in">
+          {/* Búsqueda */}
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cafe-light dark:text-crema-400 text-sm">
+              🔍
+            </span>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Buscar novena o santo..."
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm
+                         bg-crema-100 dark:bg-oscuro-card border border-crema-200 dark:border-oscuro-border
+                         text-cafe-dark dark:text-crema-200 placeholder:text-cafe-light dark:placeholder:text-crema-400
+                         focus:outline-none focus:border-dorado/60"
+            />
+          </div>
+
+          {/* Filtro categorías */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {CATEGORIAS.map(cat => (
+              <button
+                key={cat.value}
+                onClick={() => setCategoria(cat.value)}
+                className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
+                  categoria === cat.value
+                    ? 'bg-dorado text-cafe-dark'
+                    : 'bg-crema-100 dark:bg-oscuro-card text-cafe-light dark:text-crema-300 border border-crema-200 dark:border-oscuro-border hover:border-dorado/40'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="text-xs text-cafe-light dark:text-crema-300">
+            {novenas.length} novena{novenas.length !== 1 ? 's' : ''} disponible{novenas.length !== 1 ? 's' : ''}
           </p>
-          {novenas.map((novena) => (
+
+          {novenas.length === 0 && (
+            <p className="text-sm text-cafe-light dark:text-crema-400 text-center py-8">
+              No se encontraron novenas.
+            </p>
+          )}
+
+          {novenas.map((novena) => {
+            const progreso = novenasProgreso.find(p => p.novenaId === novena.id)
+            const completados = progreso?.diasCompletados.length ?? 0
+            const terminada = completados >= 9
+            const enCurso = progreso && !terminada
+
+            return (
               <Link
                 key={novena.id}
                 to={`/novenas/${novena.id}`}
@@ -30,30 +158,71 @@ export default function NovenasPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-serif font-semibold text-cafe-dark dark:text-crema-200
-                                   truncate">{novena.nombre}</h3>
+                    <h3 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 truncate">
+                      {novena.nombre}
+                    </h3>
                     <p className="text-sm text-dorado mt-0.5">✨ {novena.santo}</p>
-                    {novena.descripcion && (
+                    {novena.descripcion && !progreso && (
                       <p className="text-xs text-cafe-light dark:text-crema-300 mt-1.5 line-clamp-2">
                         {novena.descripcion}
                       </p>
                     )}
+                    {progreso?.intencion && (
+                      <p className="text-xs text-cafe-light dark:text-crema-400 mt-1.5 italic truncate">
+                        &ldquo;{progreso.intencion}&rdquo;
+                      </p>
+                    )}
+                    {novena.fechaFestividad && !progreso && /^\d{2}-\d{2}$/.test(novena.fechaFestividad) && (
+                      <p className="text-xs text-cafe-light dark:text-crema-400 mt-1">
+                        🗓 {formatFecha(novena.fechaFestividad)}
+                      </p>
+                    )}
                   </div>
-                  <span className="text-cafe-light dark:text-crema-300 text-xl flex-shrink-0">›</span>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    {terminada ? (
+                      <span className="text-xs font-semibold text-dorado bg-dorado/10 px-2 py-0.5 rounded-full">
+                        Completada
+                      </span>
+                    ) : enCurso ? (
+                      <span className="text-xs font-semibold text-cafe-light dark:text-crema-300">
+                        Día {completados + 1}/9
+                      </span>
+                    ) : null}
+                    <span className="text-cafe-light dark:text-crema-300 text-xl">›</span>
+                  </div>
                 </div>
-                {novena.intencionSugerida && (
+
+                {/* Mini barra de progreso */}
+                {progreso && (
+                  <div className="mt-3 flex gap-1">
+                    {Array.from({ length: 9 }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`flex-1 h-1 rounded-full ${
+                          progreso.diasCompletados.includes(i + 1)
+                            ? 'bg-dorado'
+                            : 'bg-crema-200 dark:bg-oscuro-border'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {!progreso && novena.intencionSugerida && (
                   <div className="mt-3 pt-3 border-t border-crema-200 dark:border-oscuro-border">
                     <p className="text-xs text-cafe-light dark:text-crema-300 italic">
-                      "{novena.intencionSugerida}"
+                      &ldquo;{novena.intencionSugerida}&rdquo;
                     </p>
                   </div>
                 )}
               </Link>
-          ))}
+            )
+          })}
         </div>
 
-        <BugReportLink />
-
+        <div className="px-4">
+          <BugReportLink />
+        </div>
       </div>
     </div>
   )

@@ -109,7 +109,6 @@ const recursos: Tool[] = [
     title: 'Novenas',
     description: 'Rezá novenas con recordatorios diarios. Acompañarte con la intercesión de los santos.',
     to: '/novenas',
-    soon: IS_PROD,
   },
   {
     icon: 'clipboard',
@@ -310,6 +309,10 @@ function LectioModal({
 export default function InicioPage() {
   const navigate = useNavigate()
   const lastBiblePath = useAppStore(s => s.lastBiblePath)
+  const novenasProgreso = useAppStore(s => s.novenasProgreso)
+  // Novena activa: la que tenga días incompletos, ordenada por la más reciente
+  const novenaActiva = novenasProgreso.find(p => p.diasCompletados.length < 9) ?? null
+  const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
   const [quote] = useState<Quote>(() => QUOTES[Math.floor(Math.random() * QUOTES.length)])
 
   // About modal
@@ -581,6 +584,35 @@ export default function InicioPage() {
             <p className="text-xs text-red-500 mt-3">{errorRec}</p>
           )}
         </div>
+
+        {/* Continuar novena */}
+        {novenaActiva && diaSiguiente && diaSiguiente <= 9 && (
+          <button
+            onClick={() => navigate(`/novenas/${novenaActiva.novenaId}`)}
+            className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                       bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
+                       active:scale-[0.98] transition-all duration-200"
+          >
+            <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
+                Rezar oración del día
+              </p>
+              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+                Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
+              </p>
+              {novenaActiva.intencion && (
+                <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
+                  {novenaActiva.intencion}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+              <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
+              <Icon name="chevron-right" size={16} className="text-dorado/50" />
+            </div>
+          </button>
+        )}
 
         {/* Continuar leyendo */}
         {lastBiblePath && (

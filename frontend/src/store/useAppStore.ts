@@ -2,6 +2,20 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { getLiturgicalAppColor } from '../lib/lectionaryResolver'
 
+export interface NovenaProgreso {
+  novenaId: number
+  nombreNovena: string
+  santo: string
+  diaActual: number          // último día marcado como rezado (0 = sin empezar)
+  fechaInicio: string        // ISO date "2024-03-25"
+  intencion: string
+  diasCompletados: number[]  // [1, 2, 3, ...]
+  notificacion: {
+    activa: boolean
+    hora: string             // "08:00"
+  } | null
+}
+
 export interface SavedCitation {
   id: string
   abbr: string
@@ -60,6 +74,14 @@ interface AppState {
   addSavedCitation: (citation: Omit<SavedCitation, 'id' | 'savedAt'>) => void
   removeSavedCitation: (id: string) => void
   updateSavedCitation: (id: string, updates: Partial<Pick<SavedCitation, 'comment' | 'category'>>) => void
+
+  // Novenas en progreso
+  novenasProgreso: NovenaProgreso[]
+  setNovenaProgreso: (progreso: NovenaProgreso) => void
+  removeNovenaProgreso: (novenaId: number) => void
+  updateNovenaIntencion: (novenaId: number, intencion: string) => void
+  updateNovenaNotificacion: (novenaId: number, notificacion: NovenaProgreso['notificacion']) => void
+  marcarDiaRezado: (novenaId: number, dia: number) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -141,6 +163,36 @@ export const useAppStore = create<AppState>()(
       updateSavedCitation: (id, updates) => set((s) => ({
         savedCitations: s.savedCitations.map(c => c.id === id ? { ...c, ...updates } : c),
       })),
+
+      novenasProgreso: [],
+      setNovenaProgreso: (progreso) => set((s) => ({
+        novenasProgreso: [
+          ...s.novenasProgreso.filter(p => p.novenaId !== progreso.novenaId),
+          progreso,
+        ],
+      })),
+      removeNovenaProgreso: (novenaId) => set((s) => ({
+        novenasProgreso: s.novenasProgreso.filter(p => p.novenaId !== novenaId),
+      })),
+      updateNovenaIntencion: (novenaId, intencion) => set((s) => ({
+        novenasProgreso: s.novenasProgreso.map(p =>
+          p.novenaId === novenaId ? { ...p, intencion } : p
+        ),
+      })),
+      updateNovenaNotificacion: (novenaId, notificacion) => set((s) => ({
+        novenasProgreso: s.novenasProgreso.map(p =>
+          p.novenaId === novenaId ? { ...p, notificacion } : p
+        ),
+      })),
+      marcarDiaRezado: (novenaId, dia) => set((s) => ({
+        novenasProgreso: s.novenasProgreso.map(p => {
+          if (p.novenaId !== novenaId) return p
+          const completados = p.diasCompletados.includes(dia)
+            ? p.diasCompletados
+            : [...p.diasCompletados, dia].sort((a, b) => a - b)
+          return { ...p, diasCompletados: completados, diaActual: Math.max(p.diaActual, dia) }
+        }),
+      })),
     }),
     {
       name: 'mana-store',
@@ -154,7 +206,8 @@ export const useAppStore = create<AppState>()(
         pinnedBooks: state.pinnedBooks,
         lastBiblePath: state.lastBiblePath,
         recentRecommendations: state.recentRecommendations,
-      savedCitations: state.savedCitations,
+        savedCitations: state.savedCitations,
+        novenasProgreso: state.novenasProgreso,
       }),
     }
   )

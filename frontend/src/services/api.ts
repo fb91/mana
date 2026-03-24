@@ -11,8 +11,10 @@ export type Novena = {
   santo: string
   descripcion?: string
   intencionSugerida?: string
-  autor: string
+  autor?: string
   estado: string
+  categoria?: string
+  fechaFestividad?: string | null
   dias?: NovenaDia[]
 }
 
