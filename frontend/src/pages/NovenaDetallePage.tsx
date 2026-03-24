@@ -6,6 +6,7 @@ import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
 import { useAppStore, NovenaProgreso } from '../store/useAppStore'
+import TimePicker from '../components/TimePicker'
 
 const novenas = novenasJson as Novena[]
 
@@ -240,16 +241,9 @@ export default function NovenaDetallePage() {
                 </button>
               </div>
               {notifActiva && (
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2">
                   <label className="text-xs text-cafe-light dark:text-crema-300">Hora del recordatorio</label>
-                  <input
-                    type="time"
-                    value={horaNotif}
-                    onChange={e => guardarHoraNotif(e.target.value)}
-                    className="rounded-lg border border-crema-300 dark:border-oscuro-border
-                               bg-crema dark:bg-oscuro-surface text-cafe-dark dark:text-crema-200
-                               text-sm px-3 py-1.5 outline-none focus:border-dorado/60"
-                  />
+                  <TimePicker value={horaNotif} onChange={guardarHoraNotif} />
                 </div>
               )}
               <button
@@ -415,16 +409,9 @@ export default function NovenaDetallePage() {
                   </button>
                 </div>
                 {notifActiva && (
-                  <div className="flex items-center gap-3 px-1">
-                    <label className="text-xs text-cafe-light dark:text-crema-300 flex-1">Hora del recordatorio</label>
-                    <input
-                      type="time"
-                      value={horaNotif}
-                      onChange={e => guardarHoraNotif(e.target.value)}
-                      className="rounded-lg border border-crema-300 dark:border-oscuro-border
-                                 bg-crema dark:bg-oscuro-surface text-cafe-dark dark:text-crema-200
-                                 text-sm px-3 py-1.5 outline-none focus:border-dorado/60"
-                    />
+                  <div className="flex flex-col gap-2 px-1">
+                    <label className="text-xs text-cafe-light dark:text-crema-300">Hora del recordatorio</label>
+                    <TimePicker value={horaNotif} onChange={guardarHoraNotif} />
                   </div>
                 )}
                 <button
