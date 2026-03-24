@@ -2,7 +2,6 @@
   "name": "mana",
   "private": true,
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "admin": "node admin/server.js"
+    "dev": "cd frontend && npm run dev"
   }
 }
