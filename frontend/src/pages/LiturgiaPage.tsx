@@ -7,8 +7,9 @@ import { downloadLectioPDF } from '../lib/lectio-pdf'
 import { getLiturgicalContext, addDays, isSameDay } from '../lib/liturgicalCalendar'
 import { resolveDay, ResolvedDay, COLOR_STYLES } from '../lib/lectionaryResolver'
 import { parseBibleRef, formatRef, getBookName } from '../lib/bibleRefParser'
-import { shareOrDownload, canGospelFitInImage } from '../lib/shareCard'
 import { BugReportLink } from '../components/BugReportButton'
+import ImageEditorModal, { type ImageEditorData } from '../components/ImageEditorModal'
+import { LITURGICAL_THEME_MAP } from '../lib/verseImage'
 import CalendarPicker from '../components/CalendarPicker'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -239,21 +240,22 @@ function GospelCard({
   const refDisplay = formatRef(reference)
   const styles = COLOR_STYLES[resolvedDay.color] ?? COLOR_STYLES.green
 
+  // Strip book abbreviation from refDisplay to get just "8:1-11"
+  const abbr = refs.length > 0 ? refs[0].book : ''
+  const verseRange = refDisplay.startsWith(abbr)
+    ? refDisplay.slice(abbr.length).trim()
+    : refDisplay
+
   return (
     <div className="card overflow-hidden">
       {/* Header con color litúrgico */}
       <div className={`rounded-xl p-4 mb-5 ${styles.bg} ${styles.border} border`}>
-        <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${styles.text} opacity-60`}>
-          Evangelio
-        </p>
-        <p className={`font-serif text-xl font-semibold leading-snug ${styles.text}`}>
-          {bookName}
-        </p>
-        <p className={`text-sm font-medium mt-1 ${styles.text} opacity-80`}>
-          {refDisplay}
-        </p>
-        <p className={`text-xs mt-2 ${styles.text} opacity-60 font-medium`}>
+        <p className={`text-xs font-medium mb-2 ${styles.text} opacity-65`}>
           {resolvedDay.celebrationName}
+        </p>
+        <p className={`font-serif leading-snug ${styles.text}`}>
+          <span className="text-xl font-semibold">Evangelio según San {bookName}</span>
+          <span className="text-sm font-medium opacity-75"> {verseRange}</span>
         </p>
       </div>
 
@@ -531,119 +533,6 @@ function LectioDivinaModal({
   )
 }
 
-// ── Share Preview Modal ────────────────────────────────────────────────────────
-
-function ShareModal({
-  day,
-  date,
-  gospelRef,
-  gospelText,
-  gospelVerses,
-  onClose,
-}: {
-  day: ResolvedDay
-  date: Date
-  gospelRef: string
-  gospelText: string
-  gospelVerses: BibleVerse[]
-  onClose: () => void
-}) {
-  const [sharing, setSharing] = useState(false)
-  const [done, setDone] = useState(false)
-  const styles = COLOR_STYLES[day.color] ?? COLOR_STYLES.green
-
-  async function handleShare() {
-    setSharing(true)
-    try {
-      await shareOrDownload(
-        {
-          celebrationName: day.celebrationName,
-          liturgicalLabel: day.label,
-          dateStr: formatDateLabel(date),
-          gospelRef,
-          gospelVerses,
-          color: day.color,
-        },
-        `lecturas-${date.toISOString().slice(0, 10)}.png`,
-      )
-      setDone(true)
-      setTimeout(onClose, 1500)
-    } catch (error) {
-      console.error('Error al compartir:', error)
-      alert('Hubo un error al generar la imagen. Por favor, intentá de nuevo.')
-    } finally {
-      setSharing(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full bg-crema dark:bg-oscuro-bg rounded-t-3xl p-5 pb-8 shadow-2xl animate-slide-up">
-        <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-4" />
-
-        <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200 mb-1">
-          Compartir Evangelio del día
-        </h2>
-        <p className="text-sm text-cafe-light dark:text-crema-300 mb-5">
-          Se generará una imagen con el Evangelio del día para que puedas compartirlo.
-        </p>
-
-        {/* Preview card */}
-        <div className={`rounded-2xl border p-4 mb-5 ${styles.bg} ${styles.border}`}>
-          <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${styles.text} opacity-60`}>
-            Maná · Evangelio del día
-          </p>
-          <p className={`font-serif font-semibold text-base ${styles.text}`}>
-            {day.celebrationName}
-          </p>
-          <p className={`text-xs mt-1 capitalize ${styles.text} opacity-70`}>
-            {formatDateLabel(date)}
-          </p>
-          {gospelRef && (
-            <p className={`text-xs mt-2 font-medium ${styles.text} opacity-80`}>
-              Evangelio: {formatRef(gospelRef)}
-            </p>
-          )}
-          {gospelText && (
-            <p className={`text-xs mt-1 italic ${styles.text} opacity-60 line-clamp-2`}>
-              "{gospelText.slice(0, 120)}…"
-            </p>
-          )}
-        </div>
-
-        {done ? (
-          <div className="flex items-center justify-center gap-2 py-3 text-green-600 dark:text-green-400">
-            <Icon name="check" size={20} />
-            <span className="font-medium text-sm">¡Compartido!</span>
-          </div>
-        ) : (
-          <button
-            onClick={handleShare}
-            disabled={sharing}
-            className="btn-primary w-full flex items-center justify-center gap-2"
-          >
-            {sharing ? (
-              <span className="text-sm">Generando imagen...</span>
-            ) : (
-              <>
-                <Icon name="share" size={18} />
-                <span>Generar imagen</span>
-              </>
-            )}
-          </button>
-        )}
-
-        <button
-          onClick={onClose}
-          className="w-full text-center text-sm text-cafe-light dark:text-crema-300 mt-3 py-1"
-        >
-          Cancelar
-        </button>
-      </div>
-    </div>
-  )
-}
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
@@ -657,7 +546,7 @@ export default function LiturgiaPage() {
   const [loadedVerses, setLoadedVerses] = useState<LoadedVerses>({})
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
-  const [showShare, setShowShare] = useState(false)
+  const [imageEditorData, setImageEditorData] = useState<ImageEditorData | null>(null)
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
   useEffect(() => {
@@ -729,9 +618,6 @@ export default function LiturgiaPage() {
 
   const readings = resolvedDay?.readings
   const gospelRef = readings?.gospel ?? ''
-  const gospelText = loadedVerses.gospel?.map(v => v.text).join(' ') ?? ''
-  const gospelVerses = loadedVerses.gospel ?? []
-  const gospelFitsInImage = canGospelFitInImage(gospelVerses)
 
   const accentClass = resolvedDay
     ? (COLOR_STYLES[resolvedDay.color]?.text ?? 'text-dorado')
@@ -820,28 +706,30 @@ export default function LiturgiaPage() {
                   </div>
                 </button>
 
-                {/* Share button */}
-                <div>
-                  <button
-                    onClick={() => setShowShare(true)}
-                    disabled={!gospelFitsInImage || !loadedVerses.gospel}
-                    className="w-full flex items-center justify-center gap-2.5
-                               border border-crema-300 dark:border-oscuro-border
-                               text-cafe-light dark:text-crema-300
-                               rounded-2xl px-5 py-3.5 font-medium text-sm
-                               active:scale-[0.98] transition-all duration-150
-                               hover:bg-crema-100 dark:hover:bg-oscuro-surface
-                               disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Icon name="share" size={18} />
-                    Generar imagen para compartir
-                  </button>
-                  {loadedVerses.gospel && !gospelFitsInImage && (
-                    <p className="text-xs text-cafe-light dark:text-crema-300 text-center mt-2 opacity-70">
-                      El texto es demasiado largo como para que quepa en una imagen :)
-                    </p>
-                  )}
-                </div>
+                {/* Share button → opens image editor */}
+                <button
+                  onClick={() => {
+                    if (!resolvedDay || !loadedVerses.gospel) return
+                    setImageEditorData({
+                      headerLabel: 'EVANGELIO',
+                      verseRef: formatRef(gospelRef),
+                      verses: loadedVerses.gospel,
+                      footer: formatDateLabel(selectedDate),
+                      defaultThemeId: LITURGICAL_THEME_MAP[resolvedDay.color] ?? 'dorado',
+                    })
+                  }}
+                  disabled={!loadedVerses.gospel}
+                  className="w-full flex items-center justify-center gap-2.5
+                             border border-crema-300 dark:border-oscuro-border
+                             text-cafe-light dark:text-crema-300
+                             rounded-2xl px-5 py-3.5 font-medium text-sm
+                             active:scale-[0.98] transition-all duration-150
+                             hover:bg-crema-100 dark:hover:bg-oscuro-surface
+                             disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Icon name="image" size={18} />
+                  Crear imagen para compartir
+                </button>
               </div>
             )}
 
@@ -861,15 +749,11 @@ export default function LiturgiaPage() {
         />
       )}
 
-      {/* Share Modal */}
-      {showShare && resolvedDay && (
-        <ShareModal
-          day={resolvedDay}
-          date={selectedDate}
-          gospelRef={gospelRef}
-          gospelText={gospelText}
-          gospelVerses={loadedVerses.gospel ?? []}
-          onClose={() => setShowShare(false)}
+      {/* Image Editor Modal */}
+      {imageEditorData && (
+        <ImageEditorModal
+          data={imageEditorData}
+          onClose={() => setImageEditorData(null)}
         />
       )}
 

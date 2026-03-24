@@ -2,6 +2,18 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { getLiturgicalAppColor } from '../lib/lectionaryResolver'
 
+export interface SavedCitation {
+  id: string
+  abbr: string
+  bookName: string
+  chapter: number
+  verseNumbers: number[]
+  verseTexts: string[]
+  comment: string
+  category: string
+  savedAt: number
+}
+
 export type Theme      = 'claro' | 'oscuro'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
@@ -42,6 +54,12 @@ interface AppState {
   recentRecommendations: string[] // Array de referencias "Libro Capitulo:Versiculo"
   addRecommendation: (ref: string) => void
   clearRecommendations: () => void
+
+  // Citas bíblicas guardadas
+  savedCitations: SavedCitation[]
+  addSavedCitation: (citation: Omit<SavedCitation, 'id' | 'savedAt'>) => void
+  removeSavedCitation: (id: string) => void
+  updateSavedCitation: (id: string, updates: Partial<Pick<SavedCitation, 'comment' | 'category'>>) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -109,6 +127,20 @@ export const useAppStore = create<AppState>()(
         return { recentRecommendations: updated.slice(0, 20) }
       }),
       clearRecommendations: () => set({ recentRecommendations: [] }),
+
+      savedCitations: [],
+      addSavedCitation: (citation) => set((s) => ({
+        savedCitations: [
+          { ...citation, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, savedAt: Date.now() },
+          ...s.savedCitations,
+        ].slice(0, 200),
+      })),
+      removeSavedCitation: (id) => set((s) => ({
+        savedCitations: s.savedCitations.filter(c => c.id !== id),
+      })),
+      updateSavedCitation: (id, updates) => set((s) => ({
+        savedCitations: s.savedCitations.map(c => c.id === id ? { ...c, ...updates } : c),
+      })),
     }),
     {
       name: 'mana-store',
@@ -122,6 +154,7 @@ export const useAppStore = create<AppState>()(
         pinnedBooks: state.pinnedBooks,
         lastBiblePath: state.lastBiblePath,
         recentRecommendations: state.recentRecommendations,
+      savedCitations: state.savedCitations,
       }),
     }
   )

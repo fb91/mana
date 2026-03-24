@@ -2,7 +2,8 @@ import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { useAppStore, Theme, FontFamily, FONT_PRESETS, GARAMOND_FONT_PRESETS } from '../store/useAppStore'
-import { getLiturgicalAppColor, LITURGICAL_COLOR_LABELS, LITURGICAL_COLOR_HEX } from '../lib/lectionaryResolver'
+import { getLiturgicalAppColor, LITURGICAL_COLOR_HEX } from '../lib/lectionaryResolver'
+import { getLiturgicalContext } from '../lib/liturgicalCalendar'
 import { usePWAInstall } from '../hooks/usePWAInstall'
 import IOSInstallModal from '../components/IOSInstallModal'
 import { BugReportLink } from '../components/BugReportButton'
@@ -50,7 +51,12 @@ export default function AjustesPage() {
 
   const currentLiturgicalColor = getLiturgicalAppColor(new Date())
   const currentLiturgicalHex   = LITURGICAL_COLOR_HEX[currentLiturgicalColor]
-  const currentLiturgicalLabel = LITURGICAL_COLOR_LABELS[currentLiturgicalColor]
+  const litCtx = getLiturgicalContext(new Date())
+  const SEASON_LABELS: Record<string, string> = {
+    ADVENT: 'Adviento', CHRISTMAS: 'Navidad', LENT: 'Cuaresma',
+    EASTER: 'Pascua', ORDINARY: 'Tiempo Ordinario',
+  }
+  const currentSeasonLabel = SEASON_LABELS[litCtx.season] ?? ''
 
   return (
     <div className="flex flex-col h-screen">
@@ -144,7 +150,7 @@ export default function AjustesPage() {
                       style={{ backgroundColor: currentLiturgicalHex }}
                     />
                     <span className="text-[11px] font-medium" style={{ color: currentLiturgicalHex }}>
-                      Hoy: {currentLiturgicalLabel}
+                      Hoy: {currentSeasonLabel}
                     </span>
                   </div>
                 )}

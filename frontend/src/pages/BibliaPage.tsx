@@ -2,12 +2,53 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { api, BibleBook, BibleChapter, LectioBiblicaResponse } from '../services/api'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
-import { useAppStore } from '../store/useAppStore'
+import { useAppStore, SavedCitation } from '../store/useAppStore'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
+import SaveCitationModal from '../components/SaveCitationModal'
+import ImageEditorModal, { type ImageEditorData } from '../components/ImageEditorModal'
 
-// All books show their abbreviation as decorative background text
+// ── Citation parser ────────────────────────────────────────────────────────────
+interface ParsedCitation {
+  book: BibleBook
+  chapter: number
+  verse?: number
+}
+
+function parseCitation(query: string, books: BibleBook[]): ParsedCitation | null {
+  const normalized = query.trim().toLowerCase()
+  if (!normalized) return null
+
+  // Sort by name length desc so "1 Corintios" matches before "Corintios"
+  const sorted = [...books].sort((a, b) => b.name.length - a.name.length)
+
+  for (const book of sorted) {
+    const name = book.name.toLowerCase()
+    const abbr = book.abbr.toLowerCase()
+    let remaining = ''
+
+    if (normalized.startsWith(name)) {
+      remaining = normalized.slice(name.length).trim()
+    } else if (normalized.startsWith(abbr) &&
+               (normalized.length === abbr.length || normalized[abbr.length] === ' ')) {
+      remaining = normalized.slice(abbr.length).trim()
+    } else {
+      continue
+    }
+
+    if (!remaining) return null
+    const match = remaining.match(/^(\d+)(?:[:.,-](\d+))?/)
+    if (!match) return null
+
+    const chapter = parseInt(match[1])
+    const verse = match[2] ? parseInt(match[2]) : undefined
+    if (chapter < 1 || chapter > book.chaptersCount) return null
+
+    return { book, chapter, verse }
+  }
+  return null
+}
 
 // ── Long-press hook ───────────────────────────────────────────────────────────
 function useLongPress(callback: () => void, delay = 500) {
@@ -16,7 +57,6 @@ function useLongPress(callback: () => void, delay = 500) {
 
   function start(e: React.TouchEvent | React.MouseEvent) {
     fired.current = false
-    // Prevent iOS text selection on long press
     e.preventDefault()
     timer.current = setTimeout(() => {
       fired.current = true
@@ -35,7 +75,6 @@ function useLongPress(callback: () => void, delay = 500) {
     onTouchStart: start,
     onTouchEnd: (e: React.TouchEvent) => {
       cancel()
-      // If long press fired, prevent the subsequent click
       if (fired.current) e.preventDefault()
     },
     onTouchMove: cancel,
@@ -77,7 +116,6 @@ function BookCard({
           : 'border-crema-200 dark:border-oscuro-border',
       ].join(' ')}
     >
-      {/* Abbreviation background (decorative) */}
       <span
         aria-hidden
         className="absolute right-1 top-1/2 -translate-y-1/2 select-none pointer-events-none
@@ -86,8 +124,6 @@ function BookCard({
       >
         {book.abbr}
       </span>
-
-      {/* Pin corner triangle — top-left, clipped by the card's overflow-hidden */}
       {pinned && (
         <span
           aria-hidden
@@ -99,7 +135,6 @@ function BookCard({
           }}
         />
       )}
-
       <p className="text-sm font-medium text-cafe-dark dark:text-crema-200
                     group-hover:text-dorado transition-colors leading-tight relative z-10">
         {book.name}
@@ -125,7 +160,6 @@ function LongPressPopup({
 }) {
   const [ready, setReady] = useState(false)
   useEffect(() => {
-    // Delay registering backdrop click to avoid touch-end closing the popup immediately
     const t = setTimeout(() => setReady(true), 300)
     return () => clearTimeout(t)
   }, [])
@@ -166,19 +200,23 @@ function BookSelector({
   newlyPinned,
   onSelect,
   onLongPress,
+  onCitationGo,
+  onShowCitations,
+  citationCount,
 }: {
   books: BibleBook[]
   pinnedBooks: string[]
   newlyPinned: string | null
   onSelect: (abbr: string) => void
   onLongPress: (book: BibleBook) => void
+  onCitationGo: (parsed: ParsedCitation) => void
+  onShowCitations: () => void
+  citationCount: number
 }) {
   const pinnedCardRef = useRef<HTMLButtonElement>(null)
-  const pinned = books.filter(b => pinnedBooks.includes(b.abbr))
-  const at = books.filter(b => b.testament === 'AT')
-  const nt = books.filter(b => b.testament === 'NT')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortMode, setSortMode] = useState<'organic' | 'alpha'>('organic')
 
-  // Scroll to newly pinned book and highlight it briefly
   useEffect(() => {
     if (newlyPinned) {
       setTimeout(() => {
@@ -187,10 +225,129 @@ function BookSelector({
     }
   }, [newlyPinned])
 
+  const parsed = searchQuery.length >= 2 ? parseCitation(searchQuery, books) : null
+
+  const filteredBooks = searchQuery.trim()
+    ? books.filter(b =>
+        b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.abbr.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : books
+
+  const displayBooks = sortMode === 'alpha'
+    ? [...filteredBooks].sort((a, b) => a.name.localeCompare(b.name, 'es'))
+    : filteredBooks
+
+  const pinned = displayBooks.filter(b => pinnedBooks.includes(b.abbr))
+  const at = displayBooks.filter(b => b.testament === 'AT' && !pinnedBooks.includes(b.abbr))
+  const nt = displayBooks.filter(b => b.testament === 'NT' && !pinnedBooks.includes(b.abbr))
+  const isSearching = searchQuery.trim().length > 0
+
   return (
     <div className="pb-6 animate-fade-in">
-      {/* Fijados section */}
-      {pinned.length > 0 && (
+      {/* Search + controls bar */}
+      <div className="px-4 mb-4">
+        {/* Search input */}
+        <div className="relative mb-3">
+          <Icon
+            name="search"
+            size={16}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cafe-light dark:text-crema-400 pointer-events-none"
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar libro o ir a cita (ej: Gn 1:1)"
+            className="w-full bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                       rounded-2xl pl-10 pr-4 py-3 text-sm text-cafe-dark dark:text-crema-200
+                       placeholder:text-cafe-light/60 dark:placeholder:text-crema-400/60
+                       focus:outline-none focus:border-dorado/60 focus:ring-1 focus:ring-dorado/30
+                       transition-colors"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cafe-light dark:text-crema-400 text-sm w-5 h-5 flex items-center justify-center"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Controls row */}
+        <div className="flex items-center gap-2">
+          {/* Sort toggle */}
+          <div className="flex rounded-xl overflow-hidden border border-crema-200 dark:border-oscuro-border flex-1">
+            <button
+              onClick={() => setSortMode('organic')}
+              className={[
+                'flex-1 text-xs py-2 px-3 font-medium transition-all flex items-center justify-center gap-1.5',
+                sortMode === 'organic'
+                  ? 'bg-dorado text-crema-50'
+                  : 'bg-white dark:bg-oscuro-surface text-cafe-light dark:text-crema-400',
+              ].join(' ')}
+            >
+              <Icon name="book-open" size={12} />
+              Bíblico
+            </button>
+            <button
+              onClick={() => setSortMode('alpha')}
+              className={[
+                'flex-1 text-xs py-2 px-3 font-medium transition-all flex items-center justify-center gap-1.5',
+                sortMode === 'alpha'
+                  ? 'bg-dorado text-crema-50'
+                  : 'bg-white dark:bg-oscuro-surface text-cafe-light dark:text-crema-400',
+              ].join(' ')}
+            >
+              <Icon name="sort-az" size={12} />
+              A-Z
+            </button>
+          </div>
+
+          {/* Saved citations button */}
+          <button
+            onClick={onShowCitations}
+            className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl
+                       bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                       text-cafe-light dark:text-crema-400 text-xs font-medium
+                       hover:border-dorado/50 hover:text-dorado transition-all relative"
+          >
+            <Icon name="bookmark" size={14} />
+            <span>Citas</span>
+            {citationCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-dorado text-crema-50 text-[9px] font-bold
+                               w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                {citationCount > 99 ? '99+' : citationCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Citation action */}
+        {parsed && (
+          <button
+            onClick={() => onCitationGo(parsed)}
+            className="w-full flex items-center gap-2.5 mt-3 py-3 px-4 rounded-2xl
+                       bg-dorado/10 dark:bg-dorado/15 border border-dorado/30
+                       active:scale-[0.98] transition-all group"
+          >
+            <Icon name="link" size={16} className="text-dorado shrink-0" />
+            <div className="text-left flex-1 min-w-0">
+              <p className="text-sm font-semibold text-dorado">
+                Ir a {parsed.book.name} {parsed.chapter}{parsed.verse ? `:${parsed.verse}` : ''}
+              </p>
+              <p className="text-xs text-cafe-light dark:text-crema-400">
+                {parsed.book.chaptersCount} capítulos
+              </p>
+            </div>
+            <Icon name="chevron-right" size={16} className="text-dorado shrink-0" />
+          </button>
+        )}
+      </div>
+
+      {/* Fijados section (only when not searching or when pinned match) */}
+      {!isSearching && pinned.length > 0 && (
         <div className="mb-6 px-4">
           <div className="flex items-center gap-2 mb-3">
             <Icon name="pin" size={14} className="text-dorado" />
@@ -214,22 +371,54 @@ function BookSelector({
         </div>
       )}
 
-      <TestamentSection
-        title="Antiguo Testamento"
-        books={at}
-        pinnedBooks={pinnedBooks}
-        newlyPinned={newlyPinned}
-        onSelect={onSelect}
-        onLongPress={onLongPress}
-      />
-      <TestamentSection
-        title="Nuevo Testamento"
-        books={nt}
-        pinnedBooks={pinnedBooks}
-        newlyPinned={newlyPinned}
-        onSelect={onSelect}
-        onLongPress={onLongPress}
-      />
+      {/* Books list */}
+      {isSearching || sortMode === 'alpha' ? (
+        /* Flat list when searching or alphabetical */
+        <div className="px-4">
+          {isSearching && sortMode === 'organic' && (
+            <h2 className="font-serif text-xs font-semibold text-dorado uppercase tracking-widest mb-3">
+              Resultados
+            </h2>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            {displayBooks.map(book => (
+              <BookCard
+                key={book.abbr}
+                book={book}
+                pinned={pinnedBooks.includes(book.abbr)}
+                highlighted={newlyPinned === book.abbr}
+                onSelect={() => onSelect(book.abbr)}
+                onLongPress={() => onLongPress(book)}
+              />
+            ))}
+          </div>
+          {displayBooks.length === 0 && (
+            <p className="text-sm text-cafe-light dark:text-crema-400 text-center py-8">
+              No se encontraron libros.
+            </p>
+          )}
+        </div>
+      ) : (
+        /* Organic order grouped by testament */
+        <>
+          <TestamentSection
+            title="Antiguo Testamento"
+            books={at}
+            pinnedBooks={pinnedBooks}
+            newlyPinned={newlyPinned}
+            onSelect={onSelect}
+            onLongPress={onLongPress}
+          />
+          <TestamentSection
+            title="Nuevo Testamento"
+            books={nt}
+            pinnedBooks={pinnedBooks}
+            newlyPinned={newlyPinned}
+            onSelect={onSelect}
+            onLongPress={onLongPress}
+          />
+        </>
+      )}
     </div>
   )
 }
@@ -261,7 +450,7 @@ function TestamentSection({
             key={book.abbr}
             book={book}
             pinned={pinnedBooks.includes(book.abbr)}
-            highlighted={false}
+            highlighted={newlyPinned === book.abbr}
             onSelect={() => onSelect(book.abbr)}
             onLongPress={() => onLongPress(book)}
           />
@@ -452,31 +641,329 @@ function LectioSection({ titulo, color, children }: { titulo: string; color: 'do
   )
 }
 
+// ── Share Verse Sheet ─────────────────────────────────────────────────────────
+function ShareVerseSheet({
+  url,
+  onImageEditor,
+  onClose,
+}: {
+  url: string
+  onImageEditor: () => void
+  onClose: () => void
+}) {
+  const [copied, setCopied] = useState(false)
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 200)
+    return () => clearTimeout(t)
+  }, [])
+
+  async function handleShareLink() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ url, title: 'Versículos bíblicos — Maná' })
+        onClose()
+        return
+      } catch { /* fallthrough */ }
+    }
+    await navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(onClose, 1500)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center" onClick={() => ready && onClose()}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className="relative w-full bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 py-6 pb-10 shadow-2xl animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
+        <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200 mb-1">
+          Compartir versículos
+        </h2>
+        <p className="text-xs text-cafe-light dark:text-crema-300 mb-5">
+          Elegí cómo querés compartir los versículos seleccionados.
+        </p>
+
+        <div className="space-y-2.5">
+          {/* Share link */}
+          <button
+            onClick={handleShareLink}
+            className="w-full flex items-center gap-3 py-3.5 px-4 rounded-2xl
+                       bg-dorado/10 hover:bg-dorado/20 active:scale-[0.98] transition-all"
+          >
+            <Icon name={copied ? 'check' : 'link'} size={20} className={copied ? 'text-green-500' : 'text-dorado'} />
+            <div className="text-left">
+              <p className={`font-medium text-sm ${copied ? 'text-green-600 dark:text-green-400' : 'text-dorado'}`}>
+                {copied ? '¡Enlace copiado!' : 'Compartir enlace'}
+              </p>
+              <p className="text-xs text-cafe-light dark:text-crema-400">
+                Al abrirlo, los versículos se resaltan
+              </p>
+            </div>
+          </button>
+
+          {/* Image editor */}
+          <button
+            onClick={() => { onImageEditor(); onClose() }}
+            className="w-full flex items-center gap-3 py-3.5 px-4 rounded-2xl
+                       bg-dorado/10 hover:bg-dorado/20 active:scale-[0.98] transition-all"
+          >
+            <Icon name="image" size={20} className="text-dorado" />
+            <div className="text-left">
+              <p className="font-medium text-sm text-dorado">Crear imagen para Stories</p>
+              <p className="text-xs text-cafe-light dark:text-crema-400">
+                Personalizá y descargá una imagen 9:16
+              </p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Saved Citations View ──────────────────────────────────────────────────────
+function CitationsView({
+  onClose,
+  onNavigate,
+}: {
+  onClose: () => void
+  onNavigate: (abbr: string, chapter: number, verse?: number) => void
+}) {
+  const { savedCitations, removeSavedCitation } = useAppStore()
+  const [editingCitation, setEditingCitation] = useState<SavedCitation | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterCategory, setFilterCategory] = useState('')
+
+  const allCategories = Array.from(new Set(savedCitations.map(c => c.category || 'Sin categoría')))
+
+  const filtered = savedCitations.filter(c => {
+    if (filterCategory) {
+      const cat = c.category || 'Sin categoría'
+      if (cat !== filterCategory) return false
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      return (
+        c.bookName.toLowerCase().includes(q) ||
+        c.comment.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q) ||
+        c.verseTexts.some(t => t.toLowerCase().includes(q))
+      )
+    }
+    return true
+  })
+
+  // Group by category
+  const grouped: Record<string, SavedCitation[]> = {}
+  for (const c of filtered) {
+    const cat = c.category || 'Sin categoría'
+    if (!grouped[cat]) grouped[cat] = []
+    grouped[cat].push(c)
+  }
+
+  const verseLabel = (c: SavedCitation) =>
+    c.verseNumbers.length === 1
+      ? `${c.bookName} ${c.chapter}:${c.verseNumbers[0]}`
+      : `${c.bookName} ${c.chapter}:${c.verseNumbers[0]}-${c.verseNumbers[c.verseNumbers.length - 1]}`
+
+  return (
+    <div className="animate-fade-in pb-6">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 mb-4">
+        <button
+          onClick={onClose}
+          className="text-dorado hover:text-dorado-dark text-sm font-medium transition-colors py-1"
+        >
+          ← Libros
+        </button>
+        <span className="text-cafe-light dark:text-crema-300 text-sm">/</span>
+        <span className="font-serif text-sm font-semibold text-cafe-dark dark:text-crema-200">
+          Citas Guardadas
+        </span>
+        <span className="ml-auto text-xs text-cafe-light dark:text-crema-400">
+          {savedCitations.length}
+        </span>
+      </div>
+
+      {savedCitations.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-8 text-center gap-4">
+          <span className="text-5xl">📌</span>
+          <p className="font-serif text-lg font-semibold text-cafe-dark dark:text-crema-200">
+            Todavía no guardaste citas
+          </p>
+          <p className="text-sm text-cafe-light dark:text-crema-400 leading-relaxed">
+            Seleccioná versículos mientras lees la Biblia y tocá el ícono de marcador para guardarlos con un comentario y categoría.
+          </p>
+          <button
+            onClick={onClose}
+            className="btn-primary mt-2"
+          >
+            Ir a leer
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Search */}
+          <div className="px-4 mb-4 space-y-2.5">
+            <div className="relative">
+              <Icon name="search" size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cafe-light dark:text-crema-400 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Buscar en tus citas..."
+                className="w-full bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                           rounded-2xl pl-9 pr-4 py-2.5 text-sm text-cafe-dark dark:text-crema-200
+                           placeholder:text-cafe-light/60 dark:placeholder:text-crema-400/60
+                           focus:outline-none focus:border-dorado/60 focus:ring-1 focus:ring-dorado/30
+                           transition-colors"
+              />
+            </div>
+
+            {/* Category filter pills */}
+            {allCategories.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                <button
+                  onClick={() => setFilterCategory('')}
+                  className={[
+                    'flex-none text-xs font-medium px-3 py-1.5 rounded-full transition-all',
+                    !filterCategory
+                      ? 'bg-dorado text-crema-50'
+                      : 'bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border text-cafe-light dark:text-crema-400',
+                  ].join(' ')}
+                >
+                  Todas
+                </button>
+                {allCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setFilterCategory(cat === filterCategory ? '' : cat)}
+                    className={[
+                      'flex-none text-xs font-medium px-3 py-1.5 rounded-full transition-all whitespace-nowrap',
+                      filterCategory === cat
+                        ? 'bg-dorado text-crema-50'
+                        : 'bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border text-cafe-light dark:text-crema-400',
+                    ].join(' ')}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Citations grouped by category */}
+          {Object.keys(grouped).length === 0 ? (
+            <p className="text-sm text-cafe-light dark:text-crema-400 text-center py-8">
+              No hay citas que coincidan con la búsqueda.
+            </p>
+          ) : (
+            Object.entries(grouped).map(([cat, citations]) => (
+              <div key={cat} className="mb-6 px-4">
+                <h2 className="font-serif text-xs font-semibold text-dorado uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                  <Icon name="bookmark" size={12} />
+                  {cat}
+                  <span className="text-cafe-light dark:text-crema-400 normal-case tracking-normal font-normal">
+                    ({citations.length})
+                  </span>
+                </h2>
+                <div className="space-y-2.5">
+                  {citations.map(c => (
+                    <div
+                      key={c.id}
+                      className="bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                                 rounded-2xl overflow-hidden"
+                    >
+                      <button
+                        onClick={() => onNavigate(c.abbr, c.chapter, c.verseNumbers[0])}
+                        className="w-full text-left px-4 pt-3.5 pb-2.5 hover:bg-crema-50 dark:hover:bg-oscuro-border
+                                   active:scale-[0.99] transition-all"
+                      >
+                        <p className="text-xs font-semibold text-dorado mb-1.5">{verseLabel(c)}</p>
+                        <p className="font-serif text-sm text-cafe-dark dark:text-crema-200 leading-relaxed line-clamp-3">
+                          {c.verseTexts[0]}
+                          {c.verseNumbers.length > 1 && ` …(${c.verseNumbers.length} vers.)`}
+                        </p>
+                        {c.comment && (
+                          <p className="text-xs text-cafe-light dark:text-crema-400 mt-1.5 italic line-clamp-2">
+                            "{c.comment}"
+                          </p>
+                        )}
+                      </button>
+                      <div className="flex items-center border-t border-crema-100 dark:border-oscuro-border px-4 py-2 gap-3">
+                        <span className="text-[10px] text-cafe-light dark:text-crema-500 flex-1">
+                          {new Date(c.savedAt).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                        <button
+                          onClick={() => setEditingCitation(c)}
+                          className="text-xs text-cafe-light dark:text-crema-400 hover:text-dorado transition-colors py-1 px-2"
+                        >
+                          <Icon name="pencil" size={13} />
+                        </button>
+                        <button
+                          onClick={() => removeSavedCitation(c.id)}
+                          className="text-xs text-cafe-light dark:text-crema-400 hover:text-red-500 transition-colors py-1 px-2"
+                        >
+                          <Icon name="trash" size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </>
+      )}
+
+      {/* Edit modal */}
+      {editingCitation && (
+        <SaveCitationModal
+          abbr={editingCitation.abbr}
+          bookName={editingCitation.bookName}
+          chapter={editingCitation.chapter}
+          verseNumbers={editingCitation.verseNumbers}
+          verseTexts={editingCitation.verseTexts}
+          existing={editingCitation}
+          onClose={() => setEditingCitation(null)}
+        />
+      )}
+    </div>
+  )
+}
+
 // ── Verse Reader ──────────────────────────────────────────────────────────────
 type SlideDir = 'next' | 'prev' | null
 
 function VerseReader({
   chapter,
   maxChapter,
-  highlightVerse,
+  highlightVerses,
   focusMode,
   setFocusMode,
   onBack,
   onChapterChange,
+  onSave,
+  onShare,
   scrollContainerRef,
 }: {
   chapter: BibleChapter
   maxChapter: number
-  highlightVerse: number | null
+  highlightVerses: number[]
   focusMode: boolean
   setFocusMode: (v: boolean) => void
   onBack: () => void
   onChapterChange: (delta: number) => void
+  onSave: (verseNumbers: number[], verseTexts: string[]) => void
+  onShare: (verseNumbers: number[], verseTexts: string[]) => void
   scrollContainerRef: React.RefObject<HTMLDivElement>
 }) {
   const verseRefs = useRef<Record<number, HTMLDivElement | null>>({})
   const prevChapterRef = useRef(chapter.chapter)
-  const [activeHighlight, setActiveHighlight] = useState<number | null>(highlightVerse)
+  const [activeHighlights, setActiveHighlights] = useState<number[]>(highlightVerses)
   const [selectedVerses, setSelectedVerses] = useState<Set<number>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
   const [showFocusExit, setShowFocusExit] = useState(false)
@@ -485,7 +972,6 @@ function VerseReader({
 
   useEffect(() => { setSelectedVerses(new Set()) }, [chapter.chapter])
 
-  // Trigger slide-in when chapter data actually changes (component stays mounted)
   useEffect(() => {
     if (prevChapterRef.current !== chapter.chapter) {
       prevChapterRef.current = chapter.chapter
@@ -495,19 +981,19 @@ function VerseReader({
   }, [chapter.chapter])
 
   useEffect(() => {
-    if (highlightVerse) {
-      setActiveHighlight(highlightVerse)
+    if (highlightVerses.length > 0) {
+      setActiveHighlights(highlightVerses)
       setTimeout(() => {
-        verseRefs.current[highlightVerse]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        const firstVerse = highlightVerses[0]
+        verseRefs.current[firstVerse]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }, 200)
-      const timer = setTimeout(() => setActiveHighlight(null), 3500)
+      const timer = setTimeout(() => setActiveHighlights([]), 3500)
       return () => clearTimeout(timer)
     }
-  }, [highlightVerse, chapter.chapter])
+  }, [highlightVerses, chapter.chapter])
 
   function toggleVerse(n: number, e: React.MouseEvent) {
     if (focusMode) {
-      // Stop bubbling so the wrapper's onClick doesn't double-toggle
       e.stopPropagation()
       setShowFocusExit(v => !v)
       return
@@ -527,7 +1013,6 @@ function VerseReader({
     setAnimKey(k => k + 1)
     setTimeout(() => {
       onChapterChange(delta)
-      // Scroll to top after chapter change
       if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0
       window.scrollTo({ top: 0 })
     }, 220)
@@ -545,11 +1030,20 @@ function VerseReader({
   }
 
   function toggleFocusExit(e: React.MouseEvent) {
-    // Only trigger when clicking directly on the wrapper, not on children (verses, buttons)
     if (e.target === e.currentTarget) setShowFocusExit(v => !v)
   }
 
   const sortedSelected = Array.from(selectedVerses).sort((a, b) => a - b)
+
+  function handleSave() {
+    const texts = sortedSelected.map(n => chapter.verses.find(v => v.number === n)?.text ?? '')
+    onSave(sortedSelected, texts)
+  }
+
+  function handleShare() {
+    const texts = sortedSelected.map(n => chapter.verses.find(v => v.number === n)?.text ?? '')
+    onShare(sortedSelected, texts)
+  }
 
   const slideClass = slideDir === 'next'
     ? 'animate-slide-out-left'
@@ -561,7 +1055,7 @@ function VerseReader({
     <div key={animKey} className={`px-3 space-y-0.5 ${slideClass}`}>
       {chapter.verses.map(verse => {
         const isSelected = selectedVerses.has(verse.number)
-        const isHighlighted = activeHighlight === verse.number
+        const isHighlighted = activeHighlights.includes(verse.number)
         return (
           <div
             key={verse.number}
@@ -588,7 +1082,7 @@ function VerseReader({
         )
       })}
 
-      {/* Bottom chapter nav (feature 4) */}
+      {/* Bottom chapter nav */}
       <div className="flex items-center justify-between pt-6 pb-2 px-1">
         <button
           onClick={() => navigate(-1)}
@@ -619,15 +1113,13 @@ function VerseReader({
     </div>
   )
 
-  // ── Focus mode overlay (feature 3) ─────────────────────────────────────────
+  // ── Focus mode overlay ──────────────────────────────────────────────────────
   if (focusMode) {
     return (
       <div className="fixed inset-0 z-[90] bg-crema dark:bg-oscuro-bg overflow-y-auto">
         <div className="py-8 pb-32" onClick={toggleFocusExit}>
           {versesContent}
         </div>
-
-        {/* Exit button: appears on tap */}
         {showFocusExit && (
           <div className="fixed bottom-8 left-0 right-0 flex justify-center z-[100] animate-slide-up px-6">
             <button
@@ -661,7 +1153,6 @@ function VerseReader({
           {chapter.bookName} {chapter.chapter}
         </span>
         <div className="flex gap-3 items-center">
-          {/* Focus mode button (feature 3) */}
           <button
             onClick={enterFocusMode}
             title="Modo sin distracciones"
@@ -688,29 +1179,53 @@ function VerseReader({
 
       {selectedVerses.size === 0 && (
         <p className="text-center text-xs text-cafe-light dark:text-crema-300 mb-3 px-4">
-          Tocá versículos para seleccionarlos e iniciar una Lectio Divina
+          Tocá versículos para seleccionarlos
         </p>
       )}
 
       {versesContent}
 
-      {/* Floating Lectio bar */}
+      {/* Floating action bar */}
       {selectedVerses.size > 0 && (
-        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] px-0 z-40 animate-slide-up">
+        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:max-w-[calc(28rem-2rem)] z-40 animate-slide-up">
           <div className="flex items-center gap-2 bg-white dark:bg-oscuro-surface
                           border border-crema-200 dark:border-oscuro-border
-                          rounded-2xl shadow-lg px-4 py-3">
-            <span className="text-xs text-cafe-light dark:text-crema-300 flex-1">
-              {selectedVerses.size} versículo{selectedVerses.size > 1 ? 's' : ''} seleccionado{selectedVerses.size > 1 ? 's' : ''}
+                          rounded-2xl shadow-lg px-3 py-2.5">
+            <span className="text-xs text-cafe-light dark:text-crema-300 flex-1 min-w-0 truncate">
+              {selectedVerses.size} vers. selecc.
             </span>
+
+            {/* Save citation */}
+            <button
+              onClick={handleSave}
+              title="Guardar cita"
+              className="w-9 h-9 flex items-center justify-center rounded-xl
+                         text-cafe-light dark:text-crema-400 hover:text-dorado hover:bg-dorado/10
+                         active:scale-95 transition-all duration-150"
+            >
+              <Icon name="bookmark" size={18} />
+            </button>
+
+            {/* Share */}
+            <button
+              onClick={handleShare}
+              title="Compartir"
+              className="w-9 h-9 flex items-center justify-center rounded-xl
+                         text-cafe-light dark:text-crema-400 hover:text-dorado hover:bg-dorado/10
+                         active:scale-95 transition-all duration-150"
+            >
+              <Icon name="share" size={18} />
+            </button>
+
+            {/* Lectio Divina */}
             <button
               onClick={() => setShowLectio(true)}
               className="flex items-center gap-1.5 bg-dorado text-crema-50
-                         rounded-xl px-4 py-2 text-sm font-semibold
+                         rounded-xl px-3.5 py-2 text-sm font-semibold
                          active:scale-95 transition-all duration-150"
             >
               <span>🕯️</span>
-              <span>Lectio Divina</span>
+              <span>Lectio</span>
             </button>
           </div>
         </div>
@@ -728,13 +1243,13 @@ function VerseReader({
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
-type View = 'books' | 'chapters' | 'reader'
+type View = 'books' | 'chapters' | 'reader' | 'citas'
 
 export default function BibliaPage() {
   const { book: urlBook, chapter: urlChapter } = useParams<{ book?: string; chapter?: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { pinnedBooks, togglePinnedBook, setLastBiblePath } = useAppStore()
+  const { pinnedBooks, togglePinnedBook, setLastBiblePath, savedCitations } = useAppStore()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const [books, setBooks] = useState<BibleBook[]>([])
@@ -744,10 +1259,15 @@ export default function BibliaPage() {
   const [chapterData, setChapterData] = useState<BibleChapter | null>(null)
   const [loadingChapter, setLoadingChapter] = useState(false)
   const [view, setView] = useState<View>('books')
-  const [highlightVerse, setHighlightVerse] = useState<number | null>(null)
+  const [highlightVerses, setHighlightVerses] = useState<number[]>([])
   const [longPressBook, setLongPressBook] = useState<BibleBook | null>(null)
   const [focusMode, setFocusMode] = useState(false)
   const [newlyPinned, setNewlyPinned] = useState<string | null>(null)
+
+  // Overlays
+  const [saveCitationData, setSaveCitationData] = useState<{ verseNumbers: number[]; verseTexts: string[] } | null>(null)
+  const [shareSheetData, setShareSheetData] = useState<{ url: string; verseNumbers: number[]; verseTexts: string[] } | null>(null)
+  const [imageEditorData, setImageEditorData] = useState<ImageEditorData | null>(null)
 
   useEffect(() => {
     api.getBibleBooks()
@@ -762,10 +1282,21 @@ export default function BibliaPage() {
     if (!book) return
     const chapterNum = parseInt(urlChapter, 10)
     if (isNaN(chapterNum)) return
-    const verso = searchParams.get('verso') ? parseInt(searchParams.get('verso')!, 10) : null
+
+    // Support both ?verso=N (single, legacy) and ?versos=N,M,... (multiple)
+    const versosParam = searchParams.get('versos')
+    const versoParam = searchParams.get('verso')
+    let verses: number[] = []
+    if (versosParam) {
+      verses = versosParam.split(',').map(Number).filter(n => !isNaN(n) && n > 0)
+    } else if (versoParam) {
+      const n = parseInt(versoParam, 10)
+      if (!isNaN(n)) verses = [n]
+    }
+
     setSelectedBook(book)
     setView('reader')
-    setHighlightVerse(verso)
+    setHighlightVerses(verses)
     loadChapter(urlBook, chapterNum)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlBook, urlChapter, books])
@@ -793,7 +1324,7 @@ export default function BibliaPage() {
   function handleSelectChapter(chapter: number) {
     if (!selectedBook) return
     setView('reader')
-    setHighlightVerse(null)
+    setHighlightVerses([])
     navigate(`/biblia/${selectedBook.abbr}/${chapter}`, { replace: true })
     loadChapter(selectedBook.abbr, chapter)
   }
@@ -802,16 +1333,59 @@ export default function BibliaPage() {
     if (!chapterData || !selectedBook) return
     const next = chapterData.chapter + delta
     if (next < 1 || next > selectedBook.chaptersCount) return
-    setHighlightVerse(null)
+    setHighlightVerses([])
     navigate(`/biblia/${selectedBook.abbr}/${next}`, { replace: true })
     loadChapter(selectedBook.abbr, next)
+  }
+
+  function handleCitationGo(parsed: ParsedCitation) {
+    const { book, chapter, verse } = parsed
+    setSelectedBook(book)
+    setView('reader')
+    setHighlightVerses(verse ? [verse] : [])
+    navigate(`/biblia/${book.abbr}/${chapter}`, { replace: true })
+    loadChapter(book.abbr, chapter)
+  }
+
+  function handleSaveVerse(verseNumbers: number[], verseTexts: string[]) {
+    setSaveCitationData({ verseNumbers, verseTexts })
+  }
+
+  function handleShareVerse(verseNumbers: number[], verseTexts: string[]) {
+    if (!chapterData) return
+    const url = `${window.location.origin}/biblia/${chapterData.book}/${chapterData.chapter}?versos=${verseNumbers.join(',')}`
+    setShareSheetData({ url, verseNumbers, verseTexts })
+  }
+
+  function handleOpenImageEditor(verseNumbers: number[], verseTexts: string[]) {
+    if (!chapterData) return
+    const ref = verseNumbers.length === 1
+      ? `${chapterData.bookName} ${chapterData.chapter}:${verseNumbers[0]}`
+      : `${chapterData.bookName} ${chapterData.chapter}:${verseNumbers[0]}-${verseNumbers[verseNumbers.length - 1]}`
+    setImageEditorData({
+      headerLabel: 'BIBLIA',
+      verseRef: ref,
+      verses: verseNumbers.map((n, i) => ({ number: n, text: verseTexts[i] })),
+    })
+  }
+
+  function handleCitationNavigate(abbr: string, chapter: number, verse?: number) {
+    const book = books.find(b => b.abbr === abbr)
+    if (!book) return
+    setSelectedBook(book)
+    setView('reader')
+    setHighlightVerses(verse ? [verse] : [])
+    navigate(`/biblia/${abbr}/${chapter}`, { replace: true })
+    loadChapter(abbr, chapter)
   }
 
   const subtitle = view === 'reader' && chapterData
     ? `${chapterData.bookName} ${chapterData.chapter}`
     : view === 'chapters' && selectedBook
       ? selectedBook.name
-      : 'Nueva Biblia de Jerusalén'
+      : view === 'citas'
+        ? 'Citas guardadas'
+        : 'Nueva Biblia de Jerusalén'
 
   return (
     <div className="flex flex-col h-screen">
@@ -837,6 +1411,14 @@ export default function BibliaPage() {
             newlyPinned={newlyPinned}
             onSelect={handleSelectBook}
             onLongPress={setLongPressBook}
+            onCitationGo={handleCitationGo}
+            onShowCitations={() => setView('citas')}
+            citationCount={savedCitations.length}
+          />
+        ) : view === 'citas' ? (
+          <CitationsView
+            onClose={() => setView('books')}
+            onNavigate={handleCitationNavigate}
           />
         ) : view === 'chapters' && selectedBook ? (
           <ChapterSelector
@@ -845,8 +1427,6 @@ export default function BibliaPage() {
             onBack={() => { setView('books'); navigate('/biblia', { replace: true }) }}
           />
         ) : view === 'reader' ? (
-          // Show spinner only on initial load (no data yet). When in focus mode or when
-          // chapterData already exists, keep VerseReader mounted so focusMode state persists.
           loadingChapter && !chapterData ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 animate-pulse-soft">
               <span className="text-4xl">📖</span>
@@ -856,21 +1436,22 @@ export default function BibliaPage() {
             <VerseReader
               chapter={chapterData}
               maxChapter={selectedBook.chaptersCount}
-              highlightVerse={highlightVerse}
+              highlightVerses={highlightVerses}
               focusMode={focusMode}
               setFocusMode={setFocusMode}
               onBack={() => setView('chapters')}
               onChapterChange={handleChapterChange}
+              onSave={handleSaveVerse}
+              onShare={handleShareVerse}
               scrollContainerRef={scrollContainerRef}
             />
           ) : null
         ) : null}
 
         <BugReportLink />
-
       </div>
 
-      {/* Long-press popup (feature 1) */}
+      {/* Long-press popup */}
       {longPressBook && (
         <LongPressPopup
           book={longPressBook}
@@ -886,6 +1467,35 @@ export default function BibliaPage() {
             }
           }}
           onClose={() => setLongPressBook(null)}
+        />
+      )}
+
+      {/* Save citation modal */}
+      {saveCitationData && chapterData && selectedBook && (
+        <SaveCitationModal
+          abbr={chapterData.book}
+          bookName={chapterData.bookName}
+          chapter={chapterData.chapter}
+          verseNumbers={saveCitationData.verseNumbers}
+          verseTexts={saveCitationData.verseTexts}
+          onClose={() => setSaveCitationData(null)}
+        />
+      )}
+
+      {/* Share verse sheet */}
+      {shareSheetData && (
+        <ShareVerseSheet
+          url={shareSheetData.url}
+          onImageEditor={() => handleOpenImageEditor(shareSheetData.verseNumbers, shareSheetData.verseTexts)}
+          onClose={() => setShareSheetData(null)}
+        />
+      )}
+
+      {/* Image editor modal */}
+      {imageEditorData && (
+        <ImageEditorModal
+          data={imageEditorData}
+          onClose={() => setImageEditorData(null)}
         />
       )}
     </div>
