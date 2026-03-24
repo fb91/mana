@@ -53,7 +53,7 @@ export default function App() {
                 <Route path="/examen" element={<ExamenPage />} />
                 <Route path="/santo" element={<SantoPage />} />
                 <Route path="/novenas" element={<NovenasPage />} />
-                <Route path="/novenas/:id" element={<NovenaDetallePage />} />
+                <Route path="/novenas/:slug" element={<NovenaDetallePage />} />
               </Routes>
             </main>
             <BottomNav />

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
+import { slugify } from '../lib/slugify'
 import { Novena } from '../services/api'
 import novenasJson from '../data/novenas.json'
 import { BugReportLink } from '../components/BugReportButton'
@@ -80,7 +81,7 @@ export default function NovenasPage() {
         {/* Banner novena próxima */}
         {proximaNovena && !query && !categoria && (
           <Link
-            to={`/novenas/${proximaNovena.id}`}
+            to={`/novenas/${slugify(proximaNovena.nombre)}`}
             className="block mx-4 mt-4 p-3 rounded-xl bg-dorado/10 border border-dorado/30
                        hover:bg-dorado/15 transition-colors"
           >
@@ -152,7 +153,7 @@ export default function NovenasPage() {
             return (
               <Link
                 key={novena.id}
-                to={`/novenas/${novena.id}`}
+                to={`/novenas/${slugify(novena.nombre)}`}
                 className="card block hover:border-dorado/50 hover:shadow-md transition-all
                            duration-200 active:scale-[0.98]"
               >

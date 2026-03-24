@@ -7,11 +7,25 @@ import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
 import { useAppStore, NovenaProgreso } from '../store/useAppStore'
 import TimePicker from '../components/TimePicker'
+import CalendarPicker from '../components/CalendarPicker'
+import { slugify } from '../lib/slugify'
 
 const novenas = novenasJson as Novena[]
 
 function hoyISO(): string {
   return new Date().toISOString().split('T')[0]
+}
+
+function isoToDate(iso: string): Date {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+function formatFechaLarga(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  })
 }
 
 async function requestNotificationPermission(): Promise<boolean> {
@@ -41,7 +55,7 @@ function scheduleNotification(p: NovenaProgreso) {
 }
 
 export default function NovenaDetallePage() {
-  const { id } = useParams<{ id: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
 
   const {
@@ -53,8 +67,8 @@ export default function NovenaDetallePage() {
     marcarDiaRezado,
   } = useAppStore()
 
-  const novenaId = Number(id)
-  const novena = novenas.find(n => n.id === novenaId)
+  const novena = novenas.find(n => slugify(n.nombre) === slug)
+  const novenaId = novena?.id ?? -1
   const progreso = novenasProgreso.find(p => p.novenaId === novenaId) ?? null
   const iniciada = progreso !== null
   const diaRecomendado = iniciada ? Math.min((progreso.diaActual ?? 0) + 1, 9) : 1
@@ -66,6 +80,7 @@ export default function NovenaDetallePage() {
   const [horaNotif, setHoraNotif] = useState(progreso?.notificacion?.hora ?? '08:00')
   const [notifActiva, setNotifActiva] = useState(progreso?.notificacion?.activa ?? false)
   const [fechaInicioInput, setFechaInicioInput] = useState(hoyISO())
+  const [showCalendar, setShowCalendar] = useState(false)
   const intencionRef = useRef<HTMLTextAreaElement>(null)
 
   // Sync state when novenaId changes
@@ -215,19 +230,6 @@ export default function NovenaDetallePage() {
                              focus:border-dorado/60 transition-colors"
                 />
               </div>
-              <div>
-                <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wide block mb-1.5">
-                  Fecha de inicio
-                </label>
-                <input
-                  type="date"
-                  value={fechaInicioInput}
-                  onChange={e => setFechaInicioInput(e.target.value)}
-                  className="rounded-xl border border-crema-300 dark:border-oscuro-border
-                             bg-crema dark:bg-oscuro-surface text-cafe-dark dark:text-crema-200
-                             text-sm px-3 py-2.5 outline-none focus:border-dorado/60 transition-colors"
-                />
-              </div>
               <div className="flex items-center justify-between bg-crema-100 dark:bg-oscuro-surface rounded-xl px-4 py-3">
                 <div>
                   <p className="text-sm font-medium text-cafe-dark dark:text-crema-200">Recordatorio diario</p>
@@ -241,9 +243,59 @@ export default function NovenaDetallePage() {
                 </button>
               </div>
               {notifActiva && (
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-cafe-light dark:text-crema-300">Hora del recordatorio</label>
-                  <TimePicker value={horaNotif} onChange={guardarHoraNotif} />
+                <div className="space-y-4 animate-fade-in">
+                  <div>
+                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wide block mb-2">
+                      Fecha de inicio
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowCalendar(v => !v)}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl
+                                 bg-crema dark:bg-oscuro-surface border border-crema-300 dark:border-oscuro-border
+                                 text-cafe-dark dark:text-crema-200 text-sm font-medium
+                                 active:scale-[0.98] transition-all"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="text-dorado flex-shrink-0">
+                        <rect x="1" y="3" width="13" height="11" rx="2" stroke="currentColor" strokeWidth="1.3"/>
+                        <path d="M1 7h13" stroke="currentColor" strokeWidth="1.3"/>
+                        <path d="M5 1v4M10 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      </svg>
+                      {formatFechaLarga(fechaInicioInput)}
+                    </button>
+                    {showCalendar && (
+                      <div className="mt-2 animate-fade-in">
+                        <CalendarPicker
+                          inline
+                          selectedDate={isoToDate(fechaInicioInput)}
+                          today={new Date()}
+                          onSelect={date => {
+                            setFechaInicioInput(
+                              `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+                            )
+                            setShowCalendar(false)
+                          }}
+                          onClose={() => setShowCalendar(false)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wide block mb-2">
+                      Hora del recordatorio
+                    </label>
+                    <TimePicker value={horaNotif} onChange={guardarHoraNotif} />
+                  </div>
+                  <p className="text-xs text-cafe-light dark:text-crema-400 leading-relaxed bg-crema-100 dark:bg-oscuro-surface rounded-xl px-4 py-3">
+                    Comenzarás a recibir notificaciones a partir del{' '}
+                    <span className="font-semibold text-cafe-dark dark:text-crema-200">
+                      {formatFechaLarga(fechaInicioInput)}
+                    </span>{' '}
+                    a las{' '}
+                    <span className="font-semibold text-cafe-dark dark:text-crema-200">
+                      {horaNotif}
+                    </span>.
+                  </p>
                 </div>
               )}
               <button

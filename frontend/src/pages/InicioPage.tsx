@@ -8,6 +8,7 @@ import { getBibleVerse, getBibleBooks, getBibleChapter, BOOK_NAME } from '../lib
 import { downloadLectioPDF } from '../lib/lectio-pdf'
 import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from '../components/IOSInstallModal'
 import { usePWAInstall } from '../hooks/usePWAInstall'
+import { slugify } from '../lib/slugify'
 
 
 interface Quote {
@@ -588,7 +589,7 @@ export default function InicioPage() {
         {/* Continuar novena */}
         {novenaActiva && diaSiguiente && diaSiguiente <= 9 && (
           <button
-            onClick={() => navigate(`/novenas/${novenaActiva.novenaId}`)}
+            onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
             className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
                        bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
                        active:scale-[0.98] transition-all duration-200"
