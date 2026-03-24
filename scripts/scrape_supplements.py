@@ -34,11 +34,12 @@ BIBLE_PATH = "frontend/public/data/bible_es.json"
 REQUEST_DELAY = 0.20   # seconds between requests (be polite to Vatican servers)
 TIMEOUT       = 15
 
-# Range to scan.  After Psalms (ends at page 731) come Job, Prov, Rt, Cant,
-# Ecl, Lam, Est, Dn.  With ~1 header page per book the supplements should
-# fall between pages 830 and 970.  Widen if nothing is found.
-SCAN_START = 730
-SCAN_END   = 990
+# Range to scan.
+# - Est supplements (ESTER SUPLEMENTOS GRIEGOS): pages 945-950
+# - Dn supplements (DANIEL SUPLEMENTOS GRIEGOS): pages 1088-1090
+# Setting 940-1095 covers both without re-scanning the whole OT.
+SCAN_START = 940
+SCAN_END   = 1095
 
 # Base-36 alphabet used in Vatican URL codes
 _B36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -68,46 +69,44 @@ _ENTITIES: dict[str, str] = {
 }
 
 
+# Regex to extract <meta name="part"> content, which holds the real book/chapter.
+# Format: "El Antiguo Testamento > BOOK NAME > CHAPTER_NUMBER"
+# The <title> tag always says "El libro del Pueblo de Dios - IntraText" (useless).
+_PART_RE = re.compile(r'<meta\s+name="part"\s+content="([^"]+)"', re.I)
+
+
 class PageParser(HTMLParser):
-    """Extract <title> text and all <p class=MsoNormal> paragraphs."""
+    """Extract all <p class=MsoNormal> paragraphs."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.title: str = ""
         self.paragraphs: list[str] = []
-        self._in_title = False
-        self._in_p     = False
+        self._in_p = False
         self._buf: list[str] = []
 
     # ── tag events ────────────────────────────────────────────────────────────
 
     def handle_starttag(self, tag: str, attrs: list) -> None:
-        if tag == "title":
-            self._in_title = True
-            self._buf = []
-        elif tag == "p":
+        if tag == "p":
             cls = dict(attrs).get("class", "")
             if "MsoNormal" in cls:
                 self._in_p = True
                 self._buf = []
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "title" and self._in_title:
-            self._in_title = False
-            self.title = re.sub(r"\s+", " ", "".join(self._buf)).strip()
-        elif tag == "p" and self._in_p:
+        if tag == "p" and self._in_p:
             self._in_p = False
             text = re.sub(r"\s+", " ", "".join(self._buf)).strip()
             if text:
                 self.paragraphs.append(text)
 
     def handle_data(self, data: str) -> None:
-        if self._in_title or self._in_p:
+        if self._in_p:
             self._buf.append(data)
 
     def handle_entityref(self, name: str) -> None:
         ch = _ENTITIES.get(name, f"&{name};")
-        if self._in_title or self._in_p:
+        if self._in_p:
             self._buf.append(ch)
 
     def handle_charref(self, name: str) -> None:
@@ -115,7 +114,7 @@ class PageParser(HTMLParser):
             ch = chr(int(name[1:], 16) if name.lower().startswith("x") else int(name))
         except (ValueError, OverflowError):
             ch = ""
-        if self._in_title or self._in_p:
+        if self._in_p:
             self._buf.append(ch)
 
 
@@ -171,68 +170,68 @@ def fetch_page(url: str, retries: int = 3) -> bytes | None:
 
 
 def parse_page(content: bytes) -> tuple[str, dict[str, str]]:
-    """Return (title, verses_dict) for a Vatican HTML chapter page."""
+    """Return (part, verses_dict) for a Vatican HTML chapter page.
+
+    'part' comes from <meta name="part"> and has the form:
+        "El Antiguo Testamento > BOOK NAME > CHAPTER_NUMBER"
+    The <title> tag is always the same generic string and is not used.
+    """
     html = content.decode("latin-1")
+    m = _PART_RE.search(html)
+    part = m.group(1) if m else ""
+    # Decode the few HTML entities that appear in meta content
+    part = part.replace("&gt;", ">").replace("&amp;", "&").replace("&lt;", "<")
     p = PageParser()
     p.feed(html)
-    return p.title, parse_verses(p.paragraphs)
+    return part, parse_verses(p.paragraphs)
 
 
 # ── Target detection ──────────────────────────────────────────────────────────
 
-# We want to detect these books / chapters on the Vatican pages.
-# The page title format appears to be something like:
-#   "ESL0506 - DANIEL - CAPÍTULO 1"
-#   "ESL0506 - DANIEL SUPLEMENTOS GRIEGOS - CAPÍTULO 1"   (=our Dn 13)
-#   "ESL0506 - ESTER SUPLEMENTOS GRIEGOS - CAPÍTULO 1"    (=Est supplement)
-# We do a case-insensitive scan.
+# The <meta name="part"> content format is:
+#   "El Antiguo Testamento > BOOK NAME > CHAPTER_NUMBER"
+# e.g. "El Antiguo Testamento > DANIEL SUPLEMENTOS GRIEGOS > 13"
+#      "El Antiguo Testamento > ESTER SUPLEMENTOS GRIEGOS > 1"
 
-_DN_MAIN_RE   = re.compile(r"\bDANIEL\b(?!.*SUPLE)", re.I)
 _DN_SUPPL_RE  = re.compile(r"\bDANIEL\b.*SUPLE", re.I)
-_EST_MAIN_RE  = re.compile(r"\bEST[EÉ]R?\b(?!.*SUPLE)", re.I)
 _EST_SUPPL_RE = re.compile(r"\bEST[EÉ]R?\b.*SUPLE", re.I)
-_CHAPTER_RE   = re.compile(r"CAP[IÍ]TULO\s+(\d+)", re.I)
-_ADDICION_RE  = re.compile(r"ADICI[OÓ]N\s+([A-F])", re.I)  # Add. A–F pattern
+_PART_CH_RE   = re.compile(r">\s*(\d+)\s*$")   # chapter number at end of part string
 
-# Mapping of Greek Addition letter → canonical chapter number in NBJ
-ADDITION_CHAPTER: dict[str, int] = {
-    "A": 11, "B": 13, "C": 13, "D": 15, "E": 16, "F": 10,
-}
-# Note: Add. C is part of ch.13 (prayer of Mardocheo + prayer of Ester),
-# but since the Vatican site may split them we just track by page sequence.
+# Esther supplement: Vatican "after chapter N" → NBJ chapter
+# Vatican labels each supplement by the canonical Hebrew chapter it follows.
+# Verse counts confirmed by scraping 2024-03:
+#   > 1  (17 v) = Addition A  → Est 11+12 (stored together as ch 11 here, ch 12 empty)
+#   > 3  ( 7 v) = Addition B  → Est 13 v1-7 only
+#   > 4  (30 v) = Add. C      → Est 13 v8-18 + Est 14  (complex split; stored as ch 14)
+#   > 5  (16 v) = Addition D  → Est 15
+#   > 8  (21 v) = Addition E  → Est 16
+#   > 10 (11 v) = Addition F  → appended to Est 10 (skip: already short book)
+_EST_SUPPL_MAP: dict[int, int] = {1: 11, 3: 13, 4: 14, 5: 15, 8: 16}
 
 
-def identify_page(title: str) -> tuple[str, int] | None:
+def identify_page(part: str) -> tuple[str, int] | None:
     """
     Returns (book_abbr, chapter_number) if the page is a supplement target,
-    or None otherwise.
+    or None otherwise.  'part' is the decoded <meta name="part"> content.
 
     Daniel main chapters 1-12: not a target (already in JSON).
-    Daniel supplements: map sequential pages to Dn 13, 14.
+    Daniel supplements (ch 3, 13, 14): returned with their actual chapter numbers.
     Esther main chapters 1-10: not a target.
-    Esther supplements: map to Est 11, 12, 13, 14, 15, 16.
+    Esther supplements: mapped via _EST_SUPPL_MAP to NBJ chapter numbers.
     """
+    ch_m = _PART_CH_RE.search(part)
+    chapter = int(ch_m.group(1)) if ch_m else -1
+
     # ── Daniel supplement ────────────────────────────────────────────────────
-    if _DN_SUPPL_RE.search(title):
-        m = _CHAPTER_RE.search(title)
-        if m:
-            # Vatican numbers supplement chapters starting from 1 (= our Dn 13)
-            offset = int(m.group(1))
-            return ("Dn", 12 + offset)          # ch1 → Dn 13, ch2 → Dn 14
-        # If no chapter number found we still flag it for manual review
-        return ("Dn", -1)
+    if _DN_SUPPL_RE.search(part):
+        # Vatican part: "... > DANIEL SUPLEMENTOS GRIEGOS > 3/13/14"
+        # Chapter number in part IS the canonical Dn chapter (3, 13, or 14).
+        return ("Dn", chapter)
 
     # ── Esther supplement ────────────────────────────────────────────────────
-    if _EST_SUPPL_RE.search(title):
-        m_add = _ADDICION_RE.search(title)
-        m_ch  = _CHAPTER_RE.search(title)
-        if m_add:
-            letter = m_add.group(1).upper()
-            return ("Est", ADDITION_CHAPTER.get(letter, -1))
-        if m_ch:
-            offset = int(m_ch.group(1))
-            return ("Est", 10 + offset)         # ch1 → Est 11, etc.
-        return ("Est", -1)
+    if _EST_SUPPL_RE.search(part):
+        nbj_ch = _EST_SUPPL_MAP.get(chapter, -1)
+        return ("Est", nbj_ch)
 
     return None
 
@@ -254,12 +253,7 @@ def main() -> None:
     print(f"  Est current chapters: {sorted(int(k) for k in bible.get('Est', {}).keys())}")
 
     # ── Scan ─────────────────────────────────────────────────────────────────
-    found: list[tuple[str, int, dict[str, str], str]] = []   # (book, chapter, verses, title)
-
-    # Also track consecutive Daniel/Ester supplement pages in case chapter
-    # numbers are absent from the title (fall back to sequential numbering).
-    dn_suppl_seq: list[tuple[int, dict[str, str], str]] = []   # (page_n, verses, title)
-    est_suppl_seq: list[tuple[int, dict[str, str], str]] = []
+    found: list[tuple[str, int, dict[str, str], str]] = []   # (book, chapter, verses, part)
 
     print()
     for n in range(SCAN_START, SCAN_END + 1):
@@ -272,8 +266,8 @@ def main() -> None:
             time.sleep(REQUEST_DELAY)
             continue
 
-        title, verses = parse_page(content)
-        label = f"  [{n:4d}/{page_url(n)}]  {title[:65]:<65}  v={len(verses):3d}"
+        part, verses = parse_page(content)
+        label = f"  [{n:4d}/{page_url(n)}]  {part[:65]:<65}  v={len(verses):3d}"
         sys.stdout.write(f"\r{label}")
         sys.stdout.flush()
 
@@ -281,54 +275,18 @@ def main() -> None:
             time.sleep(REQUEST_DELAY)
             continue
 
-        target = identify_page(title)
+        target = identify_page(part)
 
         if target:
             book, chapter = target
-            sys.stdout.write("\n")  # new line so the target stands out
-            print(f"      *** TARGET FOUND: {book} ch.{chapter}  '{title}'  ({len(verses)} verses)")
-
+            sys.stdout.write("\n")
+            print(f"      *** TARGET FOUND: {book} ch.{chapter}  '{part}'  ({len(verses)} verses)")
             if chapter > 0:
-                found.append((book, chapter, verses, title))
-            else:
-                # Unknown chapter number — store for sequential fallback
-                if _DN_SUPPL_RE.search(title):
-                    dn_suppl_seq.append((n, verses, title))
-                elif _EST_SUPPL_RE.search(title):
-                    est_suppl_seq.append((n, verses, title))
-
-        # Detect Daniel main chapters: anchor Dn 12, and re-scrape Dn 3 if extended
-        elif _DN_MAIN_RE.search(title) and len(verses) > 0:
-            m = _CHAPTER_RE.search(title)
-            if m:
-                ch = int(m.group(1))
-                if ch == 12:
-                    sys.stdout.write("\n")
-                    print(f"      (anchor) Dn 12 found at page {n}")
-                elif ch == 3 and len(verses) > 33:
-                    # Vatican page for Dn 3 has more verses than our JSON → has Greek additions
-                    sys.stdout.write("\n")
-                    print(f"      *** TARGET FOUND: Dn 3 extended  ({len(verses)} verses, was 33)  '{title}'")
-                    found.append(("Dn", 3, verses, title))
+                found.append((book, chapter, verses, part))
 
         time.sleep(REQUEST_DELAY)
 
     print()
-
-    # ── Sequential fallback ──────────────────────────────────────────────────
-    if dn_suppl_seq and not any(b == "Dn" for b, _, _, _ in found):
-        print("\nUsing sequential fallback for Daniel supplements:")
-        for i, (n, verses, title) in enumerate(dn_suppl_seq):
-            ch = 13 + i
-            print(f"  Page {n} → Dn {ch}  '{title}'  ({len(verses)} verses)")
-            found.append(("Dn", ch, verses, title))
-
-    if est_suppl_seq and not any(b == "Est" for b, _, _, _ in found):
-        print("\nUsing sequential fallback for Esther supplements:")
-        for i, (n, verses, title) in enumerate(est_suppl_seq):
-            ch = 11 + i
-            print(f"  Page {n} → Est {ch}  '{title}'  ({len(verses)} verses)")
-            found.append(("Est", ch, verses, title))
 
     # ── Summary ──────────────────────────────────────────────────────────────
     print(f"\n{'='*70}")
@@ -338,15 +296,19 @@ def main() -> None:
         print("\nNothing found.  Suggestions:")
         print(f"  1. Widen scan range: edit SCAN_START/SCAN_END at the top of this script.")
         print(f"     Current range: {SCAN_START}–{SCAN_END}")
-        print(f"  2. The Vatican title format may differ.  Re-run with --debug to print")
-        print(f"     every page title (edit the script: change debug=True below).")
+        print(f"  2. Check that the Vatican site returns <meta name='part'> with book info.")
         return
 
     print("\nChapters to be added/updated:")
-    for book, chapter, verses, title in found:
+    for book, chapter, verses, part in found:
         cur = bible.get(book, {}).get(str(chapter))
-        status = "UPDATE" if cur else "NEW"
-        print(f'  [{status}] {book} {chapter:2d}  ({len(verses)} verses)  "{title}"')
+        if book == "Dn" and chapter == 3:
+            # Special case: Dn 3 supplement = Greek additions only (v24-v90).
+            # Will be merged with existing Hebrew text, not replaced.
+            status = "MERGE"
+        else:
+            status = "UPDATE" if cur else "NEW"
+        print(f'  [{status}] {book} {chapter:2d}  ({len(verses)} verses)  "{part}"')
 
     # ── Write ─────────────────────────────────────────────────────────────────
     ans = input("\nApply these changes to bible_es.json? [y/N] ").strip().lower()
@@ -357,7 +319,27 @@ def main() -> None:
     for book, chapter, verses, _ in found:
         if book not in bible:
             bible[book] = {}
-        bible[book][str(chapter)] = verses
+
+        if book == "Dn" and chapter == 3:
+            # Dn 3 Greek additions (v24-v90) must be MERGED with the Hebrew text:
+            #   v1-v23  : Hebrew (keep from current JSON)
+            #   v24-v90 : Greek additions (from supplement)
+            #   v91-v100: Hebrew continuation (current v24-v33, renumbered +67)
+            dn3_cur = bible["Dn"].get("3", {})
+            dn3_new: dict[str, str] = {}
+            for v in range(1, 24):
+                if str(v) in dn3_cur:
+                    dn3_new[str(v)] = dn3_cur[str(v)]
+            for vk, text in verses.items():
+                if 24 <= int(vk) <= 90:
+                    dn3_new[vk] = text
+            for v in range(24, 34):
+                if str(v) in dn3_cur:
+                    dn3_new[str(v + 67)] = dn3_cur[str(v)]
+            bible["Dn"]["3"] = dn3_new
+            print(f"  Dn 3 merged: {len(dn3_new)} verses (Hebrew v1-23 + Greek v24-90 + Hebrew v91-100)")
+        else:
+            bible[book][str(chapter)] = verses
 
     print(f"\nWriting {BIBLE_PATH} …")
     with open(BIBLE_PATH, "w", encoding="utf-8") as f:
