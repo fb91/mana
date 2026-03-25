@@ -54,7 +54,7 @@ export default function SantoPage() {
   }, [])
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader
         icon={<Icon name="star" size={18} />}
         title="¿Con qué santo conectás?"

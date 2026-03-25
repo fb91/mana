@@ -1388,7 +1388,7 @@ export default function BibliaPage() {
         : 'Nueva Biblia de Jerusalén'
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader icon={<Icon name="book-open" size={18} />} title="Biblia" subtitle={subtitle} />
 
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pt-4 pb-28">

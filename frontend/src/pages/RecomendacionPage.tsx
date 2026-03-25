@@ -72,7 +72,7 @@ export default function RecomendacionPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader
         icon={<Icon name="sparkles" size={18} />}
         title="Recomendación espiritual"

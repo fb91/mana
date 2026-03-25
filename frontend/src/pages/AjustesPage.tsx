@@ -59,7 +59,7 @@ export default function AjustesPage() {
   const currentSeasonLabel = SEASON_LABELS[litCtx.season] ?? ''
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader icon={<Icon name="cog" size={18} />} title="Ajustes" subtitle="Preferencias visuales" />
 
       <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in space-y-6 pb-28">

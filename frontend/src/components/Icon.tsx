@@ -39,6 +39,8 @@ export type IconName =
   | 'image'
   | 'trash'
   | 'sort-az'
+  | 'menu'
+  | 'x-mark'
 
 const PATHS: Record<IconName, JSX.Element> = {
   home: (
@@ -274,6 +276,12 @@ const PATHS: Record<IconName, JSX.Element> = {
       strokeWidth={1.75}
       d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
     />
+  ),
+  menu: (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 6h16M4 12h16M4 18h16" />
+  ),
+  'x-mark': (
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M6 18L18 6M6 6l12 12" />
   ),
 }
 

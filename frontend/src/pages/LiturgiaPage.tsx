@@ -624,14 +624,14 @@ export default function LiturgiaPage() {
     : 'text-dorado'
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader
         icon={<Icon name="cross" size={18} />}
         title="Evangelio del día"
         subtitle={resolvedDay?.label ?? ''}
       />
 
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-8">
 
         {/* Day navigator */}
         <DayNavigator

@@ -101,7 +101,7 @@ export default function ExamenPage() {
   }, [perfil, data, selected])
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader
         icon={<Icon name="clipboard" size={18} />}
         title="Examen de Conciencia"

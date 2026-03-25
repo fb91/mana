@@ -226,7 +226,7 @@ export default function NovenaDetallePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <PageHeader
         icon={<Icon name="beads" size={18} />}
         title={novena.nombre}
