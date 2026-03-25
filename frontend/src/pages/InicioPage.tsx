@@ -234,11 +234,11 @@ function LectioModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end">
+    <div className="fixed inset-0 z-[60] flex flex-col justify-end lg:items-center lg:justify-center lg:p-8">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-8
-                      max-h-[92vh] overflow-y-auto animate-slide-up shadow-2xl">
-        <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
+      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl lg:rounded-3xl px-5 pt-5 pb-8
+                      w-full lg:max-w-2xl max-h-[92vh] overflow-y-auto animate-slide-up shadow-2xl">
+        <div className="lg:hidden w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
 
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
@@ -1051,11 +1051,11 @@ export default function InicioPage() {
 
       {/* Recommendation Modal */}
       {recommendation && (
-        <div className="fixed inset-0 z-[60] flex flex-col justify-end">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end lg:items-center lg:justify-center lg:p-8">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRecommendation(null)} />
-          <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl px-5 pt-5 pb-8
-                          max-h-[85vh] overflow-y-auto animate-slide-up shadow-2xl">
-            <div className="w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
+          <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl lg:rounded-3xl px-5 pt-5 pb-8
+                          w-full lg:max-w-lg max-h-[85vh] overflow-y-auto animate-slide-up shadow-2xl">
+            <div className="lg:hidden w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
 
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
