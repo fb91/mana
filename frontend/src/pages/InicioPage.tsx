@@ -322,7 +322,7 @@ export default function InicioPage() {
   const novenaActiva = novenasProgreso.find(p => p.diasCompletados.length < 9) ?? null
   const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
   const planEspiritual = useAppStore(s => s.planEspiritual)
-  const planActivo: PlanEspiritualProgreso | null =
+  const planActivo =
     planEspiritual && planEspiritual.diasCompletados.length < planEspiritual.plan.duracionDias
       ? planEspiritual
       : null
