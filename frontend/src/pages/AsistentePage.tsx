@@ -92,6 +92,38 @@ const ASISTENCIAS_MISA = [
   'Diariamente',
 ]
 
+// ── Reglas de compatibilidad ──────────────────────────────────────────────────
+
+// Estados que no tienen sentido para ciertos grupos de edad
+const ESTADOS_BLOQUEADOS_POR_EDAD: Record<string, string[]> = {
+  'Niño/a':      ['Casado/a', 'Casado/a con hijos', 'Viudo/a', 'Divorciado/a', 'Laico/a consagrado/a', 'Religioso/a'],
+  'Adolescente': ['Casado/a', 'Casado/a con hijos', 'Viudo/a', 'Divorciado/a', 'Laico/a consagrado/a', 'Religioso/a'],
+}
+
+// Duraciones máximas por grupo de edad
+const DURACION_MAX_POR_EDAD: Record<string, number> = {
+  'Niño/a':      7,
+  'Adolescente': 10,
+}
+
+function isEstadoBloqueado(edad: string, estado: string): boolean {
+  return (ESTADOS_BLOQUEADOS_POR_EDAD[edad] ?? []).includes(estado)
+}
+
+function isObjetivoBloqueado(edad: string, estado: string, objetivo: string): boolean {
+  // "Fortalecer la vida familiar" no aplica a niños ni a personas en vida religiosa consagrada
+  if (objetivo === 'Fortalecer la vida familiar') {
+    if (edad === 'Niño/a') return true
+    if (estado === 'Religioso/a') return true
+  }
+  return false
+}
+
+function isDuracionBloqueada(edad: string, dias: number): boolean {
+  const max = DURACION_MAX_POR_EDAD[edad]
+  return max !== undefined && dias > max
+}
+
 // ── Tipos locales ─────────────────────────────────────────────────────────────
 
 type Phase = 'config' | 'loading' | 'plan' | 'celebracion'
@@ -258,6 +290,26 @@ export default function AsistentePage() {
     }
   }
 
+  function handleEdadChange(e: string) {
+    setEdad(e)
+    if (estado && isEstadoBloqueado(e, estado)) {
+      setEstado('')
+      setObjetivo('')
+    } else if (objetivo && isObjetivoBloqueado(e, estado, objetivo)) {
+      setObjetivo('')
+    }
+    if (duracion && isDuracionBloqueada(e, duracion)) {
+      setDuracion(DURACION_MAX_POR_EDAD[e] ?? 7)
+    }
+  }
+
+  function handleEstadoChange(s: string) {
+    setEstado(s)
+    if (objetivo && isObjetivoBloqueado(edad, s, objetivo)) {
+      setObjetivo('')
+    }
+  }
+
   function handleReset() {
     if (phase === 'config') {
       navigate('/inicio')
@@ -306,15 +358,20 @@ export default function AsistentePage() {
           {/* Duración */}
           <Section label="¿Cuántos días querés que dure el plan?">
             <div className="flex flex-wrap gap-2">
-              {DURACIONES.map(d => (
-                <button
-                  key={d}
-                  onClick={() => setDuracion(d)}
-                  className={pill(duracion === d)}
-                >
-                  {d} días
-                </button>
-              ))}
+              {DURACIONES.map(d => {
+                const bloqueado = isDuracionBloqueada(edad, d)
+                return (
+                  <button
+                    key={d}
+                    onClick={() => !bloqueado && setDuracion(d)}
+                    disabled={bloqueado}
+                    className={bloqueado ? pillDisabled() : pill(duracion === d)}
+                    title={bloqueado ? `Máximo ${DURACION_MAX_POR_EDAD[edad]} días para este grupo de edad` : undefined}
+                  >
+                    {d} días
+                  </button>
+                )
+              })}
             </div>
           </Section>
 
@@ -322,7 +379,7 @@ export default function AsistentePage() {
           <Section label="¿Cuál es tu grupo de edad?">
             <div className="flex flex-wrap gap-2">
               {EDADES.map(e => (
-                <button key={e} onClick={() => setEdad(e)} className={pill(edad === e)}>{e}</button>
+                <button key={e} onClick={() => handleEdadChange(e)} className={pill(edad === e)}>{e}</button>
               ))}
             </div>
           </Section>
@@ -330,28 +387,52 @@ export default function AsistentePage() {
           {/* Estado de vida */}
           <Section label="¿Cuál es tu estado de vida?">
             <div className="flex flex-wrap gap-2">
-              {ESTADOS.map(s => (
-                <button key={s} onClick={() => setEstado(s)} className={pill(estado === s)}>{s}</button>
-              ))}
+              {ESTADOS.map(s => {
+                const bloqueado = isEstadoBloqueado(edad, s)
+                return (
+                  <button
+                    key={s}
+                    onClick={() => !bloqueado && handleEstadoChange(s)}
+                    disabled={bloqueado}
+                    className={bloqueado ? pillDisabled() : pill(estado === s)}
+                    title={bloqueado ? 'No compatible con el grupo de edad seleccionado' : undefined}
+                  >
+                    {s}
+                  </button>
+                )
+              })}
             </div>
+            {edad && Object.keys(ESTADOS_BLOQUEADOS_POR_EDAD).includes(edad) && (
+              <p className="mt-2 text-[11px] text-cafe-light/70 dark:text-crema-400/60 leading-snug">
+                Algunas opciones no están disponibles para este grupo de edad.
+              </p>
+            )}
           </Section>
 
           {/* Objetivo */}
           <Section label="¿Qué objetivo querés trabajar?">
             <div className="flex flex-col gap-2">
-              {OBJETIVOS.map(o => (
-                <button
-                  key={o}
-                  onClick={() => setObjetivo(o)}
-                  className={`px-4 py-2.5 rounded-xl text-sm text-left border transition-all duration-150 active:scale-[0.98]
-                    ${objetivo === o
-                      ? 'bg-dorado text-white border-dorado shadow-sm'
-                      : 'bg-white dark:bg-oscuro-card border-crema-200 dark:border-oscuro-border text-cafe-dark dark:text-crema-200 hover:border-dorado/50'
-                    }`}
-                >
-                  {o}
-                </button>
-              ))}
+              {OBJETIVOS.map(o => {
+                const bloqueado = isObjetivoBloqueado(edad, estado, o)
+                return (
+                  <button
+                    key={o}
+                    onClick={() => !bloqueado && setObjetivo(o)}
+                    disabled={bloqueado}
+                    title={bloqueado ? 'No compatible con las opciones seleccionadas' : undefined}
+                    className={bloqueado
+                      ? 'px-4 py-2.5 rounded-xl text-sm text-left border opacity-35 cursor-not-allowed border-crema-200 dark:border-oscuro-border text-cafe-light dark:text-crema-400 line-through bg-white dark:bg-oscuro-card'
+                      : `px-4 py-2.5 rounded-xl text-sm text-left border transition-all duration-150 active:scale-[0.98]
+                          ${objetivo === o
+                            ? 'bg-dorado text-white border-dorado shadow-sm'
+                            : 'bg-white dark:bg-oscuro-card border-crema-200 dark:border-oscuro-border text-cafe-dark dark:text-crema-200 hover:border-dorado/50'
+                          }`
+                    }
+                  >
+                    {o}
+                  </button>
+                )
+              })}
             </div>
           </Section>
 
@@ -720,6 +801,10 @@ function pill(active: boolean) {
       ? 'bg-dorado text-white border-dorado shadow-sm'
       : 'bg-white dark:bg-oscuro-card border-crema-200 dark:border-oscuro-border text-cafe-light dark:text-crema-300 hover:border-dorado/50',
   ].join(' ')
+}
+
+function pillDisabled() {
+  return 'px-3 py-1.5 rounded-full text-xs border opacity-35 cursor-not-allowed line-through border-crema-200 dark:border-oscuro-border text-cafe-light dark:text-crema-400 bg-white dark:bg-oscuro-card'
 }
 
 function Toggle({ active, onChange }: { active: boolean; onChange: (v: boolean) => void }) {
