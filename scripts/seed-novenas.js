@@ -22,6 +22,13 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
+/** Convierte "MM-DD" → "2000-MM-DD". Cualquier otro formato → null. */
+function parseFecha(f) {
+  if (!f) return null
+  if (/^\d{2}-\d{2}$/.test(f)) return `2000-${f}`
+  return null
+}
+
 const novenasPath = path.join(__dirname, '../frontend/src/data/novenas.json')
 const novenas = JSON.parse(fs.readFileSync(novenasPath, 'utf8'))
 
@@ -42,7 +49,7 @@ async function seed() {
         autor:              novena.autor          ?? null,
         estado:             novena.estado         ?? 'activa',
         categoria:          novena.categoria      ?? null,
-        fecha_festividad:   novena.fechaFestividad ?? null,
+        fecha_festividad:   parseFecha(novena.fechaFestividad),
         published:          true,   // el JSON actual = contenido aprobado
       })
       .select('id')
