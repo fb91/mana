@@ -65,6 +65,20 @@ export default defineConfig({
               expiration: { maxAgeSeconds: 300 },
               cacheableResponse: { statuses: [0, 200] }
             }
+          },
+          {
+            // Supabase REST API: red primero, caché como respaldo offline (7 días)
+            urlPattern: /^https:\/\/[^/]+\.supabase\.co\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'mi-pwa-cache-v1-supabase',
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+                maxEntries: 50,
+              },
+              cacheableResponse: { statuses: [0, 200] }
+            }
           }
         ]
       },
