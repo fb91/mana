@@ -109,7 +109,10 @@ export default function NovenaDetallePage() {
   const [notifActiva, setNotifActiva] = useState(progreso?.notificacion?.activa ?? false)
   const [fechaInicioInput, setFechaInicioInput] = useState(hoyISO())
   const [showCalendar, setShowCalendar] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [showCelebracion, setShowCelebracion] = useState(false)
   const intencionRef = useRef<HTMLTextAreaElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Sync state when novenaId changes
   useEffect(() => {
@@ -198,18 +201,28 @@ export default function NovenaDetallePage() {
   }
 
   function handleMarcarRezado() {
+    const completadosDespues = [...(progreso?.diasCompletados ?? []), diaSeleccionado]
+    const esUltimoDia = completadosDespues.length >= 9
+
     marcarDiaRezado(novena!.id, diaSeleccionado)
-    // Si este día completa la novena (9 días únicos), desuscribir notificaciones
-    const yaEstaba = progreso?.diasCompletados.includes(diaSeleccionado)
-    if (!yaEstaba) {
-      const completadosDespues = [...(progreso?.diasCompletados ?? []), diaSeleccionado]
-      if (completadosDespues.length >= 9 && progreso?.notificacion?.activa) {
+
+    if (esUltimoDia) {
+      if (progreso?.notificacion?.activa) {
         const endpoint = pushSubscription?.endpoint
         removeWebPushSubscription(novena!.id, endpoint)
         updateNovenaNotificacion(novena!.id, null)
       }
+      setTimeout(() => setShowCelebracion(true), 200)
+    } else {
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+        if (diaSeleccionado < 9) setDiaSeleccionado(diaSeleccionado + 1)
+        requestAnimationFrame(() => {
+          scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+      }, 1300)
     }
-    if (diaSeleccionado < 9) setDiaSeleccionado(diaSeleccionado + 1)
   }
 
   return (
@@ -232,7 +245,7 @@ export default function NovenaDetallePage() {
         ) : undefined}
       />
 
-      <div className="flex-1 overflow-y-auto pb-28">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-28">
 
         {/* ── Barra de progreso ── */}
         {iniciada && (
@@ -547,6 +560,99 @@ export default function NovenaDetallePage() {
 
         <BugReportLink />
       </div>
+
+      {/* ── Flash de éxito al marcar como rezado ── */}
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="animate-bounce-in flex flex-col items-center gap-3 bg-dorado rounded-3xl px-10 py-7 shadow-2xl">
+            <div className="w-16 h-16 rounded-full bg-white/25 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+            <p className="text-white font-semibold text-base tracking-wide">¡Día rezado!</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Celebración al completar la novena (día 9) ── */}
+      {showCelebracion && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
+          style={{ background: 'linear-gradient(160deg, #3D2000 0%, #1C0D00 60%, #261005 100%)' }}>
+
+          {/* Partículas flotantes */}
+          {PARTICULAS_CELEBRACION.map((p, i) => (
+            <span
+              key={i}
+              className="absolute animate-float-particle pointer-events-none select-none"
+              style={{
+                left: `${p.x}%`,
+                bottom: `${p.bottom}%`,
+                fontSize: `${p.size}px`,
+                '--delay': `${p.delay}s`,
+                '--duration': `${p.duration}s`,
+              } as Record<string, string>}
+            >
+              {p.symbol}
+            </span>
+          ))}
+
+          {/* Contenido central */}
+          <div className="relative flex flex-col items-center gap-5 text-center px-8 animate-pop-in">
+            {/* Icono */}
+            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-2"
+              style={{ background: 'radial-gradient(circle, rgba(245,200,66,0.3) 0%, rgba(245,200,66,0.05) 70%)' }}>
+              <svg viewBox="0 0 48 48" className="w-16 h-16 animate-shimmer" fill="none">
+                <circle cx="24" cy="24" r="22" stroke="rgb(245,200,66)" strokeWidth="1.5" strokeDasharray="4 3" />
+                <text x="24" y="32" textAnchor="middle" fontSize="26" fill="rgb(245,200,66)">✝</text>
+              </svg>
+            </div>
+
+            <h2 className="font-serif text-3xl font-bold text-amber-100 leading-tight">
+              ¡Novena completada!
+            </h2>
+            <p className="text-amber-300 text-base leading-relaxed max-w-xs">
+              Has completado los 9 días de oración.{progreso?.intencion ? ' Que Dios escuche tu intención.' : ' Que Dios te bendiga.'}
+            </p>
+
+            {progreso?.intencion && (
+              <p className="text-amber-200/70 text-sm italic max-w-xs leading-relaxed">
+                "{progreso.intencion}"
+              </p>
+            )}
+
+            <button
+              onClick={() => setShowCelebracion(false)}
+              className="mt-3 bg-amber-400 text-amber-950 rounded-2xl px-10 py-3.5 font-bold text-base shadow-lg active:scale-95 transition-transform"
+            >
+              Amén
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
+const PARTICULAS_CELEBRACION = [
+  { x: 8,  bottom: 5,  size: 18, symbol: '✦', delay: 0,    duration: 2.4 },
+  { x: 18, bottom: 8,  size: 12, symbol: '✶', delay: 0.3,  duration: 2.0 },
+  { x: 30, bottom: 3,  size: 22, symbol: '✦', delay: 0.6,  duration: 2.7 },
+  { x: 45, bottom: 6,  size: 14, symbol: '✸', delay: 0.2,  duration: 2.2 },
+  { x: 58, bottom: 4,  size: 20, symbol: '✦', delay: 0.8,  duration: 2.5 },
+  { x: 70, bottom: 9,  size: 10, symbol: '✶', delay: 0.4,  duration: 1.9 },
+  { x: 82, bottom: 5,  size: 16, symbol: '✸', delay: 1.0,  duration: 2.3 },
+  { x: 92, bottom: 7,  size: 13, symbol: '✦', delay: 0.1,  duration: 2.1 },
+  { x: 12, bottom: 15, size: 10, symbol: '✶', delay: 1.2,  duration: 2.6 },
+  { x: 25, bottom: 12, size: 16, symbol: '✦', delay: 0.7,  duration: 2.0 },
+  { x: 38, bottom: 18, size: 11, symbol: '✸', delay: 0.5,  duration: 2.4 },
+  { x: 52, bottom: 10, size: 19, symbol: '✦', delay: 1.4,  duration: 2.2 },
+  { x: 65, bottom: 14, size: 12, symbol: '✶', delay: 0.9,  duration: 2.8 },
+  { x: 78, bottom: 11, size: 15, symbol: '✦', delay: 1.1,  duration: 2.1 },
+  { x: 88, bottom: 16, size: 9,  symbol: '✸', delay: 0.3,  duration: 2.5 },
+  { x: 5,  bottom: 20, size: 14, symbol: '✦', delay: 1.6,  duration: 2.3 },
+  { x: 35, bottom: 2,  size: 17, symbol: '✶', delay: 1.8,  duration: 2.0 },
+  { x: 62, bottom: 20, size: 11, symbol: '✦', delay: 1.3,  duration: 2.6 },
+  { x: 75, bottom: 2,  size: 20, symbol: '✸', delay: 2.0,  duration: 2.2 },
+  { x: 95, bottom: 18, size: 13, symbol: '✦', delay: 0.6,  duration: 2.4 },
+]
