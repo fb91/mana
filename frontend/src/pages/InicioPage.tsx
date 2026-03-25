@@ -130,6 +130,12 @@ const recursos: Tool[] = [
 
 const herramientas: Tool[] = [
   {
+    icon: 'sparkles',
+    title: 'Asistente Espiritual',
+    description: 'Generá un plan personalizado de oración, reflexión y acción para N días con guía de IA.',
+    to: '/asistente',
+  },
+  {
     icon: 'book-open',
     title: 'Lectio Divina',
     description: 'Meditá profundamente sobre cualquier pasaje bíblico con guía de IA.',
@@ -315,6 +321,12 @@ export default function InicioPage() {
   // Novena activa: la que tenga días incompletos, ordenada por la más reciente
   const novenaActiva = novenasProgreso.find(p => p.diasCompletados.length < 9) ?? null
   const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
+  const planEspiritual = useAppStore(s => s.planEspiritual)
+  const planActivo: PlanEspiritualProgreso | null =
+    planEspiritual && planEspiritual.diasCompletados.length < planEspiritual.plan.duracionDias
+      ? planEspiritual
+      : null
+  const diaPlanSiguiente = planActivo ? Math.min(planActivo.diaActual + 1, planActivo.plan.duracionDias) : null
   const [quote] = useState<Quote>(() => QUOTES[Math.floor(Math.random() * QUOTES.length)])
 
   const liturgicalCtx = getLiturgicalContext(new Date())
@@ -652,6 +664,31 @@ export default function InicioPage() {
               </div>
             </button>
           )}
+          {planActivo && diaPlanSiguiente && (
+            <button
+              onClick={() => navigate('/asistente')}
+              className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-dorado/10 dark:bg-dorado/8 border border-dorado/25
+                         active:scale-[0.98] transition-all duration-200"
+            >
+              <Icon name="sparkles" size={20} className="text-dorado flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
+                  Plan espiritual · Día {diaPlanSiguiente}
+                </p>
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+                  {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.tema ?? planActivo.plan.titulo}
+                </p>
+                <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5">
+                  {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.lectura}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <span className="text-xs text-dorado font-semibold">{planActivo.diasCompletados.length}/{planActivo.plan.duracionDias}</span>
+                <Icon name="chevron-right" size={16} className="text-dorado/50" />
+              </div>
+            </button>
+          )}
           {lastBiblePath && (
             <button
               onClick={() => navigate(lastBiblePath)}
@@ -768,6 +805,33 @@ export default function InicioPage() {
             </button>
           )}
         </div>
+
+        {/* Plan espiritual activo — desktop */}
+        {planActivo && diaPlanSiguiente && (
+          <button
+            onClick={() => navigate('/asistente')}
+            className="hidden lg:flex w-full mb-4 rounded-2xl text-left items-center gap-4 px-5 py-4
+                       bg-dorado/10 dark:bg-dorado/8 border border-dorado/25
+                       active:scale-[0.98] transition-all duration-200 hover:border-dorado/40 hover:shadow-sm"
+          >
+            <Icon name="sparkles" size={20} className="text-dorado flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
+                Plan espiritual · Día {diaPlanSiguiente}
+              </p>
+              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+                {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.tema ?? planActivo.plan.titulo}
+              </p>
+              <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5">
+                {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.lectura}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+              <span className="text-xs text-dorado font-semibold">{planActivo.diasCompletados.length}/{planActivo.plan.duracionDias}</span>
+              <Icon name="chevron-right" size={16} className="text-dorado/50" />
+            </div>
+          </button>
+        )}
 
         {/* RECURSOS Section */}
         <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />

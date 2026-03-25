@@ -151,6 +151,12 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ endpoint, novenaId }),
     }),
+
+  generarPlanEspiritual: (params: PlanEspiritualParams) =>
+    request<PlanEspiritual>('/api/ai/asistente', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    }),
 }
 
 export type BibleBook = {
@@ -188,4 +194,32 @@ export type LectioBiblicaResponse = {
   meditatioPreguntas: string[]
   oratio: string
   contemplatio: string
+}
+
+// ── Asistente Espiritual ─────────────────────────────────────────────────────
+
+export type PlanEspiritualDia = {
+  dia: number
+  tema: string
+  lectura: string
+  reflexion: string
+  oracion: string
+  accion: string
+}
+
+export type PlanEspiritual = {
+  titulo: string
+  duracionDias: number
+  objetivo: string
+  plan: PlanEspiritualDia[]
+}
+
+export type PlanEspiritualParams = {
+  duracion: number
+  edad: string
+  estado: string
+  objetivo: string
+  contextoLiturgico: string
+  frecuenciaOracion: string
+  asistenciaMisa: string
 }

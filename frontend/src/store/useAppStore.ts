@@ -1,6 +1,21 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { getLiturgicalAppColor } from '../lib/lectionaryResolver'
+import type { PlanEspiritual, PlanEspiritualParams } from '../services/api'
+
+export interface PlanEspiritualProgreso {
+  cacheKey: string
+  plan: PlanEspiritual
+  params: PlanEspiritualParams
+  fechaInicio: string          // ISO "2024-03-25"
+  diaActual: number            // último día marcado como completado (0 = sin empezar)
+  diasCompletados: number[]    // [1, 2, 3, ...]
+  tareasCompletadas: string[]  // "1-lectura", "1-oracion", "1-accion", "1-reflexion"
+  notificacion: {
+    activa: boolean
+    hora: string
+  } | null
+}
 
 export interface NovenaProgreso {
   novenaId: number
@@ -82,6 +97,15 @@ interface AppState {
   updateNovenaIntencion: (novenaId: number, intencion: string) => void
   updateNovenaNotificacion: (novenaId: number, notificacion: NovenaProgreso['notificacion']) => void
   marcarDiaRezado: (novenaId: number, dia: number) => void
+
+  // Plan espiritual activo
+  planEspiritual: PlanEspiritualProgreso | null
+  setPlanEspiritual: (plan: PlanEspiritualProgreso) => void
+  removePlanEspiritual: () => void
+  marcarTareaEspiritual: (tareaKey: string) => void
+  desmarcarTareaEspiritual: (tareaKey: string) => void
+  marcarDiaPlanCompletado: (dia: number) => void
+  updatePlanNotificacion: (notificacion: PlanEspiritualProgreso['notificacion']) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -193,6 +217,47 @@ export const useAppStore = create<AppState>()(
           return { ...p, diasCompletados: completados, diaActual: Math.max(p.diaActual, dia) }
         }),
       })),
+
+      planEspiritual: null,
+      setPlanEspiritual: (plan) => set({ planEspiritual: plan }),
+      removePlanEspiritual: () => set({ planEspiritual: null }),
+      marcarTareaEspiritual: (tareaKey) => set((s) => {
+        if (!s.planEspiritual) return s
+        const ya = s.planEspiritual.tareasCompletadas.includes(tareaKey)
+        if (ya) return s
+        return {
+          planEspiritual: {
+            ...s.planEspiritual,
+            tareasCompletadas: [...s.planEspiritual.tareasCompletadas, tareaKey],
+          },
+        }
+      }),
+      desmarcarTareaEspiritual: (tareaKey) => set((s) => {
+        if (!s.planEspiritual) return s
+        return {
+          planEspiritual: {
+            ...s.planEspiritual,
+            tareasCompletadas: s.planEspiritual.tareasCompletadas.filter(k => k !== tareaKey),
+          },
+        }
+      }),
+      marcarDiaPlanCompletado: (dia) => set((s) => {
+        if (!s.planEspiritual) return s
+        const completados = s.planEspiritual.diasCompletados.includes(dia)
+          ? s.planEspiritual.diasCompletados
+          : [...s.planEspiritual.diasCompletados, dia].sort((a, b) => a - b)
+        return {
+          planEspiritual: {
+            ...s.planEspiritual,
+            diasCompletados: completados,
+            diaActual: Math.max(s.planEspiritual.diaActual, dia),
+          },
+        }
+      }),
+      updatePlanNotificacion: (notificacion) => set((s) => {
+        if (!s.planEspiritual) return s
+        return { planEspiritual: { ...s.planEspiritual, notificacion } }
+      }),
     }),
     {
       name: 'mana-store',
@@ -208,6 +273,7 @@ export const useAppStore = create<AppState>()(
         recentRecommendations: state.recentRecommendations,
         savedCitations: state.savedCitations,
         novenasProgreso: state.novenasProgreso,
+        planEspiritual: state.planEspiritual,
       }),
     }
   )
