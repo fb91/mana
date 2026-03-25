@@ -23,7 +23,7 @@ La barra inferior tiene tres botones:
 ### Herramientas espirituales (`/herramientas`)
 Hub central desde el que se accede a todas las utilidades.
 
-- **📖 La Biblia** — Lectura completa por libro y capítulo (Nueva Biblia de Jerusalén). Seleccioná versículos para hacer Lectio Divina guiada por IA.
+- **📖 La Biblia** — Lectura completa por libro y capítulo (El libro del pueblo de Dios (1990)). Seleccioná versículos para hacer Lectio Divina guiada por IA.
 - **💡 Recomendación espiritual** — Describís cómo te sentís y la IA sugiere un pasaje bíblico. El texto del versículo se resuelve desde el JSON local, nunca lo genera la IA.
 - **✨ ¿Con qué santo conectás?** — Valorás 5 ejes de tu vida (escala 1–5) y la IA recomienda 3 santos de la tradición católica que conectan con tu perfil.
 - **📿 Novenas** — Catálogo de novenas con recordatorios diarios via Web Push.

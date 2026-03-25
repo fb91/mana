@@ -1385,7 +1385,7 @@ export default function BibliaPage() {
       ? selectedBook.name
       : view === 'citas'
         ? 'Citas guardadas'
-        : 'Nueva Biblia de Jerusalén'
+        : 'El libro del pueblo de Dios (1990)'
 
   return (
     <div className="flex flex-col h-screen">

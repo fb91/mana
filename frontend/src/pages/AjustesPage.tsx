@@ -348,7 +348,7 @@ export default function AjustesPage() {
               <p className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed">
                 Todas las citas bíblicas que aparecen en esta aplicación <strong>no están generadas
                 por IA</strong>: son tomadas directamente de la traducción oficial del sitio web
-                del Vaticano (<em>Nueva Biblia de Jerusalén</em>).
+                del Vaticano (<em>El libro del pueblo de Dios (1990)</em>).
               </p>
             </div>
           </div>
