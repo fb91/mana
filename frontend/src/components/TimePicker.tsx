@@ -9,6 +9,8 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
   const [rawH, rawM] = value.split(':').map(Number)
   const hours   = isNaN(rawH) ? 8 : rawH
   const minutes = isNaN(rawM) ? 0 : rawM
+  // Redondea al múltiplo de 15 más cercano (soporta valores legacy)
+  const snappedMinutes = Math.round(minutes / 15) * 15 % 60
 
   // Touch swipe tracking
   const touchStartY = useRef<number | null>(null)
@@ -52,14 +54,14 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
 
       <span className="text-xl font-bold text-cafe-dark dark:text-crema-200 pb-0.5 mx-0.5">:</span>
 
-      {/* Minutes — solo :00 y :30 para coincidir con el cron cada 30 min */}
+      {/* Minutes — :00, :15, :30, :45 para coincidir con el cron cada 15 min */}
       <Drum
-        value={minutes < 15 ? '00' : '30'}
-        onInc={() => set(hours, minutes < 15 ? 30 : 0)}
-        onDec={() => set(hours, minutes < 15 ? 30 : 0)}
+        value={String(snappedMinutes).padStart(2, '0')}
+        onInc={() => snappedMinutes >= 45 ? set(hours + 1, 0) : set(hours, snappedMinutes + 15)}
+        onDec={() => snappedMinutes <= 0  ? set(hours - 1, 45) : set(hours, snappedMinutes - 15)}
         swipeHandlers={makeHandlers(
-          () => set(hours, minutes < 15 ? 30 : 0),
-          () => set(hours, minutes < 15 ? 30 : 0),
+          () => snappedMinutes >= 45 ? set(hours + 1, 0) : set(hours, snappedMinutes + 15),
+          () => snappedMinutes <= 0  ? set(hours - 1, 45) : set(hours, snappedMinutes - 15),
         )}
       />
     </div>

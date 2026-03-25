@@ -1,11 +1,9 @@
 name: Novena Notifications
 
 on:
-  schedule:
-    # Corre a los :00 y :30 de cada hora (UTC). Buenos Aires es UTC-3 fijo (sin DST).
-    # Cubre horarios en punto y media para todas las horas del día en Argentina.
-    - cron: '0,30 * * * *'
-  workflow_dispatch: # permite correrlo manualmente para testear
+  # El cron automático está manejado por cron-job.org (cada 15 min, más confiable).
+  # Este workflow queda solo para ejecución manual — útil para debugging.
+  workflow_dispatch:
 
 jobs:
   send-notifications:
