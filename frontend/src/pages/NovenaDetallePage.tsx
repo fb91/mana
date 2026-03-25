@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Novena, api } from '../services/api'
-import novenasJson from '../data/novenas.json'
+import { Novena, NovenaDia, api } from '../services/api'
+import { supabase } from '../lib/supabase'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
@@ -11,8 +11,6 @@ import TimePicker from '../components/TimePicker'
 import CalendarPicker from '../components/CalendarPicker'
 import { slugify } from '../lib/slugify'
 import { getOrCreatePushSubscription, getCurrentPushSubscription, isPushSupported } from '../lib/webpush'
-
-const novenas = novenasJson as Novena[]
 
 function hoyISO(): string {
   return new Date().toISOString().split('T')[0]
@@ -95,7 +93,40 @@ export default function NovenaDetallePage() {
     setPushSubscription,
   } = useAppStore()
 
-  const novena = novenas.find(n => slugify(n.nombre) === slug)
+  const [novena, setNovena] = useState<Novena | null>(null)
+  const [loadingNovena, setLoadingNovena] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('novenas')
+      .select('id, nombre, santo, descripcion')
+      .eq('published', true)
+      .then(async ({ data: rows }) => {
+        const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
+        if (!match || cancelled) { setLoadingNovena(false); return }
+
+        const { data: diasData } = await supabase
+          .from('novena_dias')
+          .select('id, novena_id, dia, titulo, oracion, reflexion')
+          .eq('novena_id', match.id)
+          .order('dia')
+
+        if (cancelled) return
+        const dias: NovenaDia[] = (diasData ?? []).map(d => ({
+          id: d.id,
+          novenaId: d.novena_id,
+          dia: d.dia,
+          titulo: d.titulo ?? undefined,
+          oracion: d.oracion,
+          reflexion: d.reflexion ?? undefined,
+        }))
+        setNovena({ ...match, descripcion: match.descripcion ?? undefined, estado: 'publicado', dias })
+        setLoadingNovena(false)
+      })
+    return () => { cancelled = true }
+  }, [slug])
+
   const novenaId = novena?.id ?? -1
   const progreso = novenasProgreso.find(p => p.novenaId === novenaId) ?? null
   const iniciada = progreso !== null
@@ -127,6 +158,16 @@ export default function NovenaDetallePage() {
   useEffect(() => {
     if (editandoIntencion) intencionRef.current?.focus()
   }, [editandoIntencion])
+
+  if (loadingNovena) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    )
+  }
 
   if (!novena) {
     navigate('/novenas')

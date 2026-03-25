@@ -1,15 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { slugify } from '../lib/slugify'
 import { Novena } from '../services/api'
-import novenasJson from '../data/novenas.json'
 import { BugReportLink } from '../components/BugReportButton'
 import { useAppStore } from '../store/useAppStore'
 import { useAdminStore } from '../store/useAdminStore'
-
-const allNovenas = (novenasJson as Novena[]).filter(n => n.estado === 'publicado')
+import { supabase } from '../lib/supabase'
 
 const CATEGORIAS: { value: string; label: string }[] = [
   { value: '', label: 'Todas' },
@@ -21,13 +19,13 @@ const CATEGORIAS: { value: string; label: string }[] = [
 ]
 
 /** Próxima novena por fecha de festividad. Solo considera fechas "MM-DD". */
-function getProximaNovena(): Novena | null {
+function getProximaNovena(novenas: Novena[]): Novena | null {
   const today = new Date()
   const mm = today.getMonth() + 1
   const dd = today.getDate()
   const todayNum = mm * 100 + dd
 
-  const withDate = allNovenas
+  const withDate = novenas
     .filter(n => /^\d{2}-\d{2}$/.test(n.fechaFestividad ?? ''))
     .map(n => {
       const [m, d] = (n.fechaFestividad as string).split('-').map(Number)
@@ -55,11 +53,34 @@ export default function NovenasPage() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [categoria, setCategoria] = useState('')
+  const [baseNovenas, setBaseNovenas] = useState<Novena[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const proximaNovena = useMemo(() => getProximaNovena(), [])
+  useEffect(() => {
+    supabase
+      .from('novenas')
+      .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+      .eq('published', true)
+      .order('nombre')
+      .then(({ data }) => {
+        setBaseNovenas((data ?? []).map(row => ({
+          id: row.id,
+          nombre: row.nombre,
+          santo: row.santo,
+          descripcion: row.descripcion ?? undefined,
+          intencionSugerida: row.intencion_sugerida ?? undefined,
+          estado: 'publicado',
+          categoria: row.categoria ?? undefined,
+          fechaFestividad: row.fecha_festividad ?? undefined,
+        })))
+        setLoading(false)
+      })
+  }, [])
+
+  const proximaNovena = useMemo(() => getProximaNovena(baseNovenas), [baseNovenas])
 
   const novenas = useMemo(() => {
-    let list = allNovenas
+    let list = baseNovenas
     if (categoria) list = list.filter(n => n.categoria === categoria)
     if (query.trim()) {
       const q = query.toLowerCase()
@@ -70,7 +91,7 @@ export default function NovenasPage() {
       )
     }
     return list
-  }, [query, categoria])
+  }, [query, categoria, baseNovenas])
 
   return (
     <div className="flex flex-col h-screen">
@@ -146,11 +167,17 @@ export default function NovenasPage() {
             ))}
           </div>
 
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-6 h-6 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
           <p className="text-xs text-cafe-light dark:text-crema-300">
             {novenas.length} novena{novenas.length !== 1 ? 's' : ''} disponible{novenas.length !== 1 ? 's' : ''}
           </p>
+          )}
 
-          {novenas.length === 0 && (
+          {!loading && novenas.length === 0 && (
             <p className="text-sm text-cafe-light dark:text-crema-400 text-center py-8">
               No se encontraron novenas.
             </p>
