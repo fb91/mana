@@ -32,7 +32,7 @@ export default defineConfig({
 
         // Archivos pre-cacheados en el install del SW — excluimos bible_es.json
         // porque se persiste en IndexedDB libro por libro (más eficiente y sobrevive iOS)
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}', 'data/novenas.json'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
 
         // Ruta de fallback para navegación SPA cuando no hay red
         navigateFallback: '/index.html',
