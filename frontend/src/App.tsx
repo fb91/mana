@@ -19,7 +19,6 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminNovenasPage from './pages/admin/AdminNovenasPage'
 import AdminNovenaFormPage from './pages/admin/AdminNovenaFormPage'
-import AdminBibliaPage from './pages/admin/AdminBibliaPage'
 import AdminRoute from './components/AdminRoute'
 import { useAdminStore } from './store/useAdminStore'
 
@@ -51,7 +50,7 @@ function AppContent() {
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/novenas" element={<AdminRoute><AdminNovenasPage /></AdminRoute>} />
           <Route path="/admin/novenas/:id" element={<AdminRoute><AdminNovenaFormPage /></AdminRoute>} />
-          <Route path="/admin/biblia" element={<AdminRoute requireAdmin><AdminBibliaPage /></AdminRoute>} />
+
           </Routes>
         </main>
         {!isAdminRoute && <BottomNav />}

@@ -320,6 +320,9 @@ export default function InicioPage() {
   const liturgicalCtx = getLiturgicalContext(new Date())
   const liturgicalLabel = buildLiturgicalLabel(liturgicalCtx)
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches'
+
   // About modal
   const [showAbout, setShowAbout] = useState(false)
 
@@ -490,7 +493,7 @@ export default function InicioPage() {
                          bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm sticky top-0 z-10">
         <div>
           <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
-            Bienvenido
+            {greeting}
           </h1>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <p className="text-sm text-cafe-light dark:text-crema-300 capitalize">

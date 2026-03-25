@@ -55,22 +55,6 @@ export default function AdminDashboard() {
           </svg>
         </button>
 
-        {isAdmin() && (
-          <button
-            onClick={() => navigate('/admin/biblia')}
-            className="w-full flex items-center justify-between bg-white dark:bg-oscuro-surface
-                       border border-crema-200 dark:border-oscuro-border rounded-2xl px-5 py-4
-                       active:scale-[0.98] transition-all"
-          >
-            <div className="text-left">
-              <p className="text-sm font-semibold text-cafe-dark dark:text-crema-200">Biblia</p>
-              <p className="text-xs text-cafe-light dark:text-crema-400 mt-0.5">Correcciones de versículos</p>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-cafe-light dark:text-crema-400 flex-shrink-0">
-              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        )}
       </div>
     </div>
   )
