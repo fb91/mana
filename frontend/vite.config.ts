@@ -30,11 +30,9 @@ export default defineConfig({
         // Prefijo para los caches generados por Workbox (precache → mi-pwa-cache-v1-precache-v2)
         cacheId: 'mi-pwa-cache-v1',
 
-        // Archivos pre-cacheados en el install del SW — la app carga offline de inmediato
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
-
-        // Aumentar el tamaño máximo para incluir bible_es.json (es grande)
-        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
+        // Archivos pre-cacheados en el install del SW — excluimos bible_es.json
+        // porque se persiste en IndexedDB libro por libro (más eficiente y sobrevive iOS)
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}', 'data/novenas.json'],
 
         // Ruta de fallback para navegación SPA cuando no hay red
         navigateFallback: '/index.html',
