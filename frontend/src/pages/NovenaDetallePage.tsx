@@ -98,22 +98,27 @@ export default function NovenaDetallePage() {
 
   useEffect(() => {
     let cancelled = false
-    supabase
-      .from('novenas')
-      .select('id, nombre, santo, descripcion')
-      .eq('published', true)
-      .then(async ({ data: rows }) => {
-        const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
-        if (!match || cancelled) { setLoadingNovena(false); return }
 
-        const { data: diasData } = await supabase
-          .from('novena_dias')
-          .select('id, novena_id, dia, titulo, oracion, reflexion')
-          .eq('novena_id', match.id)
-          .order('dia')
+    // Mismas queries que NovenasPage prefetchea → cache hit del SW en modo offline
+    Promise.all([
+      supabase
+        .from('novenas')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+        .eq('published', true)
+        .order('nombre'),
+      supabase
+        .from('novena_dias')
+        .select('id, novena_id, dia, titulo, oracion, reflexion')
+        .order('novena_id')
+        .order('dia'),
+    ]).then(([{ data: rows }, { data: allDias }]) => {
+      if (cancelled) return
+      const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
+      if (!match) { setLoadingNovena(false); return }
 
-        if (cancelled) return
-        const dias: NovenaDia[] = (diasData ?? []).map(d => ({
+      const dias: NovenaDia[] = (allDias ?? [])
+        .filter(d => d.novena_id === match.id)
+        .map(d => ({
           id: d.id,
           novenaId: d.novena_id,
           dia: d.dia,
@@ -121,9 +126,20 @@ export default function NovenaDetallePage() {
           oracion: d.oracion,
           reflexion: d.reflexion ?? undefined,
         }))
-        setNovena({ ...match, descripcion: match.descripcion ?? undefined, estado: 'publicado', dias })
-        setLoadingNovena(false)
+
+      setNovena({
+        id: match.id,
+        nombre: match.nombre,
+        santo: match.santo,
+        descripcion: match.descripcion ?? undefined,
+        intencionSugerida: match.intencion_sugerida ?? undefined,
+        estado: 'publicado',
+        categoria: match.categoria ?? undefined,
+        fechaFestividad: match.fecha_festividad ?? undefined,
+        dias,
       })
+      setLoadingNovena(false)
+    })
     return () => { cancelled = true }
   }, [slug])
 

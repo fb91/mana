@@ -75,6 +75,15 @@ export default function NovenasPage() {
         })))
         setLoading(false)
       })
+
+    // Prefetch de todos los días en bulk: misma query que usa NovenaDetallePage,
+    // así el SW la cachea aquí y el detalle la sirve desde caché offline.
+    supabase
+      .from('novena_dias')
+      .select('id, novena_id, dia, titulo, oracion, reflexion')
+      .order('novena_id')
+      .order('dia')
+      .then(() => {})
   }, [])
 
   const proximaNovena = useMemo(() => getProximaNovena(baseNovenas), [baseNovenas])
