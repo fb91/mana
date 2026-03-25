@@ -6,6 +6,7 @@ import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
 import { useAppStore, NovenaProgreso } from '../store/useAppStore'
+import { useAdminStore } from '../store/useAdminStore'
 import TimePicker from '../components/TimePicker'
 import CalendarPicker from '../components/CalendarPicker'
 import { slugify } from '../lib/slugify'
@@ -81,6 +82,7 @@ async function removeWebPushSubscription(novenaId: number, endpoint: string | un
 export default function NovenaDetallePage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const { isContributor } = useAdminStore()
 
   const {
     novenasProgreso,
@@ -217,6 +219,17 @@ export default function NovenaDetallePage() {
         title={novena.nombre}
         subtitle={novena.santo}
         onReset={() => navigate('/novenas')}
+        actions={isContributor() ? (
+          <button
+            onClick={() => navigate(`/admin/novenas/${novena.id}`)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-dorado px-3 py-1.5 rounded-lg border border-dorado/40 active:scale-95 transition-all"
+          >
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M8 2l3 3-7 7H1v-3l7-7z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+            </svg>
+            Editar
+          </button>
+        ) : undefined}
       />
 
       <div className="flex-1 overflow-y-auto pb-28">
