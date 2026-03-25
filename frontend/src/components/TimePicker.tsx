@@ -52,14 +52,14 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
 
       <span className="text-xl font-bold text-cafe-dark dark:text-crema-200 pb-0.5 mx-0.5">:</span>
 
-      {/* Minutes */}
+      {/* Minutes — solo :00 y :30 para coincidir con el cron cada 30 min */}
       <Drum
-        value={String(minutes).padStart(2, '0')}
-        onInc={() => set(hours, minutes + 5 > 59 ? 0 : minutes + 5)}
-        onDec={() => set(hours, minutes - 5 < 0 ? 55 : minutes - 5)}
+        value={minutes < 15 ? '00' : '30'}
+        onInc={() => set(hours, minutes < 15 ? 30 : 0)}
+        onDec={() => set(hours, minutes < 15 ? 30 : 0)}
         swipeHandlers={makeHandlers(
-          () => set(hours, minutes + 5 > 59 ? 0 : minutes + 5),
-          () => set(hours, minutes - 5 < 0 ? 55 : minutes - 5),
+          () => set(hours, minutes < 15 ? 30 : 0),
+          () => set(hours, minutes < 15 ? 30 : 0),
         )}
       />
     </div>

@@ -27,6 +27,9 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // Incluye los handlers de push y notificationclick en el SW generado
+        importScripts: ['/sw-push.js'],
+
         // Prefijo para los caches generados por Workbox (precache → mi-pwa-cache-v1-precache-v2)
         cacheId: 'mi-pwa-cache-v1',
 

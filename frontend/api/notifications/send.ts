@@ -2,6 +2,17 @@ import webpush from 'web-push'
 import { createClient } from '@supabase/supabase-js'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
 webpush.setVapidDetails(
   `mailto:${process.env.VAPID_CONTACT_EMAIL ?? 'admin@mana.app'}`,
   process.env.VAPID_PUBLIC_KEY!,
@@ -22,20 +33,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  // Hora actual en Buenos Aires (UTC-3, sin horario de verano)
+  // Hora y minuto actuales en Buenos Aires (UTC-3, sin horario de verano)
   const now = new Date()
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Argentina/Buenos_Aires',
     hour: '2-digit',
+    minute: '2-digit',
     hour12: false,
   }).formatToParts(now)
-  const currentHour = parts.find(p => p.type === 'hour')!.value.padStart(2, '0')
+  const currentHour   = parts.find(p => p.type === 'hour')!.value.padStart(2, '0')
+  const currentMinute = parts.find(p => p.type === 'minute')!.value.padStart(2, '0')
+  const currentTime   = `${currentHour}:${currentMinute}`
 
-  // Traer todas las subscripciones programadas para esta hora
+  // Traer todas las subscripciones programadas para este momento exacto
   const { data: subscriptions, error } = await supabase
     .from('push_subscriptions')
     .select('*')
-    .like('hora_notificacion', `${currentHour}:%`)
+    .eq('hora_notificacion', currentTime)
 
   if (error) return res.status(500).json({ error: error.message })
   if (!subscriptions?.length) return res.status(200).json({ sent: 0, expired: 0 })
@@ -51,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           title: 'Maná — Recordatorio de Novena',
           body: `Es hora de rezar: ${row.novena_nombre}`,
           icon: '/icons/icon-192.png',
-          url: '/novenas',
+          url: `/novenas/${slugify(row.novena_nombre)}`,
         })
       )
       sent++

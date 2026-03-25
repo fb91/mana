@@ -2,9 +2,9 @@ name: Novena Notifications
 
 on:
   schedule:
-    # Corre cada hora en punto (UTC). Buenos Aires es UTC-3 fijo (sin DST).
-    # Esto cubre todas las horas del día en Argentina.
-    - cron: '0 * * * *'
+    # Corre a los :00 y :30 de cada hora (UTC). Buenos Aires es UTC-3 fijo (sin DST).
+    # Cubre horarios en punto y media para todas las horas del día en Argentina.
+    - cron: '0,30 * * * *'
   workflow_dispatch: # permite correrlo manualmente para testear
 
 jobs:

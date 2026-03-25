@@ -29,6 +29,22 @@ function formatFechaLarga(iso: string): string {
   })
 }
 
+// Buenos Aires es UTC-3 fijo (sin DST)
+const BSAS_OFFSET_MINUTES = -180
+
+/**
+ * Convierte una hora "HH:MM" en hora local del usuario a su equivalente en Buenos Aires.
+ * El servidor siempre opera en UTC-3, así que guardamos en ese timezone.
+ */
+function localToBsas(hora: string): string {
+  const [h, m] = hora.split(':').map(Number)
+  const userOffset = -new Date().getTimezoneOffset() // minutos, e.g. +60 para UTC+1
+  const diff = BSAS_OFFSET_MINUTES - userOffset
+  const totalLocal = h * 60 + m
+  const totalBsas = ((totalLocal + diff) % (24 * 60) + 24 * 60) % (24 * 60)
+  return `${String(Math.floor(totalBsas / 60)).padStart(2, '0')}:${String(totalBsas % 60).padStart(2, '0')}`
+}
+
 async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) return false
   if (Notification.permission === 'granted') return true
@@ -46,7 +62,7 @@ async function saveWebPushSubscription(
     const sub = await getOrCreatePushSubscription()
     if (!sub) return false
     setPushSubscription(sub.toJSON())
-    await api.subscribeNotification(sub.toJSON(), novenaId, nombreNovena, hora)
+    await api.subscribeNotification(sub.toJSON(), novenaId, nombreNovena, localToBsas(hora))
     return true
   } catch {
     return false
@@ -181,6 +197,16 @@ export default function NovenaDetallePage() {
 
   function handleMarcarRezado() {
     marcarDiaRezado(novena!.id, diaSeleccionado)
+    // Si este día completa la novena (9 días únicos), desuscribir notificaciones
+    const yaEstaba = progreso?.diasCompletados.includes(diaSeleccionado)
+    if (!yaEstaba) {
+      const completadosDespues = [...(progreso?.diasCompletados ?? []), diaSeleccionado]
+      if (completadosDespues.length >= 9 && progreso?.notificacion?.activa) {
+        const endpoint = pushSubscription?.endpoint
+        removeWebPushSubscription(novena!.id, endpoint)
+        updateNovenaNotificacion(novena!.id, null)
+      }
+    }
     if (diaSeleccionado < 9) setDiaSeleccionado(diaSeleccionado + 1)
   }
 
@@ -490,7 +516,13 @@ export default function NovenaDetallePage() {
                   </div>
                 )}
                 <button
-                  onClick={() => { removeNovenaProgreso(novena!.id); navigate('/novenas') }}
+                  onClick={async () => {
+                    if (progreso?.notificacion?.activa) {
+                      await removeWebPushSubscription(novena!.id, pushSubscription?.endpoint)
+                    }
+                    removeNovenaProgreso(novena!.id)
+                    navigate('/novenas')
+                  }}
                   className="w-full text-xs text-red-400 py-2 text-center"
                 >
                   Abandonar esta novena
