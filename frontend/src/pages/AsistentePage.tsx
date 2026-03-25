@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
@@ -7,6 +7,8 @@ import { BugReportLink } from '../components/BugReportButton'
 import { api, PlanEspiritualParams } from '../services/api'
 import { useAppStore, PlanEspiritualProgreso } from '../store/useAppStore'
 import { getLiturgicalContext, buildLiturgicalLabel } from '../lib/liturgicalCalendar'
+import { parseBibleRef } from '../lib/bibleRefParser'
+import { getBibleChapter } from '../lib/bible'
 import {
   getOrCreatePushSubscription,
   isPushSupported,
@@ -731,7 +733,37 @@ function Toggle({ active, onChange }: { active: boolean; onChange: (v: boolean) 
   )
 }
 
+const SPARK_SYMBOLS = ['✦', '✸', '✶']
+const SPARK_POSITIONS = [
+  { x: -14, delay: 0,   duration: 0.7 },
+  { x:   0, delay: 0.1, duration: 0.65 },
+  { x:  14, delay: 0.05,duration: 0.75 },
+]
+
+function Sparkles() {
+  return (
+    <>
+      {SPARK_POSITIONS.map((p, i) => (
+        <span
+          key={i}
+          className="absolute pointer-events-none select-none text-dorado animate-float-particle"
+          style={{
+            left: `calc(50% + ${p.x}px)`,
+            bottom: '50%',
+            fontSize: '9px',
+            '--delay': `${p.delay}s`,
+            '--duration': `${p.duration}s`,
+          } as CSSProperties}
+        >
+          {SPARK_SYMBOLS[i]}
+        </span>
+      ))}
+    </>
+  )
+}
+
 function TareaCard({
+  tipo,
   label,
   emoji,
   contenido,
@@ -745,8 +777,36 @@ function TareaCard({
   completada: boolean
   onToggle: () => void
 }) {
+  const [verses, setVerses] = useState<{ number: number; text: string }[]>([])
+  const [sparkKey, setSparkKey] = useState(0)
+
+  useEffect(() => {
+    if (tipo !== 'lectura') return
+    let cancelled = false
+    async function load() {
+      const parsed = parseBibleRef(contenido)
+      if (!parsed.length) return
+      const { book, chapter, verses: verseNums } = parsed[0]
+      try {
+        const data = await getBibleChapter(book, chapter)
+        if (cancelled) return
+        const filtered = verseNums.length > 0
+          ? data.verses.filter(v => verseNums.includes(v.number))
+          : data.verses
+        setVerses(filtered.slice(0, 8))
+      } catch { /* referencia no encontrada — silencioso */ }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [tipo, contenido])
+
+  function handleToggle() {
+    if (!completada) setSparkKey(k => k + 1)
+    onToggle()
+  }
+
   return (
-    <div className={`rounded-2xl border transition-all duration-200 overflow-hidden
+    <div className={`rounded-2xl border transition-all duration-300 overflow-hidden
       ${completada
         ? 'border-dorado/40 bg-dorado/5 dark:bg-dorado/10'
         : 'border-crema-200 dark:border-oscuro-border bg-white dark:bg-oscuro-card'
@@ -761,21 +821,36 @@ function TareaCard({
           <p className={`text-sm leading-relaxed ${completada ? 'line-through text-cafe-light/60 dark:text-crema-400/60' : 'text-cafe-dark dark:text-crema-200'}`}>
             {contenido}
           </p>
-        </div>
-        <button
-          onClick={onToggle}
-          className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-150 active:scale-90
-            ${completada
-              ? 'bg-dorado border-dorado'
-              : 'border-crema-300 dark:border-oscuro-border bg-transparent hover:border-dorado/50'
-            }`}
-        >
-          {completada && (
-            <svg viewBox="0 0 10 10" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <path d="M1.5 5l2.5 2.5 4.5-4.5" />
-            </svg>
+          {tipo === 'lectura' && verses.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-crema-200/60 dark:border-oscuro-border/60 space-y-1.5 animate-fade-in">
+              {verses.map(v => (
+                <p key={v.number} className="font-serif text-[13px] leading-relaxed text-cafe-dark/80 dark:text-crema-200/75">
+                  <span className="text-dorado font-bold text-[10px] mr-1.5 align-top leading-5 select-none">
+                    {v.number}
+                  </span>
+                  {v.text}
+                </p>
+              ))}
+            </div>
           )}
-        </button>
+        </div>
+        <div className="relative flex-shrink-0">
+          {sparkKey > 0 && <Sparkles key={sparkKey} />}
+          <button
+            onClick={handleToggle}
+            className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200
+              ${completada
+                ? 'bg-dorado border-dorado scale-110'
+                : 'border-crema-300 dark:border-oscuro-border bg-transparent hover:border-dorado/50 active:scale-90'
+              }`}
+          >
+            {completada && (
+              <svg viewBox="0 0 10 10" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <path d="M1.5 5l2.5 2.5 4.5-4.5" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
