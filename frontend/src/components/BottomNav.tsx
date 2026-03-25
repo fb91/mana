@@ -36,7 +36,7 @@ export default function BottomNav() {
   const lecturasActive = location.pathname === '/lecturas-del-dia'
 
   return (
-    <nav className="fixed bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] left-1/2 -translate-x-1/2
+    <nav className="lg:hidden fixed bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] left-1/2 -translate-x-1/2
                     w-[calc(100%-1.5rem)] sm:max-w-[calc(28rem-1.5rem)] z-50
                     bg-white/75 dark:bg-oscuro-surface/80 backdrop-blur-md
                     rounded-2xl shadow-lg shadow-black/10

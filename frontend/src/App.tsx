@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
+import Sidebar from './components/Sidebar'
 // InstallPrompt replaced by unified banner in InicioPage
 import ExamenPage from './pages/ExamenPage'
 import SantoPage from './pages/SantoPage'
@@ -27,9 +28,11 @@ function AppContent() {
   const isAdminRoute = location.pathname.startsWith('/admin')
 
   return (
-    <div className="w-full sm:max-w-md sm:shadow-2xl flex flex-col min-h-screen bg-crema dark:bg-oscuro-bg">
-      <main className="flex-1 overflow-hidden">
-        <Routes>
+    <div className="w-full sm:max-w-md sm:shadow-2xl lg:max-w-none lg:shadow-none flex flex-col min-h-screen bg-crema dark:bg-oscuro-bg">
+      {!isAdminRoute && <Sidebar />}
+      <div className="flex flex-col flex-1 lg:ml-64">
+        <main className="flex-1 overflow-hidden">
+          <Routes>
           <Route path="/" element={<Navigate to="/inicio" replace />} />
           <Route path="/inicio" element={<InicioPage />} />
           <Route path="/lecturas-del-dia" element={<LiturgiaPage />} />
@@ -49,9 +52,10 @@ function AppContent() {
           <Route path="/admin/novenas" element={<AdminRoute><AdminNovenasPage /></AdminRoute>} />
           <Route path="/admin/novenas/:id" element={<AdminRoute><AdminNovenaFormPage /></AdminRoute>} />
           <Route path="/admin/biblia" element={<AdminRoute requireAdmin><AdminBibliaPage /></AdminRoute>} />
-        </Routes>
-      </main>
-      {!isAdminRoute && <BottomNav />}
+          </Routes>
+        </main>
+        {!isAdminRoute && <BottomNav />}
+      </div>
     </div>
   )
 }
@@ -83,7 +87,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <BugReportProvider>
-        <div className="min-h-screen bg-stone-300 dark:bg-stone-900 sm:flex sm:justify-center">
+        <div className="min-h-screen bg-stone-300 dark:bg-stone-900 lg:bg-crema dark:lg:bg-oscuro-bg sm:flex sm:justify-center">
           <AppContent />
         </div>
       </BugReportProvider>

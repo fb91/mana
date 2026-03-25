@@ -9,6 +9,7 @@ import { downloadLectioPDF } from '../lib/lectio-pdf'
 import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from '../components/IOSInstallModal'
 import { usePWAInstall } from '../hooks/usePWAInstall'
 import { slugify } from '../lib/slugify'
+import { getLiturgicalContext, buildLiturgicalLabel } from '../lib/liturgicalCalendar'
 
 
 interface Quote {
@@ -316,6 +317,9 @@ export default function InicioPage() {
   const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
   const [quote] = useState<Quote>(() => QUOTES[Math.floor(Math.random() * QUOTES.length)])
 
+  const liturgicalCtx = getLiturgicalContext(new Date())
+  const liturgicalLabel = buildLiturgicalLabel(liturgicalCtx)
+
   // About modal
   const [showAbout, setShowAbout] = useState(false)
 
@@ -449,8 +453,8 @@ export default function InicioPage() {
   return (
     <div className="flex flex-col h-screen">
 
-      {/* Header personalizado */}
-      <header className="sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
+      {/* Header personalizado — solo mobile */}
+      <header className="lg:hidden sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
                           border-b border-crema-200 dark:border-oscuro-border px-5 py-4 relative">
         <div className="flex items-center gap-3 pr-12">
           <h1 className="font-serif text-5xl font-semibold text-cafe-dark dark:text-crema-200 leading-none">
@@ -480,7 +484,35 @@ export default function InicioPage() {
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in">
+      {/* Header desktop — solo lg+ */}
+      <header className="hidden lg:flex items-start justify-between px-8 pt-8 pb-6
+                         border-b border-crema-200 dark:border-oscuro-border
+                         bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm sticky top-0 z-10">
+        <div>
+          <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
+            Bienvenido
+          </h1>
+          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+            <p className="text-sm text-cafe-light dark:text-crema-300 capitalize">
+              {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+            <span className="inline-flex items-center text-xs bg-dorado/10 text-dorado
+                             px-2.5 py-1 rounded-full border border-dorado/20 font-medium">
+              {liturgicalLabel}
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowAbout(true)}
+          className="w-9 h-9 rounded-full bg-dorado/10 hover:bg-dorado/20 active:scale-95 transition-all
+                     flex items-center justify-center flex-shrink-0 mt-1"
+          aria-label="Acerca de Maná"
+        >
+          <Icon name="info" size={18} className="text-dorado" />
+        </button>
+      </header>
+
+      <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:py-8 animate-fade-in">
 
         {/* Install banner (iOS + Android) */}
         {showInstallBanner && (
@@ -586,62 +618,160 @@ export default function InicioPage() {
           )}
         </div>
 
-        {/* Continuar novena */}
-        {novenaActiva && diaSiguiente && diaSiguiente <= 9 && (
-          <button
-            onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
-            className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                       bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
-                       active:scale-[0.98] transition-all duration-200"
-          >
-            <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
-                Rezar oración del día
-              </p>
-              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
-                Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
-              </p>
-              {novenaActiva.intencion && (
-                <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
-                  {novenaActiva.intencion}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
-              <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
-              <Icon name="chevron-right" size={16} className="text-dorado/50" />
-            </div>
-          </button>
-        )}
+        {/* Accesos rápidos — mobile: condicional / desktop: grilla 2 columnas siempre */}
 
-        {/* Continuar leyendo */}
-        {lastBiblePath && (
-          <button
-            onClick={() => navigate(lastBiblePath)}
-            className="w-full mb-4 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                       bg-cafe-dark dark:bg-dorado/90
-                       active:scale-[0.98] transition-all duration-200 shadow-md"
-          >
-            <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
-                Continuar leyendo
-              </p>
-              <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
-                {formatBiblePath(lastBiblePath)}
-              </p>
-            </div>
-            <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
-          </button>
-        )}
+        {/* Mobile */}
+        <div className="lg:hidden">
+          {novenaActiva && diaSiguiente && diaSiguiente <= 9 && (
+            <button
+              onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
+              className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
+                         active:scale-[0.98] transition-all duration-200"
+            >
+              <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
+                  Rezar oración del día
+                </p>
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+                  Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
+                </p>
+                {novenaActiva.intencion && (
+                  <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
+                    {novenaActiva.intencion}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
+                <Icon name="chevron-right" size={16} className="text-dorado/50" />
+              </div>
+            </button>
+          )}
+          {lastBiblePath && (
+            <button
+              onClick={() => navigate(lastBiblePath)}
+              className="w-full mb-4 rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-cafe-dark dark:bg-dorado/90
+                         active:scale-[0.98] transition-all duration-200 shadow-md"
+            >
+              <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
+                  Continuar leyendo
+                </p>
+                <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
+                  {formatBiblePath(lastBiblePath)}
+                </p>
+              </div>
+              <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
+            </button>
+          )}
+        </div>
+
+        {/* Desktop: siempre muestra ambas tarjetas, con placeholder si no hay datos */}
+        <div className="hidden lg:grid grid-cols-2 gap-3 mb-6">
+
+          {/* Novena */}
+          {novenaActiva && diaSiguiente && diaSiguiente <= 9 ? (
+            <button
+              onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
+              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
+                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/50 hover:shadow-sm"
+            >
+              <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
+                  Rezar oración del día
+                </p>
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
+                  Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
+                </p>
+                {novenaActiva.intencion && (
+                  <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
+                    {novenaActiva.intencion}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
+                <Icon name="chevron-right" size={16} className="text-dorado/50" />
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/novenas')}
+              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
+            >
+              <Icon name="beads" size={20} className="text-cafe-light dark:text-crema-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-cafe-light dark:text-crema-400 mb-0.5">
+                  Oración del día
+                </p>
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
+                  Comenzar una novena
+                </p>
+                <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
+                  Acompañate con la intercesión de los santos
+                </p>
+              </div>
+              <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
+            </button>
+          )}
+
+          {/* Biblia */}
+          {lastBiblePath ? (
+            <button
+              onClick={() => navigate(lastBiblePath)}
+              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-cafe-dark dark:bg-dorado/90
+                         active:scale-[0.98] transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
+                  Continuar leyendo
+                </p>
+                <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
+                  {formatBiblePath(lastBiblePath)}
+                </p>
+              </div>
+              <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/biblia')}
+              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                         bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
+                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
+            >
+              <Icon name="book-open" size={20} className="text-cafe-light dark:text-crema-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-cafe-light dark:text-crema-400 mb-0.5">
+                  La Biblia
+                </p>
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
+                  Empezar a leer
+                </p>
+                <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
+                  Leé cualquier libro y capítulo
+                </p>
+              </div>
+              <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
+            </button>
+          )}
+        </div>
 
         {/* RECURSOS Section */}
         <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />
         <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-sm uppercase tracking-widest mb-4">
           RECURSOS
         </h2>
-        <div className="grid grid-cols-1 gap-3 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
           {recursos.map((tool) => (
             <button
               key={tool.title}
@@ -691,7 +821,7 @@ export default function InicioPage() {
           El contenido de estas herramientas está generado con IA, a excepción de las citas bíblicas que son literales.
           La IA puede cometer errores.
         </p>
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {herramientas.map((tool) => (
             <div key={tool.title}>
               <button
@@ -861,7 +991,7 @@ export default function InicioPage() {
 
         <BugReportLink />
 
-        <div className="pb-28" />
+        <div className="pb-28 lg:pb-10" />
 
       </div>
 
