@@ -3,14 +3,15 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import Icon from './Icon'
 
 const DESKTOP_ITEMS = [
+  { label: 'Inicio', path: '/inicio' },
   { label: 'Evangelio', path: '/lecturas-del-dia' },
   { label: 'Biblia', path: '/biblia' },
   { label: 'Novenas', path: '/novenas' },
-  { label: 'Examen', path: '/examen' },
   { label: 'Ajustes', path: '/ajustes' },
 ]
 
 const MOBILE_ITEMS = [
+  { label: 'Inicio', path: '/inicio' },
   { label: 'Evangelio del día', path: '/lecturas-del-dia' },
   { label: 'Biblia', path: '/biblia' },
   { label: 'Novenas', path: '/novenas' },
@@ -21,6 +22,7 @@ const MOBILE_ITEMS = [
 ]
 
 function isPathActive(location: { pathname: string }, path: string): boolean {
+  if (path === '/inicio') return location.pathname === '/inicio' || location.pathname === '/'
   if (path === '/lecturas-del-dia') return location.pathname === path
   return location.pathname === path || location.pathname.startsWith(path + '/')
 }
@@ -46,12 +48,11 @@ export default function TopNav() {
 
           {/* Logo */}
           <button
-            onClick={() => handleNav('/lecturas-del-dia')}
-            className="flex items-center gap-2 text-dorado hover:opacity-80 transition-opacity shrink-0"
+            onClick={() => handleNav('/inicio')}
+            className="hover:opacity-75 transition-opacity shrink-0"
             aria-label="Ir al inicio"
           >
-            <Icon name="cross" size={17} />
-            <span className="font-serif font-semibold text-lg leading-none">Maná</span>
+            <span className="font-serif font-bold text-2xl text-cafe-dark dark:text-crema-100 leading-none">Maná</span>
           </button>
 
           {/* Desktop nav */}

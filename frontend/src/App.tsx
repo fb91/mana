@@ -30,7 +30,7 @@ function AppContent() {
       {!isAdminRoute && <TopNav />}
       <main className="flex-1 overflow-hidden min-h-0">
         <Routes>
-          <Route path="/" element={<Navigate to="/lecturas-del-dia" replace />} />
+          <Route path="/" element={<Navigate to="/inicio" replace />} />
           <Route path="/inicio" element={<InicioPage />} />
           <Route path="/lecturas-del-dia" element={<LiturgiaPage />} />
           <Route path="/recomendacion" element={<RecomendacionPage />} />

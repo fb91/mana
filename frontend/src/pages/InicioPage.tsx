@@ -859,9 +859,38 @@ export default function InicioPage() {
           ))}
         </div>
 
+        {/* ── Acerca de ── */}
+        <div className="mt-2 rounded-2xl border border-crema-200 dark:border-oscuro-border
+                        bg-white dark:bg-oscuro-surface px-5 py-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">
+              <Icon name="sparkles" size={16} />
+            </div>
+            <h2 className="font-serif font-semibold text-cafe-dark dark:text-crema-200">
+              Acerca de Maná
+            </h2>
+          </div>
+          <div className="space-y-2.5 text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">
+            <p>
+              <strong>Maná</strong> es tu compañero espiritual diario. Combina la Biblia católica
+              completa con las lecturas litúrgicas diarias, disponibles{' '}
+              <strong className="text-dorado">100% offline</strong>.
+            </p>
+            <p>
+              Incorpora inteligencia artificial para generar <em>Lectios Divinas</em> personalizadas,
+              recomendarte pasajes bíblicos según tu momento espiritual, y conectarte con santos que
+              resuenen con tu vida.
+            </p>
+            <p>
+              Personalizá la experiencia desde <strong>Ajustes</strong>: elegí colores, tamaño de
+              letra, y configurá notificaciones para acompañarte en tu jornada de fe.
+            </p>
+          </div>
+        </div>
+
         <BugReportLink />
 
-        <div className="pb-28" />
+        <div className="pb-6" />
 
       </div>
 
