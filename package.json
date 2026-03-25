@@ -3,5 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "cd frontend && npm run dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.78.0"
   }
 }
