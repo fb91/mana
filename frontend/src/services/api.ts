@@ -132,6 +132,25 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ page, description, url }),
     }),
+
+  // ── Push Notifications ──────────────────────────────────────────
+
+  subscribeNotification: (
+    subscription: PushSubscriptionJSON,
+    novenaId: number,
+    nombreNovena: string,
+    hora: string,
+  ) =>
+    request<{ ok: boolean }>('/api/notifications/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ subscription, novenaId, nombreNovena, hora }),
+    }),
+
+  unsubscribeNotification: (endpoint: string, novenaId: number) =>
+    request<{ ok: boolean }>('/api/notifications/unsubscribe', {
+      method: 'POST',
+      body: JSON.stringify({ endpoint, novenaId }),
+    }),
 }
 
 export type BibleBook = {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Novena } from '../services/api'
+import { Novena, api } from '../services/api'
 import novenasJson from '../data/novenas.json'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
@@ -9,6 +9,7 @@ import { useAppStore, NovenaProgreso } from '../store/useAppStore'
 import TimePicker from '../components/TimePicker'
 import CalendarPicker from '../components/CalendarPicker'
 import { slugify } from '../lib/slugify'
+import { getOrCreatePushSubscription, getCurrentPushSubscription, isPushSupported } from '../lib/webpush'
 
 const novenas = novenasJson as Novena[]
 
@@ -35,23 +36,30 @@ async function requestNotificationPermission(): Promise<boolean> {
   return result === 'granted'
 }
 
-function scheduleNotification(p: NovenaProgreso) {
-  if (!p.notificacion?.activa) return
-  const [h, m] = p.notificacion.hora.split(':').map(Number)
-  const now = new Date()
-  const target = new Date()
-  target.setHours(h, m, 0, 0)
-  if (target <= now) target.setDate(target.getDate() + 1)
-  const delay = target.getTime() - now.getTime()
-  setTimeout(() => {
-    if (Notification.permission === 'granted') {
-      new Notification('Maná — Recordatorio de Novena', {
-        body: `Día ${(p.diaActual ?? 0) + 1} de la ${p.nombreNovena}`,
-        icon: '/icons/icon-192.png',
-        tag: `novena-${p.novenaId}`,
-      })
-    }
-  }, delay)
+async function saveWebPushSubscription(
+  novenaId: number,
+  nombreNovena: string,
+  hora: string,
+  setPushSubscription: (sub: PushSubscriptionJSON | null) => void,
+): Promise<boolean> {
+  try {
+    const sub = await getOrCreatePushSubscription()
+    if (!sub) return false
+    setPushSubscription(sub.toJSON())
+    await api.subscribeNotification(sub.toJSON(), novenaId, nombreNovena, hora)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function removeWebPushSubscription(novenaId: number, endpoint: string | undefined): Promise<void> {
+  if (!endpoint) return
+  try {
+    await api.unsubscribeNotification(endpoint, novenaId)
+  } catch {
+    // Silencioso: si falla la limpieza en servidor no es crítico
+  }
 }
 
 export default function NovenaDetallePage() {
@@ -65,6 +73,8 @@ export default function NovenaDetallePage() {
     updateNovenaIntencion,
     updateNovenaNotificacion,
     marcarDiaRezado,
+    pushSubscription,
+    setPushSubscription,
   } = useAppStore()
 
   const novena = novenas.find(n => slugify(n.nombre) === slug)
@@ -107,7 +117,7 @@ export default function NovenaDetallePage() {
   const totalCompletados = progreso?.diasCompletados.length ?? 0
   const terminada = totalCompletados >= 9
 
-  function comenzarNovena() {
+  async function comenzarNovena() {
     const nueva: NovenaProgreso = {
       novenaId: novena!.id,
       nombreNovena: novena!.nombre,
@@ -120,9 +130,10 @@ export default function NovenaDetallePage() {
     }
     setNovenaProgreso(nueva)
     if (notifActiva) {
-      requestNotificationPermission().then(granted => {
-        if (granted) scheduleNotification(nueva)
-      })
+      const granted = await requestNotificationPermission()
+      if (granted) {
+        await saveWebPushSubscription(nueva.novenaId, nueva.nombreNovena, horaNotif, setPushSubscription)
+      }
     }
     setEditandoIntencion(false)
   }
@@ -134,6 +145,10 @@ export default function NovenaDetallePage() {
 
   async function toggleNotificacion(activa: boolean) {
     if (activa) {
+      if (!isPushSupported()) {
+        alert('Tu navegador no soporta notificaciones push. Probá instalando la app desde el menú de ajustes.')
+        return
+      }
       const granted = await requestNotificationPermission()
       if (!granted) {
         alert('Para recibir recordatorios, habilitá los permisos de notificación en tu navegador.')
@@ -144,15 +159,23 @@ export default function NovenaDetallePage() {
     if (iniciada) {
       const nueva = activa ? { activa: true, hora: horaNotif } : null
       updateNovenaNotificacion(novena!.id, nueva)
-      if (activa && progreso) scheduleNotification({ ...progreso, notificacion: { activa: true, hora: horaNotif } })
+      if (activa) {
+        await saveWebPushSubscription(novena!.id, novena!.nombre, horaNotif, setPushSubscription)
+      } else {
+        const endpoint = pushSubscription?.endpoint
+        await removeWebPushSubscription(novena!.id, endpoint)
+      }
     }
   }
 
-  function guardarHoraNotif(hora: string) {
+  async function guardarHoraNotif(hora: string) {
     setHoraNotif(hora)
     if (iniciada) {
       updateNovenaNotificacion(novena!.id, { activa: notifActiva, hora })
-      if (notifActiva && progreso) scheduleNotification({ ...progreso, notificacion: { activa: true, hora } })
+      if (notifActiva) {
+        // Upsert con la nueva hora
+        await saveWebPushSubscription(novena!.id, novena!.nombre, hora, setPushSubscription)
+      }
     }
   }
 

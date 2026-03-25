@@ -1,0 +1,19 @@
+name: Novena Notifications
+
+on:
+  schedule:
+    # Corre cada hora en punto (UTC). Buenos Aires es UTC-3 fijo (sin DST).
+    # Esto cubre todas las horas del día en Argentina.
+    - cron: '0 * * * *'
+  workflow_dispatch: # permite correrlo manualmente para testear
+
+jobs:
+  send-notifications:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send push notifications
+        run: |
+          curl -s -X POST "${{ secrets.APP_URL }}/api/notifications/send" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --fail-with-body
