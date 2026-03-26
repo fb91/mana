@@ -20,6 +20,34 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
 ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS url    text;
 ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS titulo text;
 
+-- Backfill registros existentes del asistente espiritual (novena_id = -1)
+UPDATE push_subscriptions
+SET
+  url    = '/asistente',
+  titulo = 'Maná — Asistente Espiritual'
+WHERE novena_id = -1
+  AND url IS NULL;
+
+-- Backfill registros existentes de novenas (novena_id >= 0)
+-- Reconstruye la url a partir del nombre ya almacenado, igual que hacía el servidor antes
+UPDATE push_subscriptions
+SET
+  url    = '/novenas/' || lower(
+              regexp_replace(
+                regexp_replace(
+                  translate(novena_nombre,
+                    'áéíóúàèìòùäëïöüÁÉÍÓÚÀÈÌÒÙÄËÏÖÜñÑ',
+                    'aeiouaeiouaeiouAEIOUAEIOUAEIOUnnN'
+                  ),
+                  '[^a-zA-Z0-9\s-]', '', 'g'
+                ),
+                '\s+', '-', 'g'
+              )
+           ),
+  titulo = 'Maná — Recordatorio de Novena'
+WHERE novena_id >= 0
+  AND url IS NULL;
+
 -- Índice para la query del cron (busca por hora)
 CREATE INDEX IF NOT EXISTS idx_push_hora
   ON push_subscriptions (hora_notificacion);
