@@ -75,7 +75,7 @@ export default function PrayerMarquee() {
           100% { transform: translateX(-50%); }
         }
         .prayer-marquee-inner {
-          animation: prayer-marquee 30s linear infinite;
+          animation: prayer-marquee 18s linear infinite;
           white-space: nowrap;
           will-change: transform;
         }
