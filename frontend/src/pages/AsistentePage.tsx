@@ -909,7 +909,7 @@ function TareaCard({
           {tipo === 'lectura' && verses.length > 0 && (
             <div className="mt-2 pt-2 border-t border-crema-200/60 dark:border-oscuro-border/60 space-y-1.5 animate-fade-in">
               {verses.map(v => (
-                <p key={v.number} className="font-serif text-[13px] leading-relaxed text-cafe-dark/80 dark:text-crema-200/75">
+                <p key={v.number} className="font-serif text-sm leading-relaxed text-cafe-dark/80 dark:text-crema-200/75">
                   <span className="text-dorado font-bold text-[10px] mr-1.5 align-top leading-5 select-none">
                     {v.number}
                   </span>
