@@ -234,7 +234,7 @@ export default function PedidoOracionPage() {
             type="text"
             value={nombre}
             onChange={e => handleNombreChange(e.target.value)}
-            placeholder="Ej: Francisco, María, Juanito…"
+            placeholder="Ej: Francisco, María, Luciana…"
             maxLength={30}
             autoComplete="off"
             autoCorrect="off"
