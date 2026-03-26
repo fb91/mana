@@ -7,42 +7,52 @@ import { supabase } from '../lib/supabase'
 // ── Catálogos ───────────────────────────────────────────────────────────────
 
 type TipoIntencion = 'Petición' | 'Acción de gracias'
-type Categoria = 'Salud' | 'Familia' | 'Trabajo' | 'Fe' | 'Emocional' | 'Económico'
+// 'Intención personal' = catch-all para Petición (sin subcategoría)
+// 'Agradecimiento general' = catch-all para Acción de gracias (motivo = "Acción de gracias")
+type Categoria =
+  | 'Salud' | 'Familia' | 'Trabajo' | 'Fe' | 'Emocional' | 'Económico'
+  | 'Intención personal' | 'Agradecimiento general'
 
-const CATEGORIAS: Categoria[] = ['Salud', 'Familia', 'Trabajo', 'Fe', 'Emocional', 'Económico']
+const CATEGORIAS_BASE: Categoria[] = ['Salud', 'Familia', 'Trabajo', 'Fe', 'Emocional', 'Económico']
+
+function getCategorias(tipo: TipoIntencion | null): Categoria[] {
+  if (!tipo) return []
+  return tipo === 'Petición'
+    ? [...CATEGORIAS_BASE, 'Intención personal']
+    : [...CATEGORIAS_BASE, 'Agradecimiento general']
+}
 
 // Subcategorías para Petición: incluyen situaciones difíciles o en curso
-const SUBCATEGORIAS_PETICION: Record<Categoria, string[]> = {
+const SUBCATEGORIAS_PETICION: Partial<Record<Categoria, string[]>> = {
   'Salud':     ['Enfermedad', 'Cirugía', 'Recuperación', 'Adicciones', 'Embarazo'],
   'Familia':   ['Conflicto familiar', 'Matrimonio / pareja', 'Crianza de hijos', 'Duelo / pérdida'],
   'Trabajo':   ['Búsqueda de empleo', 'Problema laboral', 'Discernimiento vocacional'],
   'Fe':        ['Conversión', 'Alejamiento de la fe', 'Sacramentos', 'Protección espiritual'],
   'Emocional': ['Depresión / ansiedad', 'Duelo / pérdida', 'Paz interior'],
   'Económico': ['Situación económica', 'Deudas'],
+  // catch-all: sin subcategorías
 }
 
 // Subcategorías para Acción de gracias: solo logros, dones o sucesos positivos
-const SUBCATEGORIAS_GRACIAS: Record<Categoria, string[]> = {
+const SUBCATEGORIAS_GRACIAS: Partial<Record<Categoria, string[]>> = {
   'Salud':     ['Recuperación', 'Nacimiento', 'Sanación'],
   'Familia':   ['Matrimonio / pareja', 'Reconciliación', 'Crianza de hijos'],
   'Trabajo':   ['Nuevo empleo', 'Proyecto logrado', 'Vocación encontrada'],
   'Fe':        ['Conversión', 'Sacramentos', 'Fortaleza recibida'],
   'Emocional': ['Paz interior', 'Superación personal'],
   'Económico': ['Estabilidad económica', 'Provisión recibida'],
+  // 'Agradecimiento general': sin subcategorías
 }
 
 function getSubcategorias(tipo: TipoIntencion | null, categoria: Categoria | null): string[] {
   if (!tipo || !categoria) return []
-  return tipo === 'Acción de gracias'
-    ? SUBCATEGORIAS_GRACIAS[categoria]
-    : SUBCATEGORIAS_PETICION[categoria]
+  const map = tipo === 'Acción de gracias' ? SUBCATEGORIAS_GRACIAS : SUBCATEGORIAS_PETICION
+  return map[categoria] ?? []
 }
 
 const CONTEXTOS = ['urgente', 'prolongado'] as const
 
 // ── Construcción del motivo almacenado ─────────────────────────────────────
-// Formato: "Categoría · Subcategoría (contexto)"
-// Para agradecimiento: "Acción de gracias · Categoría · Subcategoría"
 
 function buildMotivo(
   tipo: TipoIntencion,
@@ -50,6 +60,9 @@ function buildMotivo(
   subcategoria: string | null,
   contexto: string | null,
 ): string {
+  // Catch-all de Acción de gracias → solo "Acción de gracias"
+  if (categoria === 'Agradecimiento general') return 'Acción de gracias'
+
   if (tipo === 'Acción de gracias') {
     const parts = ['Acción de gracias', categoria, ...(subcategoria ? [subcategoria] : [])]
     return parts.join(' · ')
@@ -430,20 +443,24 @@ export default function PedidoOracionPage() {
               2. Categoría
             </h2>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIAS.map(c => (
-                <button
-                  key={c}
-                  onClick={() => handleCategoriaChange(c)}
-                  className={[
-                    'px-3.5 py-2 rounded-full text-sm font-medium border transition-all duration-150',
-                    categoria === c
-                      ? 'bg-dorado text-white border-dorado shadow-sm'
-                      : 'bg-white dark:bg-oscuro-surface border-crema-300 dark:border-oscuro-border text-cafe-dark dark:text-crema-200 hover:border-dorado/50',
-                  ].join(' ')}
-                >
-                  {c}
-                </button>
-              ))}
+              {getCategorias(tipo).map(c => {
+                const isCatchAll = c === 'Intención personal' || c === 'Agradecimiento general'
+                return (
+                  <button
+                    key={c}
+                    onClick={() => handleCategoriaChange(c)}
+                    className={[
+                      'px-3.5 py-2 rounded-full text-sm font-medium border transition-all duration-150',
+                      isCatchAll ? 'italic' : '',
+                      categoria === c
+                        ? 'bg-dorado text-white border-dorado shadow-sm'
+                        : 'bg-white dark:bg-oscuro-surface border-crema-300 dark:border-oscuro-border text-cafe-dark dark:text-crema-200 hover:border-dorado/50',
+                    ].join(' ')}
+                  >
+                    {c}
+                  </button>
+                )
+              })}
             </div>
           </section>
         )}
