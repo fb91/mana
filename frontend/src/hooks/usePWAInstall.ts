@@ -18,10 +18,6 @@ export function usePWAInstall() {
   })
 
   useEffect(() => {
-    // No mostrar prompt de instalación en PC/laptop
-    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent)
-    if (!isMobile) return
-
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
