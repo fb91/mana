@@ -5,18 +5,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta cálida — cremas, marrones (fija)
+        // Paleta cálida fija — usada principalmente por el tema oscuro y como base
         crema: {
           50:  '#FDFAF5',
           100: '#FAF7F0',
-          200: '#F5EDD8',
-          300: '#EDD9B0',
+          200: '#E8E1D9',  // borde suave (antes #F5EDD8)
+          300: '#D4C5B5',  // borde más marcado (antes #EDD9B0)
           DEFAULT: '#FAF7F2',
         },
         cafe: {
-          light: '#C4956A',
-          DEFAULT: '#7C4A1E',
-          dark:  '#4A2A0E',
+          light: '#7A6F63',   // texto secundario claro (antes #C4956A)
+          DEFAULT: '#8C5A2B', // primario/acción claro (antes #7C4A1E)
+          dark:  '#2E2A25',   // texto primario claro (antes #4A2A0E)
         },
         // Modo oscuro — cálido, no azulado
         oscuro: {
@@ -25,11 +25,20 @@ export default {
           card:    '#2E2016',
           border:  '#3D2E20',
         },
-        // Acento — cambia según el tema activo (CSS variables)
+        // Acento dinámico — cambia según el tema activo (CSS variables)
         dorado: {
           light: 'rgb(var(--accent-light) / <alpha-value>)',
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           dark:  'rgb(var(--accent-dark) / <alpha-value>)',
+        },
+        // Tokens de diseño — variables CSS que se actualizan por tema
+        token: {
+          bg:       'rgb(var(--color-bg) / <alpha-value>)',
+          surface:  'rgb(var(--color-surface) / <alpha-value>)',
+          surface2: 'rgb(var(--color-surface-2) / <alpha-value>)',
+          text:     'rgb(var(--color-text-primary) / <alpha-value>)',
+          muted:    'rgb(var(--color-text-secondary) / <alpha-value>)',
+          border:   'rgb(var(--color-border) / <alpha-value>)',
         },
       },
       fontFamily: {

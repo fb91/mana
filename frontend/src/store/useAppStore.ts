@@ -43,13 +43,13 @@ export interface SavedCitation {
   savedAt: number
 }
 
-export type Theme      = 'claro' | 'oscuro'
+export type Theme      = 'claro' | 'oscuro' | 'luz' | 'juvenil' | 'liturgico'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
 export const FONT_PRESETS          = { small: 17, normal: 19, large: 22 } as const
 export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 22 } as const
 
-export const VALID_THEMES: Theme[] = ['claro', 'oscuro']
+export const VALID_THEMES: Theme[] = ['claro', 'oscuro', 'luz', 'juvenil', 'liturgico']
 
 interface AppState {
   theme: Theme
@@ -68,6 +68,10 @@ interface AppState {
   // Liturgical accent (override accent color regardless of base theme)
   liturgicalAccent: boolean
   setLiturgicalAccent: (on: boolean) => void
+
+  // Seguir el modo oscuro del sistema operativo (solo mobile)
+  followSystemDark: boolean
+  setFollowSystemDark: (on: boolean) => void
 
   // Push subscription
   pushSubscription: PushSubscriptionJSON | null
@@ -111,9 +115,9 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      theme: 'oscuro',
+      theme: 'claro',
       setTheme: (theme) => {
-        applyTheme(theme, get().liturgicalAccent)
+        applyTheme(theme)
         set({ theme })
       },
 
@@ -150,9 +154,12 @@ export const useAppStore = create<AppState>()(
 
       liturgicalAccent: false,
       setLiturgicalAccent: (on) => {
-        applyTheme(get().theme, on)
+        applyTheme(get().theme)
         set({ liturgicalAccent: on })
       },
+
+      followSystemDark: false,
+      setFollowSystemDark: (on) => set({ followSystemDark: on }),
 
       pushSubscription: null,
       setPushSubscription: (sub) => set({ pushSubscription: sub }),
@@ -266,6 +273,7 @@ export const useAppStore = create<AppState>()(
         fontSizeValue: state.fontSizeValue,
         fontFamily: state.fontFamily,
         liturgicalAccent: state.liturgicalAccent,
+        followSystemDark: state.followSystemDark,
         estadoDeVida: state.estadoDeVida,
         pushSubscription: state.pushSubscription,
         pinnedBooks: state.pinnedBooks,
@@ -280,23 +288,30 @@ export const useAppStore = create<AppState>()(
 )
 
 const ALL_THEME_CLASSES = [
-  'theme-claro', 'theme-oscuro',
+  'theme-claro', 'theme-oscuro', 'theme-luz', 'theme-juvenil',
   // Remove legacy classes that may have been persisted
-  'theme-liturgico', 'theme-juvenil', 'theme-colorido', 'theme-rosa', 'theme-rojo',
+  'theme-liturgico', 'theme-colorido', 'theme-rosa', 'theme-rojo',
   // Liturgical accent sub-variants
   'theme-liturgico-violet', 'theme-liturgico-white',
   'theme-liturgico-red', 'theme-liturgico-green', 'theme-liturgico-rose',
 ]
 
-export function applyTheme(theme: Theme, liturgicalAccent = false) {
+// Temas que activan el modo oscuro de Tailwind (dark:)
+const DARK_THEMES: Theme[] = ['oscuro']
+
+export function applyTheme(theme: Theme) {
   const html = document.documentElement
   ALL_THEME_CLASSES.forEach(c => html.classList.remove(c))
-  html.classList.toggle('dark', theme === 'oscuro')
-  html.classList.add(`theme-${theme}`)
 
-  if (liturgicalAccent) {
+  if (theme === 'liturgico') {
+    // Base clara + acento del tiempo litúrgico activo
+    html.classList.remove('dark')
+    html.classList.add('theme-claro')
     const color = getLiturgicalAppColor(new Date())
     html.classList.add(`theme-liturgico-${color}`)
+  } else {
+    html.classList.toggle('dark', DARK_THEMES.includes(theme))
+    html.classList.add(`theme-${theme}`)
   }
 }
 
