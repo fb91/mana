@@ -7,7 +7,7 @@ interface PrayerRequest {
   nombre: string
 }
 
-const SIN_NOMBRE = 'una intención especial'
+const SIN_NOMBRE = 'Anónimo'
 
 function formatRequest(req: PrayerRequest): string {
   // motivo may be "Salud · Cirugía (urgente)" or legacy "Salud"

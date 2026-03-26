@@ -100,7 +100,7 @@ function generateCaptcha(): Captcha {
 
 interface PrayerRequest { motivo: string; nombre: string }
 const MAX_DOTS = 15
-const SIN_NOMBRE_VALUE = 'una intención especial'
+const SIN_NOMBRE_VALUE = 'Anónimo'
 
 // ── Componente ───────────────────────────────────────────────────────────────
 
@@ -525,7 +525,7 @@ export default function PedidoOracionPage() {
                 {sinNombre && <Icon name="check" size={12} className="text-white" />}
               </div>
               <span className="text-sm text-cafe-light dark:text-crema-300">
-                Sin nombre — <em>"por una intención especial"</em>
+                Sin nombre — aparecerá como <em>"Anónimo"</em>
               </span>
             </label>
 
