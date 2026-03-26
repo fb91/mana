@@ -12,7 +12,8 @@ interface Props {
 export default function PageHeader({ icon, title, subtitle, onReset, actions }: Props) {
   return (
     <header className="sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
-                        border-b border-crema-200 dark:border-oscuro-border px-4 py-3">
+                        border-b border-crema-200 dark:border-oscuro-border px-4 py-3
+                        lg:static lg:z-auto lg:bg-transparent lg:dark:bg-transparent lg:backdrop-blur-none">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-dorado/10 flex items-center justify-center text-dorado flex-shrink-0">

@@ -241,111 +241,128 @@ export default function PedidoOracionPage() {
         <style>{`
           @keyframes heart-burst {
             0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
-            25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
-            65%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+            20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.6); }
+            60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
           }
           .heart-burst {
-            animation: heart-burst 0.9s ease-out forwards;
+            animation: heart-burst 0.95s ease-out forwards;
             position: absolute;
             left: 50%;
-            top: 50%;
+            top: 45%;
             pointer-events: none;
-            color: #c5922a;
             z-index: 20;
+          }
+          @keyframes story-progress {
+            from { width: 0%; }
+            to   { width: 100%; }
+          }
+          .story-progress-fill {
+            animation: story-progress 5s linear forwards;
           }
         `}</style>
 
         {/* ── Prayer stories ── */}
         {prayersLoading && (
-          <div className="mb-8 rounded-2xl bg-dorado/10 border border-dorado/20 h-64
+          <div className="mb-8 rounded-3xl bg-[#1c1206] h-72
                           flex items-center justify-center">
-            <div className="w-6 h-6 rounded-full border-2 border-dorado/30 border-t-dorado animate-spin" />
+            <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white/70 animate-spin" />
           </div>
         )}
 
         {!prayersLoading && prayerRequests.length > 0 && (
           <div className="mb-8">
-            <div className="relative rounded-2xl overflow-hidden
-                            bg-gradient-to-br from-dorado/20 via-dorado/10 to-transparent
-                            dark:from-dorado/20 dark:via-dorado/10 dark:to-oscuro-surface
-                            border border-dorado/30 flex flex-col p-5 min-h-[300px]">
+            {/* Dark story card */}
+            <div className="relative rounded-3xl overflow-hidden bg-[#1c1206]
+                            flex flex-col" style={{ minHeight: '340px' }}>
 
-              {/* Heart burst animation */}
+              {/* Subtle radial glow */}
+              <div className="absolute inset-0 pointer-events-none"
+                   style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(197,146,42,0.12) 0%, transparent 70%)' }} />
+
+              {/* Heart burst */}
               {showHeart && (
                 <div className="heart-burst">
-                  <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor">
+                  <svg width="110" height="110" viewBox="0 0 24 24" fill="#c5922a">
                     <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </div>
               )}
 
-              {/* Progress bar segments */}
-              {dotCount > 1 && (
-                <div className="flex gap-1 mb-4">
+              {/* Progress bars */}
+              {dotCount > 0 && (
+                <div className="relative z-10 flex gap-1.5 px-5 pt-5 pb-0">
                   {Array.from({ length: dotCount }).map((_, i) => {
-                    const normalizedIndex = storyIndex % dotCount
+                    const normIdx = storyIndex % dotCount
+                    const isPast    = i < normIdx
+                    const isCurrent = i === normIdx
                     return (
-                      <div
-                        key={i}
-                        className="h-1 rounded-full flex-1 transition-all duration-300"
-                        style={{
-                          backgroundColor: i === normalizedIndex
-                            ? 'rgba(197,146,42,1)'
-                            : i < normalizedIndex
-                            ? 'rgba(197,146,42,0.45)'
-                            : 'rgba(197,146,42,0.18)',
-                        }}
-                      />
+                      <div key={i} className="h-[3px] flex-1 rounded-full overflow-hidden bg-white/15">
+                        {isPast && <div className="h-full w-full bg-white/60 rounded-full" />}
+                        {isCurrent && (
+                          <div
+                            key={`p-${storyIndex}`}
+                            className="story-progress-fill h-full bg-white rounded-full"
+                          />
+                        )}
+                      </div>
                     )
                   })}
                 </div>
               )}
 
-              {/* Counter label */}
-              <p className="text-[10px] font-bold uppercase tracking-widest text-dorado/60 mb-auto">
-                Oración {storyIndex + 1} de {prayerRequests.length}
+              {/* Counter */}
+              <p className="relative z-10 text-[10px] font-semibold uppercase tracking-widest
+                             text-white/35 px-5 pt-3">
+                {storyIndex + 1} / {prayerRequests.length}
               </p>
 
               {/* Prayer content */}
-              <div className="flex flex-col items-center justify-center text-center py-8 flex-1">
-                <span className="inline-block text-xs font-semibold uppercase tracking-widest
-                                 text-dorado/70 bg-dorado/10 rounded-full px-3 py-1 mb-4">
+              <div className="relative z-10 flex-1 flex flex-col items-center justify-center
+                              text-center px-7 py-10">
+                {/* Motivo pill */}
+                <span className="inline-block text-[11px] font-bold uppercase tracking-widest
+                                 text-dorado/80 bg-dorado/15 border border-dorado/20
+                                 rounded-full px-3.5 py-1 mb-6">
                   {current?.motivo}
                 </span>
-                <p className="font-serif text-4xl lg:text-5xl font-bold
-                              text-cafe-dark dark:text-crema-100 leading-tight">
+
+                {/* Prep + name */}
+                <p className="font-serif text-white/50 text-lg font-medium leading-none mb-1">
                   {currentPrep}
                 </p>
-                <p className="font-serif text-4xl lg:text-5xl font-bold
-                              text-cafe-dark dark:text-crema-100 leading-tight mt-1">
+                <p className="font-serif text-white font-bold leading-none"
+                   style={{ fontSize: 'clamp(2.5rem, 10vw, 4rem)' }}>
                   {current?.nombre}
                 </p>
               </div>
 
               {/* Rezar button */}
-              <button
-                onClick={handleRezar}
-                disabled={showHeart}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl
-                           bg-dorado text-white font-semibold text-sm
-                           hover:bg-dorado/90 active:scale-[0.98] transition-all duration-150
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                Rezar por {current?.nombre}
-              </button>
+              <div className="relative z-10 px-5 pb-5">
+                <button
+                  onClick={handleRezar}
+                  disabled={showHeart}
+                  className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl
+                             bg-dorado hover:bg-dorado/90 active:scale-[0.98]
+                             text-white font-semibold text-sm tracking-wide
+                             transition-all duration-150
+                             disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  Rezar por {current?.nombre}
+                </button>
+              </div>
             </div>
           </div>
         )}
 
         {!prayersLoading && prayerRequests.length === 0 && (
-          <div className="mb-8 rounded-2xl bg-dorado/8 border border-dorado/20 px-5 py-8
-                          flex flex-col items-center gap-2 text-center">
-            <Icon name="hands" size={28} className="text-dorado/50" />
-            <p className="text-sm text-cafe-light dark:text-crema-300">
+          <div className="mb-8 rounded-3xl bg-[#1c1206] px-5 py-10
+                          flex flex-col items-center gap-3 text-center">
+            <Icon name="hands" size={28} className="text-white/30" />
+            <p className="text-sm text-white/50">
               Todavía no hay pedidos de oración. ¡Sé el primero!
             </p>
           </div>
