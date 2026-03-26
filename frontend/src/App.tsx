@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useAuthStore } from './store/useAuthStore'
+import { useUserSync } from './hooks/useUserSync'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
 // InstallPrompt replaced by unified banner in InicioPage
@@ -66,6 +68,10 @@ function AppContent() {
 export default function App() {
   const { theme, setTheme, fontSizeValue, fontFamily, followSystemDark } = useAppStore()
   const { init: initAdmin } = useAdminStore()
+  const initAuth = useAuthStore((s) => s.init)
+
+  // Sincronización con Google (hook activo mientras haya sesión)
+  useUserSync()
 
   // Seguir el tema oscuro del sistema operativo
   useEffect(() => {
@@ -96,6 +102,10 @@ export default function App() {
 
     // Inicializar sesión admin si existe (silencioso, no bloquea la app)
     initAdmin()
+
+    // Inicializar auth de Google (retorna cleanup de listener)
+    const cleanupAuth = initAuth()
+    return cleanupAuth
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

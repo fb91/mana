@@ -110,6 +110,17 @@ interface AppState {
   desmarcarTareaEspiritual: (tareaKey: string) => void
   marcarDiaPlanCompletado: (dia: number) => void
   updatePlanNotificacion: (notificacion: PlanEspiritualProgreso['notificacion']) => void
+
+  /** Reemplaza todos los campos sincronizables con datos provenientes de la nube. */
+  hydrateFromCloud: (data: {
+    novenasProgreso: NovenaProgreso[]
+    planEspiritual: PlanEspiritualProgreso | null
+    savedCitations: SavedCitation[]
+    lastBiblePath: string | null
+    pinnedBooks: string[]
+    recentRecommendations: string[]
+    estadoDeVida: string | null
+  }) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -264,6 +275,16 @@ export const useAppStore = create<AppState>()(
       updatePlanNotificacion: (notificacion) => set((s) => {
         if (!s.planEspiritual) return s
         return { planEspiritual: { ...s.planEspiritual, notificacion } }
+      }),
+
+      hydrateFromCloud: (data) => set({
+        novenasProgreso: data.novenasProgreso,
+        planEspiritual: data.planEspiritual,
+        savedCitations: data.savedCitations,
+        ...(data.lastBiblePath !== null ? { lastBiblePath: data.lastBiblePath } : {}),
+        pinnedBooks: data.pinnedBooks,
+        recentRecommendations: data.recentRecommendations,
+        ...(data.estadoDeVida !== null ? { estadoDeVida: data.estadoDeVida } : {}),
       }),
     }),
     {

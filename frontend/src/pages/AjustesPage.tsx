@@ -7,6 +7,7 @@ import { getLiturgicalContext } from '../lib/liturgicalCalendar'
 import { usePWAInstall } from '../hooks/usePWAInstall'
 import IOSInstallModal from '../components/IOSInstallModal'
 import { BugReportLink } from '../components/BugReportButton'
+import GoogleLoginBanner from '../components/GoogleLoginBanner'
 
 const FONT_PRESET_OPTIONS = [
   { px: FONT_PRESETS.small,  garamondPx: GARAMOND_FONT_PRESETS.small,  label: 'Pequeña' },
@@ -65,6 +66,9 @@ export default function AjustesPage() {
       <PageHeader icon={<Icon name="cog" size={18} />} title="Ajustes" subtitle="Preferencias visuales" />
 
       <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in space-y-6 pb-28">
+
+        {/* ── Cuenta de Google ── */}
+        <GoogleLoginBanner />
 
         {/* ── Tema de color ── */}
         <section>
