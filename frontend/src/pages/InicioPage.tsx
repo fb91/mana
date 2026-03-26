@@ -7,6 +7,7 @@ import { api, BibliaRecomendacion, BibleBook, LectioBiblicaResponse } from '../s
 import { getBibleVerse, getBibleBooks, getBibleChapter, BOOK_NAME } from '../lib/bible'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
 import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from '../components/IOSInstallModal'
+import PrayerMarquee from '../components/PrayerMarquee'
 import { usePWAInstall } from '../hooks/usePWAInstall'
 import { slugify } from '../lib/slugify'
 import { getLiturgicalContext, buildLiturgicalLabel } from '../lib/liturgicalCalendar'
@@ -125,6 +126,15 @@ const recursos: Tool[] = [
     description: 'Oraciones tradicionales, jaculatorias y devociones para cada momento del día.',
     to: '',
     soon: true,
+  },
+]
+
+const comunidad: Tool[] = [
+  {
+    icon: 'hands',
+    title: 'Pedido de oración',
+    description: 'Pedí oraciones por alguien especial. Tu intención será compartida con la comunidad.',
+    to: '/comunidad/pedido-oracion',
   },
 ]
 
@@ -528,6 +538,9 @@ export default function InicioPage() {
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:py-8 animate-fade-in">
+
+        {/* Prayer requests marquee */}
+        <PrayerMarquee />
 
         {/* Install banner (iOS + Android) */}
         {showInstallBanner && (
@@ -1053,6 +1066,35 @@ export default function InicioPage() {
                 </div>
               )}
             </div>
+          ))}
+        </div>
+
+        {/* COMUNIDAD Section */}
+        <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />
+        <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-sm uppercase tracking-widest mb-4">
+          COMUNIDAD
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+          {comunidad.map((tool) => (
+            <button
+              key={tool.title}
+              onClick={() => navigate(tool.to)}
+              className="card text-left flex items-start gap-4 transition-all duration-200
+                         hover:border-dorado/50 hover:shadow-md active:scale-[0.98]"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-dorado/10 dark:bg-dorado/15 flex items-center justify-center flex-shrink-0 text-dorado">
+                <Icon name={tool.icon} size={22} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight mb-1">
+                  {tool.title}
+                </p>
+                <p className="text-xs text-cafe-light dark:text-crema-300 leading-relaxed">
+                  {tool.description}
+                </p>
+              </div>
+              <Icon name="chevron-right" size={18} className="text-dorado/50 flex-shrink-0 mt-0.5" />
+            </button>
           ))}
         </div>
 

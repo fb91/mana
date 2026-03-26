@@ -14,6 +14,7 @@ import RecomendacionPage from './pages/RecomendacionPage'
 import LectioPage from './pages/LectioPage'
 import AjustesPage from './pages/AjustesPage'
 import AsistentePage from './pages/AsistentePage'
+import PedidoOracionPage from './pages/PedidoOracionPage'
 import { BugReportProvider } from './components/BugReportButton'
 import { useAppStore, applyTheme, applyFontSize, applyFontFamily, VALID_THEMES } from './store/useAppStore'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
@@ -46,6 +47,7 @@ function AppContent() {
           <Route path="/novenas" element={<NovenasPage />} />
           <Route path="/novenas/:slug" element={<NovenaDetallePage />} />
           <Route path="/asistente" element={<AsistentePage />} />
+          <Route path="/comunidad/pedido-oracion" element={<PedidoOracionPage />} />
 
           {/* ── Rutas de administración ── */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
