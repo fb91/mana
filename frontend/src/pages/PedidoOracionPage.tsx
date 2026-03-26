@@ -169,7 +169,7 @@ export default function PedidoOracionPage() {
 
   const nombrePreview = sinNombre
     ? SIN_NOMBRE_VALUE
-    : (validateName(nombre).normalized ?? nombre.trim() || null)
+    : (validateName(nombre).normalized ?? (nombre.trim() || null))
 
   const previewText = motivoBuilt
     ? `${motivoBuilt}${nombrePreview ? ` · ${nombrePreview}` : ''}`
