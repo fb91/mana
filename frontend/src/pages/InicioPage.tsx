@@ -538,7 +538,7 @@ export default function InicioPage() {
         </header>
 
         {/* Prayer requests marquee */}
-        <div className="lg:-mx-8">
+        <div className="-mx-4 lg:-mx-8">
           <PrayerMarquee />
         </div>
 

@@ -54,7 +54,7 @@ export default function PrayerMarquee() {
   return (
     <div
       className="w-full overflow-hidden bg-dorado/10 dark:bg-dorado/15 border-b border-dorado/20
-                 py-2 px-0 flex items-center gap-2 mb-4 rounded-xl lg:rounded-none"
+                 py-2 px-0 flex items-center gap-2 mb-4 rounded-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
