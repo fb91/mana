@@ -354,6 +354,8 @@ export default function PedidoOracionPage() {
           Los pedidos se muestran de forma anónima. No se almacenan datos de identificación personal.
         </p>
 
+        <div className="pb-28 lg:pb-10" />
+
       </div>
     </div>
   )
