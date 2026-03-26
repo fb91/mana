@@ -65,6 +65,8 @@ export default function AjustesPage() {
       <PageHeader icon={<Icon name="cog" size={18} />} title="Ajustes" subtitle="Preferencias visuales" />
 
       <div className="flex-1 overflow-y-auto px-4 py-5 animate-fade-in space-y-6 pb-28">
+        {/* Install Modal - universal para iOS, Android, Windows, etc */}
+        <IOSInstallModal show={showIOSModal} onClose={() => setShowIOSModal(false)} />
 
         {/* ── Tema de color ── */}
         <section>
@@ -343,6 +345,12 @@ export default function AjustesPage() {
                     <Icon name="sparkles" size={16} />
                     Instalar Maná
                   </button>
+                  <button
+                    onClick={() => setShowIOSModal(true)}
+                    className="btn-secondary w-full"
+                  >
+                    Ver instrucciones
+                  </button>
                 </div>
               ) : installState === 'ios' ? (
                 <div className="space-y-3">
@@ -430,9 +438,6 @@ export default function AjustesPage() {
         <BugReportLink />
 
       </div>
-
-      {/* iOS Install Modal */}
-      <IOSInstallModal show={showIOSModal} onClose={() => setShowIOSModal(false)} />
     </div>
   )
 }
