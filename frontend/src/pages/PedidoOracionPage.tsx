@@ -176,10 +176,10 @@ export default function PedidoOracionPage() {
     fetchPrayers()
   }, [])
 
-  // Auto-avance cada 5s; se resetea al cambiar de historia
+  // Auto-avance cada 10s; se resetea al cambiar de historia
   useEffect(() => {
     if (prayerRequests.length < 2) return
-    const t = setTimeout(() => setStoryIndex(p => (p + 1) % prayerRequests.length), 5000)
+    const t = setTimeout(() => setStoryIndex(p => (p + 1) % prayerRequests.length), 10000)
     return () => clearTimeout(t)
   }, [storyIndex, prayerRequests.length])
 
@@ -343,7 +343,7 @@ export default function PedidoOracionPage() {
             pointer-events: none; z-index: 20;
           }
           @keyframes story-progress { from { width: 0%; } to { width: 100%; } }
-          .story-progress-fill { animation: story-progress 5s linear forwards; }
+          .story-progress-fill { animation: story-progress 10s linear forwards; }
           @keyframes confetti-fall {
             0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
             35%  { opacity: 1;   transform: translate(var(--cx), var(--cy-up)) rotate(var(--cr-mid)); }
