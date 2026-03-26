@@ -8,3 +8,20 @@ if (!supabaseUrl || !supabaseAnon) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnon)
+
+/** Reintenta una función async hasta `attempts` veces con `delayMs` entre intentos. */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  attempts = 3,
+  delayMs = 1500,
+): Promise<T> {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn()
+    } catch (err) {
+      if (i === attempts - 1) throw err
+      await new Promise(res => setTimeout(res, delayMs))
+    }
+  }
+  throw new Error('unreachable')
+}

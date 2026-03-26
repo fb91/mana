@@ -7,7 +7,7 @@ import { Novena } from '../services/api'
 import { BugReportLink } from '../components/BugReportButton'
 import { useAppStore } from '../store/useAppStore'
 import { useAdminStore } from '../store/useAdminStore'
-import { supabase } from '../lib/supabase'
+import { supabase, withRetry } from '../lib/supabase'
 
 const CATEGORIAS: { value: string; label: string }[] = [
   { value: '', label: 'Todas' },
@@ -58,13 +58,18 @@ export default function NovenasPage() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    supabase
-      .from('novenas')
-      .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
-      .eq('published', true)
-      .order('nombre')
-      .then(({ data, error: sbError }) => {
-        if (sbError) throw sbError
+    withRetry(() =>
+      supabase
+        .from('novenas')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+        .eq('published', true)
+        .order('nombre')
+        .then(({ data, error: sbError }) => {
+          if (sbError) throw sbError
+          return data
+        })
+    )
+      .then(data => {
         setBaseNovenas((data ?? []).map(row => ({
           id: row.id,
           nombre: row.nombre,

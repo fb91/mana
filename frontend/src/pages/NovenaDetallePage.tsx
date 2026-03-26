@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Novena, NovenaDia, api } from '../services/api'
-import { supabase } from '../lib/supabase'
+import { supabase, withRetry } from '../lib/supabase'
 import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
@@ -100,29 +100,34 @@ export default function NovenaDetallePage() {
   useEffect(() => {
     let cancelled = false
 
-    // 1) Buscar la novena por slug (query liviana)
-    supabase
-      .from('novenas')
-      .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
-      .eq('published', true)
-      .order('nombre')
-      .then(async ({ data: rows, error: sbError }) => {
-        if (sbError) throw sbError
+    withRetry(async () => {
+      // 1) Buscar la novena por slug (query liviana)
+      const { data: rows, error: sbError } = await supabase
+        .from('novenas')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+        .eq('published', true)
+        .order('nombre')
+      if (sbError) throw sbError
+
+      const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
+      if (!match) return null
+
+      // 2) Traer solo los días de esta novena (query dirigida, no toda la tabla)
+      const { data: diasData, error: diasError } = await supabase
+        .from('novena_dias')
+        .select('id, novena_id, dia, titulo, oracion, reflexion')
+        .eq('novena_id', match.id)
+        .order('dia')
+      if (diasError) throw diasError
+
+      return { match, dias: diasData ?? [] }
+    })
+      .then(result => {
         if (cancelled) return
-        const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
-        if (!match) { setLoadingNovena(false); return }
+        if (!result) { setLoadingNovena(false); return }
 
-        // 2) Traer solo los días de esta novena (query dirigida, no toda la tabla)
-        const { data: diasData, error: diasError } = await supabase
-          .from('novena_dias')
-          .select('id, novena_id, dia, titulo, oracion, reflexion')
-          .eq('novena_id', match.id)
-          .order('dia')
-
-        if (diasError) throw diasError
-        if (cancelled) return
-
-        const dias: NovenaDia[] = (diasData ?? []).map(d => ({
+        const { match, dias: diasData } = result
+        const dias: NovenaDia[] = diasData.map(d => ({
           id: d.id,
           novenaId: d.novena_id,
           dia: d.dia,
