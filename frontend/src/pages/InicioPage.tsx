@@ -509,33 +509,33 @@ export default function InicioPage() {
         </button>
       </header>
 
-      {/* Header desktop — solo lg+ */}
-      <header className="hidden lg:flex items-start justify-between px-8 pt-8 pb-6">
-        <div>
-          <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
-            {greeting}
-          </h1>
-          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-            <p className="text-sm text-cafe-light dark:text-crema-300 capitalize">
-              {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </p>
-            <span className="inline-flex items-center text-xs bg-dorado/10 text-dorado
-                             px-2.5 py-1 rounded-full border border-dorado/20 font-medium">
-              {liturgicalLabel}
-            </span>
-          </div>
-        </div>
-        <button
-          onClick={() => setShowAbout(true)}
-          className="w-9 h-9 rounded-full bg-dorado/10 hover:bg-dorado/20 active:scale-95 transition-all
-                     flex items-center justify-center flex-shrink-0 mt-1"
-          aria-label="Acerca de Maná"
-        >
-          <Icon name="info" size={18} className="text-dorado" />
-        </button>
-      </header>
+      <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:pt-0 lg:pb-8 animate-fade-in">
 
-      <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:py-8 animate-fade-in">
+        {/* Header desktop — solo lg+, dentro del scroll para que no quede fijo */}
+        <header className="hidden lg:flex items-start justify-between pt-8 pb-6">
+          <div>
+            <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
+              {greeting}
+            </h1>
+            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+              <p className="text-sm text-cafe-light dark:text-crema-300 capitalize">
+                {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+              <span className="inline-flex items-center text-xs bg-dorado/10 text-dorado
+                               px-2.5 py-1 rounded-full border border-dorado/20 font-medium">
+                {liturgicalLabel}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowAbout(true)}
+            className="w-9 h-9 rounded-full bg-dorado/10 hover:bg-dorado/20 active:scale-95 transition-all
+                       flex items-center justify-center flex-shrink-0 mt-1"
+            aria-label="Acerca de Maná"
+          >
+            <Icon name="info" size={18} className="text-dorado" />
+          </button>
+        </header>
 
         {/* Prayer requests marquee */}
         <div className="lg:-mx-8">
