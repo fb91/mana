@@ -157,7 +157,7 @@ export default function AudioReader({
         {/* Row 1: Title + Close */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Icon name="volume-2" size={16} className="text-dorado" />
+            <Icon name="bell" size={16} className="text-dorado" />
             <span className="text-sm font-semibold text-cafe-dark dark:text-crema-200">
               🔊 Escuchar
             </span>
@@ -166,7 +166,7 @@ export default function AudioReader({
             onClick={onClose}
             className="p-1 hover:bg-crema-100 dark:hover:bg-oscuro-border rounded transition-colors"
           >
-            <Icon name="x" size={16} className="text-cafe-light dark:text-crema-400" />
+            <Icon name="cross" size={16} className="text-cafe-light dark:text-crema-400" />
           </button>
         </div>
 
@@ -182,7 +182,7 @@ export default function AudioReader({
             title="Reproducir"
           >
             <Icon
-              name={state.isPlaying && !state.isPaused ? 'pause' : 'play'}
+              name={state.isPlaying && !state.isPaused ? 'minus' : 'check'}
               size={18}
             />
           </button>
@@ -196,7 +196,7 @@ export default function AudioReader({
                          hover:bg-rose-200 dark:hover:bg-rose-900/50 transition-colors active:scale-95"
               title="Detener"
             >
-              <Icon name="square" size={16} />
+              <Icon name="archive" size={16} />
             </button>
           )}
 
