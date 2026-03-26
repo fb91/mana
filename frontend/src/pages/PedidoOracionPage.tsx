@@ -11,13 +11,31 @@ type Categoria = 'Salud' | 'Familia' | 'Trabajo' | 'Fe' | 'Emocional' | 'Económ
 
 const CATEGORIAS: Categoria[] = ['Salud', 'Familia', 'Trabajo', 'Fe', 'Emocional', 'Económico']
 
-const SUBCATEGORIAS: Record<Categoria, string[]> = {
+// Subcategorías para Petición: incluyen situaciones difíciles o en curso
+const SUBCATEGORIAS_PETICION: Record<Categoria, string[]> = {
   'Salud':     ['Enfermedad', 'Cirugía', 'Recuperación', 'Adicciones', 'Embarazo'],
   'Familia':   ['Conflicto familiar', 'Matrimonio / pareja', 'Crianza de hijos', 'Duelo / pérdida'],
   'Trabajo':   ['Búsqueda de empleo', 'Problema laboral', 'Discernimiento vocacional'],
   'Fe':        ['Conversión', 'Alejamiento de la fe', 'Sacramentos', 'Protección espiritual'],
   'Emocional': ['Depresión / ansiedad', 'Duelo / pérdida', 'Paz interior'],
   'Económico': ['Situación económica', 'Deudas'],
+}
+
+// Subcategorías para Acción de gracias: solo logros, dones o sucesos positivos
+const SUBCATEGORIAS_GRACIAS: Record<Categoria, string[]> = {
+  'Salud':     ['Recuperación', 'Nacimiento', 'Sanación'],
+  'Familia':   ['Matrimonio / pareja', 'Reconciliación', 'Crianza de hijos'],
+  'Trabajo':   ['Nuevo empleo', 'Proyecto logrado', 'Vocación encontrada'],
+  'Fe':        ['Conversión', 'Sacramentos', 'Fortaleza recibida'],
+  'Emocional': ['Paz interior', 'Superación personal'],
+  'Económico': ['Estabilidad económica', 'Provisión recibida'],
+}
+
+function getSubcategorias(tipo: TipoIntencion | null, categoria: Categoria | null): string[] {
+  if (!tipo || !categoria) return []
+  return tipo === 'Acción de gracias'
+    ? SUBCATEGORIAS_GRACIAS[categoria]
+    : SUBCATEGORIAS_PETICION[categoria]
 }
 
 const CONTEXTOS = ['urgente', 'prolongado'] as const
@@ -431,14 +449,14 @@ export default function PedidoOracionPage() {
         )}
 
         {/* ── Paso 3: Subcategoría (opcional) ── */}
-        {categoria && SUBCATEGORIAS[categoria].length > 0 && (
+        {categoria && getSubcategorias(tipo, categoria).length > 0 && (
           <section className="mb-6 animate-fade-in">
             <h2 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 mb-1">
               3. Detalle{' '}
               <span className="text-cafe-light/50 dark:text-crema-400/50 font-normal text-xs">(opcional)</span>
             </h2>
             <div className="flex flex-wrap gap-2 mt-3">
-              {SUBCATEGORIAS[categoria].map(s => (
+              {getSubcategorias(tipo, categoria).map(s => (
                 <button
                   key={s}
                   onClick={() => setSubcat(subcategoria === s ? null : s)}
