@@ -104,17 +104,30 @@ export default function AdminNovenaFormPage() {
     if (!form.santo.trim()) return
     setFetchingImage(true)
     try {
-      const res = await fetch(
-        `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(form.santo.trim())}`
+      // 1) Buscar artículos que coincidan con el nombre del santo
+      const searchRes = await fetch(
+        `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(form.santo.trim())}&format=json&origin=*&srlimit=6&srprop=`
       )
-      if (!res.ok) throw new Error()
-      const data = await res.json()
-      const url = data.originalimage?.source ?? data.thumbnail?.source ?? null
-      if (url) {
-        setField('imagen_url', url)
-      } else {
-        setError('No se encontró imagen en Wikipedia para este santo.')
+      if (!searchRes.ok) throw new Error()
+      const searchData = await searchRes.json()
+      const titles: string[] = (searchData.query?.search ?? []).map((r: { title: string }) => r.title)
+
+      // 2) Recorrer resultados hasta encontrar uno con imagen (saltando desambiguaciones)
+      for (const title of titles) {
+        const summaryRes = await fetch(
+          `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
+        )
+        if (!summaryRes.ok) continue
+        const data = await summaryRes.json()
+        if (data.type === 'disambiguation') continue
+        const url = data.originalimage?.source ?? data.thumbnail?.source ?? null
+        if (url) {
+          setField('imagen_url', url)
+          return
+        }
       }
+
+      setError('No se encontró imagen en Wikipedia para este santo.')
     } catch {
       setError('No se pudo conectar con Wikipedia.')
     } finally {
