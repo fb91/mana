@@ -205,3 +205,6 @@ CREATE POLICY "Solo admins pueden ver el audit log"
     SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'
   ));
 -- La inserción se hace desde server-side (service_role), no desde el cliente
+
+-- ── imagen_url en novenas ──────────────────────────────────────
+ALTER TABLE novenas ADD COLUMN IF NOT EXISTS imagen_url TEXT;

@@ -15,6 +15,7 @@ export type Novena = {
   estado: string
   categoria?: string
   fechaFestividad?: string | null
+  imagenUrl?: string
   dias?: NovenaDia[]
 }
 

@@ -20,6 +20,7 @@ interface NovenaForm {
   categoria: string
   fecha_festividad: string
   published: boolean
+  imagen_url: string
   dias: DiaForm[]
 }
 
@@ -28,6 +29,7 @@ const EMPTY_FORM: NovenaForm = {
   nombre: '', santo: '', descripcion: '', intencion_sugerida: '',
   autor: '', estado: 'activa', categoria: '', fecha_festividad: '',
   published: false,
+  imagen_url: '',
   dias: Array.from({ length: 9 }, (_, i) => EMPTY_DIA(i + 1)),
 }
 
@@ -42,6 +44,7 @@ export default function AdminNovenaFormPage() {
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fetchingImage, setFetchingImage] = useState(false)
 
   useEffect(() => {
     if (!isNew) loadNovena()
@@ -80,6 +83,7 @@ export default function AdminNovenaFormPage() {
       categoria:          novena.categoria          ?? '',
       fecha_festividad:   novena.fecha_festividad   ?? '',
       published:          novena.published,
+      imagen_url:         novena.imagen_url         ?? '',
       dias:               diasForm,
     })
     setLoading(false)
@@ -94,6 +98,28 @@ export default function AdminNovenaFormPage() {
       ...f,
       dias: f.dias.map(d => d.dia === dia ? { ...d, [key]: value } : d),
     }))
+  }
+
+  async function sugerirImagenWikipedia() {
+    if (!form.santo.trim()) return
+    setFetchingImage(true)
+    try {
+      const res = await fetch(
+        `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(form.santo.trim())}`
+      )
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      const url = data.originalimage?.source ?? data.thumbnail?.source ?? null
+      if (url) {
+        setField('imagen_url', url)
+      } else {
+        setError('No se encontró imagen en Wikipedia para este santo.')
+      }
+    } catch {
+      setError('No se pudo conectar con Wikipedia.')
+    } finally {
+      setFetchingImage(false)
+    }
   }
 
   async function handleSave() {
@@ -119,6 +145,7 @@ export default function AdminNovenaFormPage() {
       categoria:          form.categoria.trim()          || null,
       fecha_festividad:   form.fecha_festividad          || null,
       published:          form.published,
+      imagen_url:         form.imagen_url.trim()         || null,
       updated_at:         new Date().toISOString(),
     }
 
@@ -249,6 +276,42 @@ export default function AdminNovenaFormPage() {
             </div>
             <span className="text-sm text-cafe-dark dark:text-crema-200">Publicada (visible para usuarios)</span>
           </label>
+        </section>
+
+        {/* ── Imagen ilustrativa ── */}
+        <section className="space-y-3">
+          <h2 className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wide">
+            Imagen ilustrativa
+          </h2>
+          <p className="text-xs text-cafe-light dark:text-crema-400">
+            URL de una imagen pública (ej: Wikimedia Commons). No se hostea en la app.
+          </p>
+          <div className="flex gap-2">
+            <input
+              value={form.imagen_url}
+              onChange={e => setField('imagen_url', e.target.value)}
+              placeholder="https://upload.wikimedia.org/..."
+              className={inputClass + ' flex-1'}
+            />
+            <button
+              type="button"
+              onClick={sugerirImagenWikipedia}
+              disabled={fetchingImage || !form.santo.trim()}
+              className="flex-shrink-0 text-xs font-semibold text-dorado border border-dorado/40 px-3 py-2 rounded-xl disabled:opacity-50 active:scale-95 transition-all"
+            >
+              {fetchingImage ? '...' : 'Sugerir'}
+            </button>
+          </div>
+          {form.imagen_url && (
+            <div className="rounded-xl overflow-hidden aspect-[4/3] max-h-40 bg-crema-200 dark:bg-oscuro-card">
+              <img
+                src={form.imagen_url}
+                alt="Vista previa"
+                className="w-full h-full object-cover"
+                onError={e => { (e.target as HTMLImageElement).style.opacity = '0' }}
+              />
+            </div>
+          )}
         </section>
 
         {/* ── Días ── */}
