@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { supabase, withRetry } from '../../lib/supabase'
 import { slugify } from '../../lib/slugify'
 
 interface NovenaSummary {
@@ -24,13 +24,21 @@ export default function AdminNovenasPage() {
 
   async function fetchNovenas() {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('novenas')
-      .select('id, nombre, santo, categoria, published, updated_at')
-      .order('nombre')
-    if (error) setError(error.message)
-    else setNovenas(data ?? [])
-    setLoading(false)
+    try {
+      const data = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('novenas')
+          .select('id, nombre, santo, categoria, published, updated_at')
+          .order('nombre')
+        if (error) throw error
+        return data
+      })
+      setNovenas(data ?? [])
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error al cargar novenas')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function togglePublish(novena: NovenaSummary) {

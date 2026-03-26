@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { supabase, withRetry } from '../../lib/supabase'
 import { useAdminStore } from '../../store/useAdminStore'
 
 interface DiaForm {
@@ -54,41 +54,50 @@ export default function AdminNovenaFormPage() {
 
   async function loadNovena() {
     setLoading(true)
-    const { data: novena, error: nErr } = await supabase
-      .from('novenas')
-      .select('*')
-      .eq('id', id)
-      .single()
+    try {
+      const result = await withRetry(async () => {
+        const { data: novena, error: nErr } = await supabase
+          .from('novenas')
+          .select('*')
+          .eq('id', id)
+          .single()
+        if (nErr || !novena) throw new Error('No se encontró la novena')
 
-    if (nErr || !novena) { setError('No se encontró la novena'); setLoading(false); return }
+        const { data: dias, error: dErr } = await supabase
+          .from('novena_dias')
+          .select('*')
+          .eq('novena_id', id)
+          .order('dia')
+        if (dErr) throw dErr
 
-    const { data: dias } = await supabase
-      .from('novena_dias')
-      .select('*')
-      .eq('novena_id', id)
-      .order('dia')
+        return { novena, dias: dias ?? [] }
+      })
 
-    const diasForm: DiaForm[] = Array.from({ length: 9 }, (_, i) => {
-      const d = dias?.find(d => d.dia === i + 1)
-      return d
-        ? { dia: d.dia, titulo: d.titulo ?? '', oracion: d.oracion, reflexion: d.reflexion ?? '' }
-        : EMPTY_DIA(i + 1)
-    })
+      const diasForm: DiaForm[] = Array.from({ length: 9 }, (_, i) => {
+        const d = result.dias.find(d => d.dia === i + 1)
+        return d
+          ? { dia: d.dia, titulo: d.titulo ?? '', oracion: d.oracion, reflexion: d.reflexion ?? '' }
+          : EMPTY_DIA(i + 1)
+      })
 
-    setForm({
-      nombre:             novena.nombre,
-      santo:              novena.santo,
-      descripcion:        novena.descripcion        ?? '',
-      intencion_sugerida: novena.intencion_sugerida ?? '',
-      autor:              novena.autor              ?? '',
-      estado:             novena.estado,
-      categoria:          novena.categoria          ?? '',
-      fecha_festividad:   novena.fecha_festividad   ?? '',
-      published:          novena.published,
-      imagen_url:         novena.imagen_url         ?? '',
-      dias:               diasForm,
-    })
-    setLoading(false)
+      setForm({
+        nombre:             result.novena.nombre,
+        santo:              result.novena.santo,
+        descripcion:        result.novena.descripcion        ?? '',
+        intencion_sugerida: result.novena.intencion_sugerida ?? '',
+        autor:              result.novena.autor              ?? '',
+        estado:             result.novena.estado,
+        categoria:          result.novena.categoria          ?? '',
+        fecha_festividad:   result.novena.fecha_festividad   ?? '',
+        published:          result.novena.published,
+        imagen_url:         result.novena.imagen_url         ?? '',
+        dias:               diasForm,
+      })
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error al cargar la novena')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function setField<K extends keyof NovenaForm>(key: K, value: NovenaForm[K]) {

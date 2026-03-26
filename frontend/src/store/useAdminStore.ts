@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { supabase, withRetry } from '../lib/supabase'
 
 type Role = 'admin' | 'contributor' | null
 
@@ -82,10 +82,18 @@ export const useAdminStore = create<AdminState>()(
 )
 
 async function fetchRole(userId: string): Promise<Role> {
-  const { data } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .single()
-  return (data?.role as Role) ?? null
+  try {
+    const data = await withRetry(async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
+      if (error) throw error
+      return data
+    })
+    return (data?.role as Role) ?? null
+  } catch {
+    return null
+  }
 }
