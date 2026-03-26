@@ -8,11 +8,17 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   novena_nombre text        NOT NULL,
   hora_notificacion text    NOT NULL,  -- formato "HH:MM" hora de Buenos Aires
   subscription  jsonb       NOT NULL,  -- objeto PushSubscription completo del browser
+  url           text,                  -- ruta a la que navega al tocar la notificación
+  titulo        text,                  -- título que muestra la notificación
   created_at    timestamptz DEFAULT now(),
   updated_at    timestamptz DEFAULT now(),
 
   UNIQUE(endpoint, novena_id)
 );
+
+-- Migración incremental: agregar columnas url y titulo si no existen
+ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS url    text;
+ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS titulo text;
 
 -- Índice para la query del cron (busca por hora)
 CREATE INDEX IF NOT EXISTS idx_push_hora

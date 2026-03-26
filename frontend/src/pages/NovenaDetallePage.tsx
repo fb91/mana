@@ -61,7 +61,14 @@ async function saveWebPushSubscription(
     const sub = await getOrCreatePushSubscription()
     if (!sub) return false
     setPushSubscription(sub.toJSON())
-    await api.subscribeNotification(sub.toJSON(), novenaId, nombreNovena, localToBsas(hora))
+    await api.subscribeNotification(
+      sub.toJSON(),
+      novenaId,
+      nombreNovena,
+      localToBsas(hora),
+      `/novenas/${slugify(nombreNovena)}`,
+      'Maná — Recordatorio de Novena',
+    )
     return true
   } catch {
     return false

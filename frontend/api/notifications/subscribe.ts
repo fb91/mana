@@ -9,11 +9,13 @@ const supabase = createClient(
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { subscription, novenaId, nombreNovena, hora } = req.body as {
+  const { subscription, novenaId, nombreNovena, hora, url, titulo } = req.body as {
     subscription: PushSubscriptionJSON
     novenaId: number
     nombreNovena: string
     hora: string // "HH:MM"
+    url?: string
+    titulo?: string
   }
 
   if (!subscription?.endpoint || !novenaId || !hora || !nombreNovena) {
@@ -27,6 +29,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       novena_nombre: nombreNovena,
       hora_notificacion: hora,
       subscription,
+      url: url ?? null,
+      titulo: titulo ?? null,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'endpoint,novena_id' }

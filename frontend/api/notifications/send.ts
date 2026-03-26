@@ -59,14 +59,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   for (const row of subscriptions) {
     try {
-      const isAsistente = row.novena_id === -1
       await webpush.sendNotification(
         row.subscription as webpush.PushSubscription,
         JSON.stringify({
-          title: isAsistente ? 'Maná — Asistente Espiritual' : 'Maná — Recordatorio de Novena',
+          title: row.titulo ?? 'Maná — Recordatorio de Novena',
           body: `Es hora de rezar: ${row.novena_nombre}`,
           icon: '/icons/icon-192.png',
-          url: isAsistente ? '/asistente' : `/novenas/${slugify(row.novena_nombre)}`,
+          url: row.url ?? `/novenas/${slugify(row.novena_nombre)}`,
         })
       )
       sent++

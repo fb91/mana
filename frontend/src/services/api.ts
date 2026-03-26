@@ -143,10 +143,12 @@ export const api = {
     novenaId: number,
     nombreNovena: string,
     hora: string,
+    url?: string,
+    titulo?: string,
   ) =>
     request<{ ok: boolean }>('/api/notifications/subscribe', {
       method: 'POST',
-      body: JSON.stringify({ subscription, novenaId, nombreNovena, hora }),
+      body: JSON.stringify({ subscription, novenaId, nombreNovena, hora, url, titulo }),
     }),
 
   unsubscribeNotification: (endpoint: string, novenaId: number) =>

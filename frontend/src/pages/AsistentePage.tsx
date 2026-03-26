@@ -49,6 +49,8 @@ async function subscribeAsitenteNotif(hora: string, setPushSubscription: (s: Pus
         novenaId: -1,
         nombreNovena: 'Asistente Espiritual',
         hora: localToBsas(hora),
+        url: '/asistente',
+        titulo: 'Maná — Asistente Espiritual',
       }),
     })
   } catch { /* silencioso */ }
