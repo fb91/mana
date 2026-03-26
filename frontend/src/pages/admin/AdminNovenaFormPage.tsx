@@ -21,6 +21,8 @@ interface NovenaForm {
   fecha_festividad: string
   published: boolean
   imagen_url: string
+  imagen_crop_x: number
+  imagen_crop_y: number
   dias: DiaForm[]
 }
 
@@ -30,6 +32,8 @@ const EMPTY_FORM: NovenaForm = {
   autor: '', estado: 'activa', categoria: '', fecha_festividad: '',
   published: false,
   imagen_url: '',
+  imagen_crop_x: 50,
+  imagen_crop_y: 50,
   dias: Array.from({ length: 9 }, (_, i) => EMPTY_DIA(i + 1)),
 }
 
@@ -91,6 +95,8 @@ export default function AdminNovenaFormPage() {
         fecha_festividad:   result.novena.fecha_festividad   ?? '',
         published:          result.novena.published,
         imagen_url:         result.novena.imagen_url         ?? '',
+        imagen_crop_x:      result.novena.imagen_crop_x      ?? 50,
+        imagen_crop_y:      result.novena.imagen_crop_y      ?? 50,
         dias:               diasForm,
       })
     } catch (e: unknown) {
@@ -181,6 +187,8 @@ export default function AdminNovenaFormPage() {
       fecha_festividad:   form.fecha_festividad          || null,
       published:          form.published,
       imagen_url:         form.imagen_url.trim()         || null,
+      imagen_crop_x:      form.imagen_crop_x,
+      imagen_crop_y:      form.imagen_crop_y,
       updated_at:         new Date().toISOString(),
     }
 
@@ -380,15 +388,49 @@ export default function AdminNovenaFormPage() {
             />
           </Field>
 
-          {/* Preview */}
+          {/* Focal point picker */}
           {form.imagen_url && (
-            <div className="rounded-xl overflow-hidden aspect-[4/3] max-h-40 bg-crema-200 dark:bg-oscuro-card">
-              <img
-                src={form.imagen_url}
-                alt="Vista previa"
-                className="w-full h-full object-cover"
-                onError={e => { (e.target as HTMLImageElement).style.opacity = '0' }}
-              />
+            <div>
+              <p className="text-xs text-cafe-light dark:text-crema-400 mb-1.5">
+                Tocá la imagen para ajustar el punto de enfoque
+              </p>
+              <div
+                className="relative rounded-xl overflow-hidden bg-crema-200 dark:bg-oscuro-card cursor-crosshair select-none"
+                style={{ aspectRatio: '4/3', maxHeight: '200px' }}
+                onClick={e => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const x = Math.round(((e.clientX - rect.left) / rect.width) * 100)
+                  const y = Math.round(((e.clientY - rect.top) / rect.height) * 100)
+                  setField('imagen_crop_x', x)
+                  setField('imagen_crop_y', y)
+                }}
+              >
+                <img
+                  src={form.imagen_url}
+                  alt="Vista previa"
+                  className="w-full h-full object-cover pointer-events-none"
+                  style={{ objectPosition: `${form.imagen_crop_x}% ${form.imagen_crop_y}%` }}
+                  onError={e => { (e.target as HTMLImageElement).style.opacity = '0' }}
+                />
+                {/* Crosshair */}
+                <div
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: `${form.imagen_crop_x}%`,
+                    top: `${form.imagen_crop_y}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <div className="relative w-7 h-7">
+                    <div className="absolute inset-0 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.4)]" />
+                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/80" />
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-white/80" />
+                  </div>
+                </div>
+              </div>
+              <p className="text-[10px] text-cafe-light dark:text-crema-400 mt-1">
+                Enfoque: {form.imagen_crop_x}% × {form.imagen_crop_y}%
+              </p>
             </div>
           )}
         </section>

@@ -16,6 +16,8 @@ export type Novena = {
   categoria?: string
   fechaFestividad?: string | null
   imagenUrl?: string
+  imagenCropX?: number
+  imagenCropY?: number
   dias?: NovenaDia[]
 }
 

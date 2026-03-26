@@ -206,5 +206,7 @@ CREATE POLICY "Solo admins pueden ver el audit log"
   ));
 -- La inserción se hace desde server-side (service_role), no desde el cliente
 
--- ── imagen_url en novenas ──────────────────────────────────────
+-- ── imagen_url + focal point en novenas ───────────────────────
 ALTER TABLE novenas ADD COLUMN IF NOT EXISTS imagen_url TEXT;
+ALTER TABLE novenas ADD COLUMN IF NOT EXISTS imagen_crop_x SMALLINT NOT NULL DEFAULT 50;
+ALTER TABLE novenas ADD COLUMN IF NOT EXISTS imagen_crop_y SMALLINT NOT NULL DEFAULT 50;

@@ -104,7 +104,7 @@ export default function NovenaDetallePage() {
       // 1) Buscar la novena por slug (query liviana)
       const { data: rows, error: sbError } = await supabase
         .from('novenas')
-        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad, imagen_url')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad, imagen_url, imagen_crop_x, imagen_crop_y')
         .eq('published', true)
         .order('nombre')
       if (sbError) throw sbError
@@ -146,6 +146,8 @@ export default function NovenaDetallePage() {
           categoria: match.categoria ?? undefined,
           fechaFestividad: match.fecha_festividad ?? undefined,
           imagenUrl: match.imagen_url ?? undefined,
+          imagenCropX: match.imagen_crop_x ?? 50,
+          imagenCropY: match.imagen_crop_y ?? 50,
           dias,
         })
         setLoadingNovena(false)
@@ -336,15 +338,19 @@ export default function NovenaDetallePage() {
         ) : undefined}
       />
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-28">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden pb-28">
 
         {/* ── Imagen ilustrativa ── */}
         {novena.imagenUrl && (
-          <div className="w-full h-52 overflow-hidden">
+          <div
+            className="relative h-52 overflow-hidden"
+            style={{ width: '100vw', marginLeft: '-50vw', left: '50%' }}
+          >
             <img
               src={novena.imagenUrl}
               alt={novena.santo}
               className="w-full h-full object-cover"
+              style={{ objectPosition: `${novena.imagenCropX ?? 50}% ${novena.imagenCropY ?? 50}%` }}
               loading="lazy"
               onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }}
             />
