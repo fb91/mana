@@ -58,17 +58,15 @@ export default function NovenasPage() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    withRetry(() =>
-      supabase
+    withRetry(async () => {
+      const { data, error: sbError } = await supabase
         .from('novenas')
         .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
         .eq('published', true)
         .order('nombre')
-        .then(({ data, error: sbError }) => {
-          if (sbError) throw sbError
-          return data
-        })
-    )
+      if (sbError) throw sbError
+      return data
+    })
       .then(data => {
         setBaseNovenas((data ?? []).map(row => ({
           id: row.id,
