@@ -115,6 +115,35 @@ interface PrayerRequest { motivo: string; nombre: string }
 const MAX_DOTS = 15
 const SIN_NOMBRE_VALUE = 'Anónimo'
 
+// ── Confetti ─────────────────────────────────────────────────────────────────
+
+interface Particle {
+  id: number
+  dx: string; cyUp: string; cyDown: string
+  rot: string; rotMid: string
+  color: string; size: number
+  duration: number; delay: number
+  wide: boolean // rect vs circle-ish
+}
+
+const CONFETTI_COLORS = ['#c5922a', '#d4a843', '#e8c070', '#f5ecd0', '#ffffff', '#b8860b']
+
+function generateConfetti(): Particle[] {
+  return Array.from({ length: 56 }, (_, i) => ({
+    id: i,
+    dx:     `${(Math.random() - 0.5) * 340}px`,
+    cyUp:   `${-80 - Math.random() * 160}px`,
+    cyDown: `${60 + Math.random() * 220}px`,
+    rot:    `${(Math.random() - 0.5) * 900}deg`,
+    rotMid: `${(Math.random() - 0.5) * 360}deg`,
+    color:  CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    size:   4 + Math.random() * 5,
+    duration: 0.9 + Math.random() * 0.6,
+    delay:    Math.random() * 0.15,
+    wide:     Math.random() > 0.4,
+  }))
+}
+
 // ── Componente ───────────────────────────────────────────────────────────────
 
 export default function PedidoOracionPage() {
@@ -124,6 +153,7 @@ export default function PedidoOracionPage() {
   const [prayerRequests, setPrayerRequests] = useState<PrayerRequest[]>([])
   const [storyIndex, setStoryIndex] = useState(0)
   const [showHeart, setShowHeart] = useState(false)
+  const [confetti, setConfetti] = useState<Particle[] | null>(null)
   const [prayersLoading, setPrayersLoading] = useState(true)
 
   useEffect(() => {
@@ -154,12 +184,22 @@ export default function PedidoOracionPage() {
   }, [storyIndex, prayerRequests.length])
 
   function handleRezar() {
-    if (showHeart || prayerRequests.length === 0) return
-    setShowHeart(true)
-    setTimeout(() => {
-      setShowHeart(false)
-      setStoryIndex(p => (p + 1) % prayerRequests.length)
-    }, 900)
+    if ((showHeart || confetti) || prayerRequests.length === 0) return
+    const current = prayerRequests[storyIndex]
+    const isGracias = current?.motivo.startsWith('Acción de gracias')
+    if (isGracias) {
+      setConfetti(generateConfetti())
+      setTimeout(() => {
+        setConfetti(null)
+        setStoryIndex(p => (p + 1) % prayerRequests.length)
+      }, 1300)
+    } else {
+      setShowHeart(true)
+      setTimeout(() => {
+        setShowHeart(false)
+        setStoryIndex(p => (p + 1) % prayerRequests.length)
+      }, 900)
+    }
   }
 
   // ── Form state ────────────────────────────────────────────────────────────
@@ -272,16 +312,13 @@ export default function PedidoOracionPage() {
   const current  = prayerRequests.length > 0 ? prayerRequests[storyIndex] : null
   const dotCount = Math.min(prayerRequests.length, MAX_DOTS)
 
-  // Splits "Salud · Cirugía (urgente)" → main="Salud", detail="Cirugía (urgente)"
-  // Or "Acción de gracias · Salud · Cirugía" → main="Acción de gracias", detail="Salud · Cirugía"
   const mParts     = current ? current.motivo.split(' · ') : []
   const motivoMain = mParts[0] ?? ''
   const motivoDet  = mParts.slice(1).join(' · ') || null
+  const isGracias  = motivoMain === 'Acción de gracias'
   const storyNombre = current?.nombre && current.nombre !== SIN_NOMBRE_VALUE
     ? `por ${current.nombre}`
-    : current?.nombre === SIN_NOMBRE_VALUE
-      ? 'por una intención especial'
-      : null
+    : null
 
   // Step numbering: Contexto step only for Petición
   const nombreStep = tipo === 'Petición' ? 5 : 4
@@ -307,6 +344,15 @@ export default function PedidoOracionPage() {
           }
           @keyframes story-progress { from { width: 0%; } to { width: 100%; } }
           .story-progress-fill { animation: story-progress 5s linear forwards; }
+          @keyframes confetti-fall {
+            0%   { opacity: 1;   transform: translate(0, 0) rotate(0deg); }
+            35%  { opacity: 1;   transform: translate(var(--cx), var(--cy-up)) rotate(var(--cr-mid)); }
+            100% { opacity: 0;   transform: translate(var(--cx), var(--cy-down)) rotate(var(--cr)); }
+          }
+          .confetti-piece {
+            position: fixed; pointer-events: none;
+            animation: confetti-fall var(--dur) var(--delay) ease-out forwards;
+          }
         `}</style>
 
         {/* ── Stories ── */}
@@ -325,7 +371,7 @@ export default function PedidoOracionPage() {
               <div className="absolute inset-0 pointer-events-none"
                    style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(197,146,42,0.12) 0%, transparent 70%)' }} />
 
-              {/* Heart burst */}
+              {/* Heart burst — solo para Petición */}
               {showHeart && (
                 <div className="heart-burst">
                   <svg width="110" height="110" viewBox="0 0 24 24" fill="#c5922a">
@@ -375,18 +421,22 @@ export default function PedidoOracionPage() {
               <div className="relative z-10 px-5 pb-5">
                 <button
                   onClick={handleRezar}
-                  disabled={showHeart}
+                  disabled={!!(showHeart || confetti)}
                   className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl
                              bg-dorado hover:bg-dorado/90 active:scale-[0.98]
                              text-white font-semibold text-sm tracking-wide
                              transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  {storyNombre && storyNombre !== 'por una intención especial'
-                    ? `Rezar ${storyNombre}`
-                    : 'Rezar por esta intención'}
+                  {isGracias ? (
+                    <span className="text-base leading-none">🙌</span>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  )}
+                  {isGracias
+                    ? (storyNombre ? `Dar gracias ${storyNombre}` : 'Dar gracias')
+                    : (storyNombre ? `Rezar ${storyNombre}` : 'Rezar por esta intención')}
                 </button>
               </div>
             </div>
@@ -676,6 +726,33 @@ export default function PedidoOracionPage() {
 
         <div className="pb-28 lg:pb-10" />
       </div>
+
+      {/* ── Confetti overlay — fixed, cubre toda la pantalla ── */}
+      {confetti && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 999 }}>
+          {confetti.map(p => (
+            <div
+              key={p.id}
+              className="confetti-piece"
+              style={{
+                left: '50%',
+                top: '55%',
+                width:  p.wide ? p.size * 2.2 : p.size,
+                height: p.size,
+                borderRadius: p.wide ? '2px' : '50%',
+                backgroundColor: p.color,
+                '--cx':     p.dx,
+                '--cy-up':  p.cyUp,
+                '--cy-down':p.cyDown,
+                '--cr':     p.rot,
+                '--cr-mid': p.rotMid,
+                '--dur':    `${p.duration}s`,
+                '--delay':  `${p.delay}s`,
+              } as React.CSSProperties}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
