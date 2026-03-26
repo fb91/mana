@@ -547,6 +547,7 @@ export default function LiturgiaPage() {
   const [loadingVerses, setLoadingVerses] = useState<Set<ReadingKey>>(new Set())
   const [showLectio, setShowLectio] = useState(false)
   const [imageEditorData, setImageEditorData] = useState<ImageEditorData | null>(null)
+  const [shareTextCopied, setShareTextCopied] = useState(false)
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
   useEffect(() => {
@@ -618,6 +619,28 @@ export default function LiturgiaPage() {
 
   const readings = resolvedDay?.readings
   const gospelRef = readings?.gospel ?? ''
+
+  async function handleShareText() {
+    const verses = loadedVerses.gospel
+    if (!verses || !gospelRef) return
+    const refs = parseBibleRef(gospelRef)
+    const bookName = refs.length > 0 ? getBookName(refs[0].book) : ''
+    const refDisplay = formatRef(gospelRef)
+    const abbr = refs.length > 0 ? refs[0].book : ''
+    const verseRange = refDisplay.startsWith(abbr) ? refDisplay.slice(abbr.length).trim() : refDisplay
+    const versesText = verses.map(v => `${v.number} ${v.text}`).join('\n')
+    const text = `Evangelio según San ${bookName} ${verseRange}\n\n${versesText}\n\nwww.mana-app.org`
+
+    if (navigator.share) {
+      try { await navigator.share({ text }) } catch { /* cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text)
+        setShareTextCopied(true)
+        setTimeout(() => setShareTextCopied(false), 2500)
+      } catch { /* clipboard not available */ }
+    }
+  }
 
   const accentClass = resolvedDay
     ? (COLOR_STYLES[resolvedDay.color]?.text ?? 'text-dorado')
@@ -704,6 +727,22 @@ export default function LiturgiaPage() {
                       <p className="text-xs text-crema-50/70 mt-0.5 font-normal">{formatRef(readings.gospel)}</p>
                     )}
                   </div>
+                </button>
+
+                {/* Share as text */}
+                <button
+                  onClick={handleShareText}
+                  disabled={!loadedVerses.gospel}
+                  className="w-full flex items-center justify-center gap-2.5
+                             border border-crema-300 dark:border-oscuro-border
+                             text-cafe-light dark:text-crema-300
+                             rounded-2xl px-5 py-3.5 font-medium text-sm
+                             active:scale-[0.98] transition-all duration-150
+                             hover:bg-crema-100 dark:hover:bg-oscuro-surface
+                             disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Icon name={shareTextCopied ? 'check' : 'share'} size={18} />
+                  {shareTextCopied ? '¡Copiado al portapapeles!' : 'Compartir como texto'}
                 </button>
 
                 {/* Share button → opens image editor */}
