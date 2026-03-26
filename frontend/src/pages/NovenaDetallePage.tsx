@@ -104,7 +104,7 @@ export default function NovenaDetallePage() {
       // 1) Buscar la novena por slug (query liviana)
       const { data: rows, error: sbError } = await supabase
         .from('novenas')
-        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad, imagen_url')
         .eq('published', true)
         .order('nombre')
       if (sbError) throw sbError
@@ -145,6 +145,7 @@ export default function NovenaDetallePage() {
           estado: 'publicado',
           categoria: match.categoria ?? undefined,
           fechaFestividad: match.fecha_festividad ?? undefined,
+          imagenUrl: match.imagen_url ?? undefined,
           dias,
         })
         setLoadingNovena(false)
@@ -336,6 +337,19 @@ export default function NovenaDetallePage() {
       />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto pb-28">
+
+        {/* ── Imagen ilustrativa ── */}
+        {novena.imagenUrl && (
+          <div className="overflow-hidden aspect-[4/3] max-h-52">
+            <img
+              src={novena.imagenUrl}
+              alt={novena.santo}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }}
+            />
+          </div>
+        )}
 
         {/* ── Barra de progreso ── */}
         {iniciada && (

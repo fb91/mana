@@ -61,7 +61,7 @@ export default function NovenasPage() {
     withRetry(async () => {
       const { data, error: sbError } = await supabase
         .from('novenas')
-        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
+        .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad, imagen_url')
         .eq('published', true)
         .order('nombre')
       if (sbError) throw sbError
@@ -77,6 +77,7 @@ export default function NovenasPage() {
           estado: 'publicado',
           categoria: row.categoria ?? undefined,
           fechaFestividad: row.fecha_festividad ?? undefined,
+          imagenUrl: row.imagen_url ?? undefined,
         })))
         setLoading(false)
       })
@@ -248,6 +249,15 @@ export default function NovenasPage() {
                       </p>
                     )}
                   </div>
+                  {novena.imagenUrl && (
+                    <img
+                      src={novena.imagenUrl}
+                      alt={novena.santo}
+                      className="w-14 h-14 rounded-lg object-cover flex-shrink-0 opacity-90"
+                      loading="lazy"
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    />
+                  )}
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                     {terminada ? (
                       <span className="text-xs font-semibold text-dorado bg-dorado/10 px-2 py-0.5 rounded-full">

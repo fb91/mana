@@ -20,6 +20,7 @@ interface NovenaForm {
   categoria: string
   fecha_festividad: string
   published: boolean
+  imagen_url: string
   dias: DiaForm[]
 }
 
@@ -28,6 +29,7 @@ const EMPTY_FORM: NovenaForm = {
   nombre: '', santo: '', descripcion: '', intencion_sugerida: '',
   autor: '', estado: 'activa', categoria: '', fecha_festividad: '',
   published: false,
+  imagen_url: '',
   dias: Array.from({ length: 9 }, (_, i) => EMPTY_DIA(i + 1)),
 }
 
@@ -42,6 +44,9 @@ export default function AdminNovenaFormPage() {
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imageSearchQuery, setImageSearchQuery] = useState('')
+  const [imageResults, setImageResults] = useState<{ title: string; thumb: string; original: string }[]>([])
+  const [fetchingImage, setFetchingImage] = useState(false)
 
   useEffect(() => {
     if (!isNew) loadNovena()
@@ -80,6 +85,7 @@ export default function AdminNovenaFormPage() {
       categoria:          novena.categoria          ?? '',
       fecha_festividad:   novena.fecha_festividad   ?? '',
       published:          novena.published,
+      imagen_url:         novena.imagen_url         ?? '',
       dias:               diasForm,
     })
     setLoading(false)
@@ -94,6 +100,52 @@ export default function AdminNovenaFormPage() {
       ...f,
       dias: f.dias.map(d => d.dia === dia ? { ...d, [key]: value } : d),
     }))
+  }
+
+  async function buscarImagenesWikipedia() {
+    const query = imageSearchQuery.trim() || form.santo.trim()
+    if (!query) return
+    setFetchingImage(true)
+    setImageResults([])
+    try {
+      // 1) Buscar artículos por texto libre
+      const searchRes = await fetch(
+        `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=12&srprop=`
+      )
+      if (!searchRes.ok) throw new Error()
+      const searchData = await searchRes.json()
+      const titles: string[] = (searchData.query?.search ?? []).map((r: { title: string }) => r.title)
+      if (titles.length === 0) { setError('Sin resultados.'); return }
+
+      // 2) Obtener thumbnails + originales en una sola llamada
+      const imgRes = await fetch(
+        `https://es.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(titles.join('|'))}&prop=pageimages&piprop=thumbnail|original&pithumbsize=200&format=json&origin=*`
+      )
+      if (!imgRes.ok) throw new Error()
+      const imgData = await imgRes.json()
+      const pages = Object.values(imgData.query?.pages ?? {}) as Array<{
+        title: string
+        thumbnail?: { source: string }
+        original?: { source: string }
+      }>
+
+      const titleIndex = Object.fromEntries(titles.map((t, i) => [t, i]))
+      const results = pages
+        .filter(p => p.thumbnail?.source)
+        .sort((a, b) => (titleIndex[a.title] ?? 99) - (titleIndex[b.title] ?? 99))
+        .map(p => ({
+          title: p.title,
+          thumb: p.thumbnail!.source,
+          original: p.original?.source ?? p.thumbnail!.source,
+        }))
+
+      setImageResults(results)
+      if (results.length === 0) setError('No se encontraron imágenes para esa búsqueda.')
+    } catch {
+      setError('No se pudo conectar con Wikipedia.')
+    } finally {
+      setFetchingImage(false)
+    }
   }
 
   async function handleSave() {
@@ -119,6 +171,7 @@ export default function AdminNovenaFormPage() {
       categoria:          form.categoria.trim()          || null,
       fecha_festividad:   form.fecha_festividad          || null,
       published:          form.published,
+      imagen_url:         form.imagen_url.trim()         || null,
       updated_at:         new Date().toISOString(),
     }
 
@@ -249,6 +302,86 @@ export default function AdminNovenaFormPage() {
             </div>
             <span className="text-sm text-cafe-dark dark:text-crema-200">Publicada (visible para usuarios)</span>
           </label>
+        </section>
+
+        {/* ── Imagen ilustrativa ── */}
+        <section className="space-y-3">
+          <h2 className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wide">
+            Imagen ilustrativa
+          </h2>
+
+          {/* Buscador de Wikipedia */}
+          <div className="flex gap-2">
+            <input
+              value={imageSearchQuery}
+              onChange={e => setImageSearchQuery(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && buscarImagenesWikipedia()}
+              placeholder={form.santo.trim() || 'Buscar en Wikipedia...'}
+              className={inputClass + ' flex-1'}
+            />
+            <button
+              type="button"
+              onClick={buscarImagenesWikipedia}
+              disabled={fetchingImage}
+              className="flex-shrink-0 text-xs font-semibold text-dorado border border-dorado/40 px-3 py-2 rounded-xl disabled:opacity-50 active:scale-95 transition-all"
+            >
+              {fetchingImage ? '...' : 'Buscar'}
+            </button>
+          </div>
+
+          {/* Grilla de resultados */}
+          {imageResults.length > 0 && (
+            <div>
+              <div className="grid grid-cols-3 gap-2">
+                {imageResults.map(r => (
+                  <button
+                    key={r.thumb}
+                    type="button"
+                    onClick={() => setField('imagen_url', r.original)}
+                    className={`relative rounded-lg overflow-hidden aspect-square border-2 transition-all active:scale-95 ${
+                      form.imagen_url === r.original
+                        ? 'border-dorado'
+                        : 'border-transparent hover:border-dorado/40'
+                    }`}
+                  >
+                    <img src={r.thumb} alt={r.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-x-0 bottom-0 bg-black/50 px-1 py-0.5">
+                      <p className="text-[10px] text-white truncate">{r.title}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setImageResults([])}
+                className="mt-2 text-xs text-cafe-light dark:text-crema-400 underline"
+              >
+                Cerrar resultados
+              </button>
+            </div>
+          )}
+
+          {/* URL manual */}
+          <Field label="URL de imagen">
+            <input
+              value={form.imagen_url}
+              onChange={e => setField('imagen_url', e.target.value)}
+              placeholder="https://upload.wikimedia.org/..."
+              className={inputClass}
+            />
+          </Field>
+
+          {/* Preview */}
+          {form.imagen_url && (
+            <div className="rounded-xl overflow-hidden aspect-[4/3] max-h-40 bg-crema-200 dark:bg-oscuro-card">
+              <img
+                src={form.imagen_url}
+                alt="Vista previa"
+                className="w-full h-full object-cover"
+                onError={e => { (e.target as HTMLImageElement).style.opacity = '0' }}
+              />
+            </div>
+          )}
         </section>
 
         {/* ── Días ── */}
