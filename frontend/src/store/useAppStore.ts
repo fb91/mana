@@ -43,13 +43,13 @@ export interface SavedCitation {
   savedAt: number
 }
 
-export type Theme      = 'claro' | 'oscuro'
+export type Theme      = 'claro' | 'oscuro' | 'luz' | 'juvenil'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
 export const FONT_PRESETS          = { small: 17, normal: 19, large: 22 } as const
 export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 22 } as const
 
-export const VALID_THEMES: Theme[] = ['claro', 'oscuro']
+export const VALID_THEMES: Theme[] = ['claro', 'oscuro', 'luz', 'juvenil']
 
 interface AppState {
   theme: Theme
@@ -280,18 +280,21 @@ export const useAppStore = create<AppState>()(
 )
 
 const ALL_THEME_CLASSES = [
-  'theme-claro', 'theme-oscuro',
+  'theme-claro', 'theme-oscuro', 'theme-luz', 'theme-juvenil',
   // Remove legacy classes that may have been persisted
-  'theme-liturgico', 'theme-juvenil', 'theme-colorido', 'theme-rosa', 'theme-rojo',
+  'theme-liturgico', 'theme-colorido', 'theme-rosa', 'theme-rojo',
   // Liturgical accent sub-variants
   'theme-liturgico-violet', 'theme-liturgico-white',
   'theme-liturgico-red', 'theme-liturgico-green', 'theme-liturgico-rose',
 ]
 
+// Temas que activan el modo oscuro de Tailwind (dark:)
+const DARK_THEMES: Theme[] = ['oscuro']
+
 export function applyTheme(theme: Theme, liturgicalAccent = false) {
   const html = document.documentElement
   ALL_THEME_CLASSES.forEach(c => html.classList.remove(c))
-  html.classList.toggle('dark', theme === 'oscuro')
+  html.classList.toggle('dark', DARK_THEMES.includes(theme))
   html.classList.add(`theme-${theme}`)
 
   if (liturgicalAccent) {

@@ -29,7 +29,7 @@ function AppContent() {
   const isAdminRoute = location.pathname.startsWith('/admin')
 
   return (
-    <div className="w-full sm:max-w-md sm:shadow-2xl lg:max-w-none lg:shadow-none flex flex-col min-h-screen bg-crema dark:bg-oscuro-bg">
+    <div className="w-full sm:max-w-md sm:shadow-2xl lg:max-w-none lg:shadow-none flex flex-col min-h-screen" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
       {!isAdminRoute && <Sidebar />}
       <div className="flex flex-col flex-1 lg:ml-64">
         <main className="flex-1 overflow-hidden">
@@ -90,7 +90,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <BugReportProvider>
-        <div className="min-h-screen bg-stone-300 dark:bg-stone-900 lg:bg-crema dark:lg:bg-oscuro-bg sm:flex sm:justify-center">
+        <div className="min-h-screen bg-token-bg sm:flex sm:justify-center" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
           <AppContent />
         </div>
       </BugReportProvider>
