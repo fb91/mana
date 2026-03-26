@@ -48,9 +48,8 @@ export default function PrayerMarquee() {
 
   if (requests.length === 0) return null
 
-  const text = requests.map(formatRequest).join('  ·  ')
   // Duplicate for seamless loop
-  const displayText = `${text}  ·  ${text}`
+  const items = [...requests, ...requests]
 
   return (
     <div
@@ -68,6 +67,8 @@ export default function PrayerMarquee() {
           animation: prayer-marquee 18s linear infinite;
           white-space: nowrap;
           will-change: transform;
+          display: inline-flex;
+          align-items: center;
         }
         .prayer-marquee-inner.paused {
           animation-play-state: paused;
@@ -82,9 +83,22 @@ export default function PrayerMarquee() {
       <div className="flex-1 overflow-hidden">
         <div
           ref={marqueeRef}
-          className={`prayer-marquee-inner text-xs text-dorado/90 dark:text-dorado/80 font-medium${paused ? ' paused' : ''}`}
+          className={`prayer-marquee-inner${paused ? ' paused' : ''}`}
         >
-          {displayText}
+          {items.map((req, i) => (
+            <span key={i} className="inline-flex items-center">
+              {/* Separator between items — visually distinct from content */}
+              <span className="mx-4 text-dorado/25 select-none" aria-hidden>✦</span>
+              <span className="text-xs font-semibold text-dorado dark:text-dorado/90">
+                {formatRequest(req).split(' · ')[0]}
+              </span>
+              {formatRequest(req).includes(' · ') && (
+                <span className="text-xs text-dorado/50 dark:text-dorado/40 ml-1.5">
+                  · {formatRequest(req).split(' · ').slice(1).join(' · ')}
+                </span>
+              )}
+            </span>
+          ))}
         </div>
       </div>
     </div>
