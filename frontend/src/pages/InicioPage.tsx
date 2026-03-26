@@ -133,7 +133,7 @@ const comunidad: Tool[] = [
   {
     icon: 'hands',
     title: 'Pedido de oración',
-    description: 'Pedí oraciones por alguien especial. Tu intención será compartida con la comunidad.',
+    description: 'Rezá por otros y pedí oraciones para vos o para alguien especial.',
     to: '/comunidad/pedido-oracion',
   },
 ]
