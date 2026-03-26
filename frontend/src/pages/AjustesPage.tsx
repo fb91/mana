@@ -39,9 +39,11 @@ const FONT_FAMILY_OPTIONS: { value: FontFamily; label: string; description: stri
   },
 ]
 
-const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string }[] = [
-  { value: 'claro',  label: 'Claro',  accent: '#965519', bg: '#FAF7F0' },
-  { value: 'oscuro', label: 'Oscuro', accent: '#D4A853', bg: '#1C1510' },
+const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string; description: string }[] = [
+  { value: 'claro',   label: 'Claro',   accent: '#8C5A2B', bg: '#FAF7F2', description: 'Calidez terrena' },
+  { value: 'oscuro',  label: 'Oscuro',  accent: '#D4A853', bg: '#1C1510', description: 'Noche cálida'    },
+  { value: 'luz',     label: 'Luz',     accent: '#3A6EA5', bg: '#FFFFFF', description: 'Claridad y cielo'},
+  { value: 'juvenil', label: 'Juvenil', accent: '#F97316', bg: '#FFFAF5', description: 'Alegría y energía'},
 ]
 
 export default function AjustesPage() {
@@ -71,16 +73,16 @@ export default function AjustesPage() {
           </p>
           <div className="card px-4 py-4 space-y-3">
 
-            {/* Base themes: Claro y Oscuro */}
+            {/* Los 4 temas base en rejilla 2×2 */}
             <div className="grid grid-cols-2 gap-2">
-              {STATIC_THEMES.map(({ value, label, accent, bg }) => {
+              {STATIC_THEMES.map(({ value, label, accent, bg, description }) => {
                 const active = theme === value
                 return (
                   <button
                     key={value}
                     onClick={() => setTheme(value)}
                     className={[
-                      'flex flex-col items-center gap-2 py-3 rounded-xl border transition-all duration-150 active:scale-95',
+                      'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all duration-150 active:scale-95',
                       active
                         ? 'border-[2px] shadow-sm'
                         : 'bg-crema-50 dark:bg-oscuro-surface border-crema-200 dark:border-oscuro-border hover:border-dorado/50',
@@ -92,10 +94,16 @@ export default function AjustesPage() {
                       style={{ backgroundColor: accent }}
                     />
                     <span
-                      className="text-xs leading-none font-medium"
+                      className="text-xs leading-none font-semibold"
                       style={active ? { color: accent } : undefined}
                     >
                       {label}
+                    </span>
+                    <span
+                      className="text-[10px] leading-none text-center"
+                      style={{ color: active ? `${accent}CC` : undefined }}
+                    >
+                      {description}
                     </span>
                     {active && (
                       <span

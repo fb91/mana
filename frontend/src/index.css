@@ -11,7 +11,9 @@
   }
 
   body {
-    @apply font-sans text-cafe-dark dark:text-crema-200 antialiased;
+    @apply font-sans antialiased;
+    color: rgb(var(--color-text-primary));
+    background-color: rgb(var(--color-bg));
     /* Safe area para notch/home indicator en iOS */
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -22,59 +24,153 @@
 }
 
 @layer components {
+  /* ── Botón primario — usa acento del tema activo ─────────────────────── */
   .btn-primary {
-    @apply bg-dorado text-crema-50 px-6 py-3 rounded-full font-medium
+    @apply px-6 py-3 rounded-full font-medium
            active:scale-95 transition-all duration-150 shadow-sm
-           hover:bg-dorado-dark disabled:opacity-50 disabled:cursor-not-allowed;
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    background-color: rgb(var(--accent));
+    color: rgb(var(--color-btn-text));
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: rgb(var(--accent-dark));
   }
 
+  /* ── Botón secundario ────────────────────────────────────────────────── */
   .btn-secondary {
-    @apply border border-dorado text-dorado px-6 py-3 rounded-full font-medium
+    @apply px-6 py-3 rounded-full font-medium border
            active:scale-95 transition-all duration-150
-           hover:bg-crema-200 dark:hover:bg-oscuro-surface disabled:opacity-50;
+           disabled:opacity-50;
+    border-color: rgb(var(--accent));
+    color: rgb(var(--accent));
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: rgb(var(--color-surface-2));
   }
 
+  /* ── Tarjeta / card ──────────────────────────────────────────────────── */
   .card {
-    @apply bg-white dark:bg-oscuro-surface rounded-2xl shadow-sm p-5
-           border border-crema-200 dark:border-oscuro-border;
+    @apply rounded-2xl shadow-sm p-5 border;
+    background-color: rgb(var(--color-surface));
+    border-color: rgb(var(--color-border));
   }
 
+  /* ── Campo de texto ──────────────────────────────────────────────────── */
   .input-field {
-    @apply w-full bg-crema-100 dark:bg-oscuro-surface border border-crema-300
-           dark:border-oscuro-border rounded-xl px-4 py-3 text-cafe-dark
-           dark:text-crema-200 placeholder-cafe-light/60 focus:outline-none
-           focus:ring-2 focus:ring-dorado/40 transition-all;
+    @apply w-full border rounded-xl px-4 py-3
+           focus:outline-none focus:ring-2 focus:ring-dorado/40 transition-all;
+    background-color: rgb(var(--color-surface-2));
+    border-color: rgb(var(--color-border));
+    color: rgb(var(--color-text-primary));
+  }
+  .input-field::placeholder {
+    color: rgb(var(--color-text-secondary) / 0.6);
   }
 
+  /* ── Chat bubbles ────────────────────────────────────────────────────── */
   .chat-bubble-user {
-    @apply bg-dorado text-crema-50 rounded-2xl rounded-br-sm px-4 py-3 max-w-xs ml-auto;
+    @apply rounded-2xl rounded-br-sm px-4 py-3 max-w-xs ml-auto;
+    background-color: rgb(var(--accent));
+    color: rgb(var(--color-btn-text));
   }
 
   .chat-bubble-assistant {
-    @apply bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
-           text-cafe-dark dark:text-crema-200 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs;
+    @apply rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs border;
+    background-color: rgb(var(--color-surface));
+    border-color: rgb(var(--color-border));
+    color: rgb(var(--color-text-primary));
   }
 }
 
-/* ── Temas de color (via CSS variables usadas por Tailwind) ──────────────── */
-/* Los valores son tripletas RGB separadas por espacio (para Tailwind /opacity) */
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOKENS DE DISEÑO POR TEMA
+   Valores como tripletas RGB (para soporte de opacidad en Tailwind: /alpha)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Tema CLARO — calidez terrena, humanidad ────────────────────────────── */
+/*    Paleta: tierra / esperanza / dorado litúrgico                          */
 :root,
 html.theme-claro {
-  --accent:        150  85  25;  /* castaño cálido #965519 */
-  --accent-dark:   110  60  15;  /* #6E3C0F */
-  --accent-light:  210 145  75;  /* #D2914B */
-  --slider-track:  210 200 188;  /* pista sin relleno, modo claro */
+  /* Superficies */
+  --color-bg:              250 247 242;  /* #FAF7F2 pergamino cálido */
+  --color-surface:         255 255 255;  /* #FFFFFF blanco puro */
+  --color-surface-2:       250 247 242;  /* #FAF7F2 igual que bg */
+  /* Textos */
+  --color-text-primary:     46  42  37;  /* #2E2A25 tinta oscura cálida */
+  --color-text-secondary:  122 111  99;  /* #7A6F63 tierra media */
+  /* Bordes */
+  --color-border:          232 225 217;  /* #E8E1D9 borde suave */
+  /* Acento — tierra / humanidad */
+  --accent:                140  90  43;  /* #8C5A2B */
+  --accent-dark:           110  70  30;  /* #6E461E */
+  --accent-light:          212 163 115;  /* #D4A373 calidez */
+  --color-btn-text:        253 250 245;  /* #FDFAF5 crema clara */
+  --slider-track:          210 198 184;
 }
 
+/* ── Tema OSCURO — calidez nocturna ─────────────────────────────────────── */
 html.theme-oscuro {
-  --accent:        212 168 83;   /* dorado más brillante sobre fondo oscuro */
-  --accent-dark:   139 105 20;
-  --accent-light:  232 200 120;
-  --slider-track:   58  48  38;  /* pista sin relleno, modo oscuro */
+  /* Superficies */
+  --color-bg:               28  21  16;  /* #1C1510 */
+  --color-surface:          38  29  21;  /* #261D15 */
+  --color-surface-2:        38  29  21;  /* #261D15 */
+  /* Textos */
+  --color-text-primary:    250 247 242;  /* crema cálida */
+  --color-text-secondary:  196 185 170;  /* crema más suave */
+  /* Bordes */
+  --color-border:           61  46  32;  /* #3D2E20 */
+  /* Acento — dorado sobre oscuro */
+  --accent:                212 168  83;  /* #D4A853 */
+  --accent-dark:           139 105  20;  /* #8B6914 */
+  --accent-light:          232 200 120;  /* #E8C878 */
+  --color-btn-text:        253 250 245;  /* crema */
+  --slider-track:           58  48  38;
 }
 
-/* ── Tema litúrgico — variantes según el tiempo del año ─────────────────── */
+/* ── Tema LUZ — cielo, confianza, claridad ──────────────────────────────── */
+/*    Paleta: azul cielo / luz divina / dorado suave                         */
+html.theme-luz {
+  /* Superficies */
+  --color-bg:              255 255 255;  /* #FFFFFF */
+  --color-surface:         249 250 251;  /* #F9FAFB */
+  --color-surface-2:       243 244 246;  /* #F3F4F6 */
+  /* Textos */
+  --color-text-primary:     31  41  55;  /* #1F2937 */
+  --color-text-secondary:  107 114 128;  /* #6B7280 */
+  /* Bordes */
+  --color-border:          229 231 235;  /* #E5E7EB */
+  /* Acento — azul confianza / cielo */
+  --accent:                 58 110 165;  /* #3A6EA5 */
+  --accent-dark:            30  80 130;  /* #1E5082 */
+  --accent-light:          168 199 232;  /* #A8C7E8 suavidad */
+  --color-btn-text:        255 255 255;  /* blanco puro */
+  --slider-track:          209 213 219;  /* #D1D5DB */
+}
+
+/* ── Tema JUVENIL — alegría, energía, esperanza joven ───────────────────── */
+/*    Paleta: naranja vivo / melocotón / calidez festiva                     */
+html.theme-juvenil {
+  /* Superficies */
+  --color-bg:              255 250 245;  /* #FFFAF5 */
+  --color-surface:         255 255 255;  /* #FFFFFF */
+  --color-surface-2:       255 247 237;  /* #FFF7ED melocotón suave */
+  /* Textos */
+  --color-text-primary:     28  25  23;  /* #1C1917 */
+  --color-text-secondary:  120 113 108;  /* #78716C */
+  /* Bordes */
+  --color-border:          254 215 170;  /* #FED7AA melocotón */
+  /* Acento — naranja vivo, festivo */
+  --accent:                249 115  22;  /* #F97316 */
+  --accent-dark:           234  88  12;  /* #EA580C */
+  --accent-light:          253 186 116;  /* #FDBA74 */
+  --color-btn-text:        255 255 255;  /* blanco puro */
+  --slider-track:          254 215 170;  /* #FED7AA */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TEMAS LITÚRGICOS — variantes de acento según el tiempo del año
+   Se superponen al tema base activo (claro u oscuro)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Violeta: Cuaresma y Adviento */
 html.theme-liturgico-violet {
@@ -85,7 +181,7 @@ html.theme-liturgico-violet {
 
 /* Dorado/Blanco: Pascua, Navidad, Solemnidades */
 html.theme-liturgico-white {
-  --accent:       190 148  10;  /* oro litúrgico  #BE940A */
+  --accent:       190 148  10;  /* #BE940A oro litúrgico */
   --accent-dark:  150 112   0;  /* #967000 */
   --accent-light: 225 185  70;  /* #E1B946 */
 }
@@ -111,16 +207,56 @@ html.theme-liturgico-rose {
   --accent-light: 249 168 212;  /* #F9A8D4 */
 }
 
-/* Tamaño de letra escalable — todas las unidades rem escalan con esto */
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPATIBILIDAD — remapeo de clases hardcodeadas en páginas
+   Permite que los temas luz y juvenil sobreescriban los colores café/crema
+   que están escritos directamente en los componentes como clases Tailwind.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tema LUZ: reemplaza tonos cálidos por tonos fríos/neutros ───────────── */
+html.theme-luz .text-cafe-dark  { color: rgb(var(--color-text-primary)); }
+html.theme-luz .text-cafe-light { color: rgb(var(--color-text-secondary)); }
+html.theme-luz .text-cafe       { color: rgb(var(--accent)); }
+
+html.theme-luz .border-crema-200,
+html.theme-luz .border-crema-300 { border-color: rgb(var(--color-border)); }
+
+html.theme-luz .bg-crema,
+html.theme-luz .bg-crema-50,
+html.theme-luz .bg-crema-100,
+html.theme-luz .bg-crema-200 { background-color: rgb(var(--color-surface-2)); }
+
+html.theme-luz .bg-white { background-color: rgb(var(--color-surface)); }
+
+html.theme-luz ::-webkit-scrollbar-thumb { background-color: rgb(var(--color-border)); }
+
+/* ── Tema JUVENIL: reemplaza tonos cálidos tierra por tonos melocotón ─────── */
+html.theme-juvenil .text-cafe-dark  { color: rgb(var(--color-text-primary)); }
+html.theme-juvenil .text-cafe-light { color: rgb(var(--color-text-secondary)); }
+html.theme-juvenil .text-cafe       { color: rgb(var(--accent)); }
+
+html.theme-juvenil .border-crema-200,
+html.theme-juvenil .border-crema-300 { border-color: rgb(var(--color-border)); }
+
+html.theme-juvenil .bg-crema,
+html.theme-juvenil .bg-crema-50,
+html.theme-juvenil .bg-crema-100,
+html.theme-juvenil .bg-crema-200 { background-color: rgb(var(--color-surface-2)); }
+
+html.theme-juvenil .bg-white { background-color: rgb(var(--color-surface)); }
+
+html.theme-juvenil ::-webkit-scrollbar-thumb { background-color: rgb(var(--color-border)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TIPOGRAFÍA — tamaño escalable y familias alternativas
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 html.font-small { font-size: 14px; }
 html.font-large  { font-size: 18px; }
-/* font-normal es el default del navegador (16px) */
 
-/* Tipografías alternativas — se sobreescribe font-sans/serif del body */
 html.font-garamond body,
 html.font-garamond .font-sans {
   font-family: 'EB Garamond', Georgia, serif;
-  /* Garamond has a smaller x-height than Inter at the same point size */
   font-size: 1.1em;
 }
 html.font-garamond .font-serif {
@@ -135,7 +271,10 @@ html.font-cinzel .font-serif {
   font-family: 'Cinzel', Georgia, serif;
 }
 
-/* ── Slider de tamaño de letra ──────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDER DE TAMAÑO DE LETRA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 input[type="range"].slider-themed {
   -webkit-appearance: none;
   appearance: none;
@@ -175,7 +314,10 @@ input[type="range"].slider-themed::-moz-range-track {
   background: rgb(var(--slider-track));
 }
 
-/* Ocultar scrollbar manteniendo scroll funcional */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -184,13 +326,13 @@ input[type="range"].slider-themed::-moz-range-track {
   display: none;
 }
 
-/* Scrollbar mínimo */
 ::-webkit-scrollbar {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-crema-300 rounded-full;
+  background-color: rgb(var(--color-border));
+  border-radius: 9999px;
 }
