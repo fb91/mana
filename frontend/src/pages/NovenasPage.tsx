@@ -55,6 +55,7 @@ export default function NovenasPage() {
   const [categoria, setCategoria] = useState('')
   const [baseNovenas, setBaseNovenas] = useState<Novena[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     supabase
@@ -62,7 +63,8 @@ export default function NovenasPage() {
       .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
       .eq('published', true)
       .order('nombre')
-      .then(({ data }) => {
+      .then(({ data, error: sbError }) => {
+        if (sbError) throw sbError
         setBaseNovenas((data ?? []).map(row => ({
           id: row.id,
           nombre: row.nombre,
@@ -74,6 +76,10 @@ export default function NovenasPage() {
           fechaFestividad: row.fecha_festividad ?? undefined,
         })))
         setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+        setError(true)
       })
 
     // Prefetch de todos los días en bulk: misma query que usa NovenaDetallePage,
@@ -179,6 +185,18 @@ export default function NovenasPage() {
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <p className="text-sm text-cafe-light dark:text-crema-400">
+                No se pudieron cargar las novenas.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-xs font-semibold text-dorado border border-dorado/40 px-4 py-2 rounded-lg active:scale-95 transition-all"
+              >
+                Reintentar
+              </button>
             </div>
           ) : (
           <p className="text-xs text-cafe-light dark:text-crema-300">

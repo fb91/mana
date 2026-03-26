@@ -95,6 +95,7 @@ export default function NovenaDetallePage() {
 
   const [novena, setNovena] = useState<Novena | null>(null)
   const [loadingNovena, setLoadingNovena] = useState(true)
+  const [errorNovena, setErrorNovena] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -105,18 +106,20 @@ export default function NovenaDetallePage() {
       .select('id, nombre, santo, descripcion, intencion_sugerida, categoria, fecha_festividad')
       .eq('published', true)
       .order('nombre')
-      .then(async ({ data: rows }) => {
+      .then(async ({ data: rows, error: sbError }) => {
+        if (sbError) throw sbError
         if (cancelled) return
         const match = (rows ?? []).find(r => slugify(r.nombre) === slug)
         if (!match) { setLoadingNovena(false); return }
 
         // 2) Traer solo los días de esta novena (query dirigida, no toda la tabla)
-        const { data: diasData } = await supabase
+        const { data: diasData, error: diasError } = await supabase
           .from('novena_dias')
           .select('id, novena_id, dia, titulo, oracion, reflexion')
           .eq('novena_id', match.id)
           .order('dia')
 
+        if (diasError) throw diasError
         if (cancelled) return
 
         const dias: NovenaDia[] = (diasData ?? []).map(d => ({
@@ -140,6 +143,12 @@ export default function NovenaDetallePage() {
           dias,
         })
         setLoadingNovena(false)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLoadingNovena(false)
+          setErrorNovena(true)
+        }
       })
     return () => { cancelled = true }
   }, [slug])
@@ -181,6 +190,24 @@ export default function NovenaDetallePage() {
       <div className="flex flex-col h-full">
         <div className="flex-1 flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    )
+  }
+
+  if (errorNovena) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8">
+          <p className="text-sm text-cafe-light dark:text-crema-400">
+            No se pudo cargar la novena.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-xs font-semibold text-dorado border border-dorado/40 px-4 py-2 rounded-lg active:scale-95 transition-all"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     )
