@@ -340,7 +340,7 @@ export default function NovenaDetallePage() {
 
         {/* ── Imagen ilustrativa ── */}
         {novena.imagenUrl && (
-          <div className="mx-4 mt-3 rounded-xl overflow-hidden aspect-[4/3] max-h-52">
+          <div className="overflow-hidden aspect-[4/3] max-h-52">
             <img
               src={novena.imagenUrl}
               alt={novena.santo}
