@@ -7,23 +7,13 @@ interface PrayerRequest {
   nombre: string
 }
 
-const MOTIVO_PREP: Record<string, string> = {
-  'Salud': 'por',
-  'Trabajo': 'por',
-  'Paz interior': 'por',
-  'Familia': 'de',
-  'Conversión': 'de',
-  'Estudios': 'de',
-  'Matrimonio': 'de',
-  'Hijos': 'de',
-  'Situación económica': 'de',
-  'Fortaleza en la fe': 'de',
-  'Intención particular': 'de',
-}
+const SIN_NOMBRE = 'una intención especial'
 
 function formatRequest(req: PrayerRequest): string {
-  const prep = MOTIVO_PREP[req.motivo] ?? 'de'
-  return `${req.motivo} ${prep} ${req.nombre}`
+  // motivo may be "Salud · Cirugía (urgente)" or legacy "Salud"
+  const motivoLabel = req.motivo.split(' · ')[0]
+  if (!req.nombre || req.nombre === SIN_NOMBRE) return motivoLabel
+  return `${motivoLabel} · ${req.nombre}`
 }
 
 export default function PrayerMarquee() {
