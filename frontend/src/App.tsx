@@ -64,14 +64,26 @@ function AppContent() {
 }
 
 export default function App() {
-  const { theme, setTheme, fontSizeValue, fontFamily } = useAppStore()
+  const { theme, setTheme, fontSizeValue, fontFamily, followSystemDark } = useAppStore()
   const { init: initAdmin } = useAdminStore()
+
+  // Seguir el tema oscuro del sistema operativo
+  useEffect(() => {
+    if (!followSystemDark) {
+      applyTheme(theme)
+      return
+    }
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => applyTheme(e.matches ? 'oscuro' : theme)
+    applyTheme(mq.matches ? 'oscuro' : theme)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [followSystemDark, theme])
 
   // Apply persisted settings on mount; migrate legacy themes to 'claro'
   useEffect(() => {
     const effective = VALID_THEMES.includes(theme) ? theme : 'claro'
     if (effective !== theme) setTheme('claro')
-    applyTheme(effective)
     applyFontSize(fontSizeValue ?? 16)
     applyFontFamily(fontFamily ?? 'inter')
 

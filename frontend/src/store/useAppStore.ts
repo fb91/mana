@@ -69,6 +69,10 @@ interface AppState {
   liturgicalAccent: boolean
   setLiturgicalAccent: (on: boolean) => void
 
+  // Seguir el modo oscuro del sistema operativo (solo mobile)
+  followSystemDark: boolean
+  setFollowSystemDark: (on: boolean) => void
+
   // Push subscription
   pushSubscription: PushSubscriptionJSON | null
   setPushSubscription: (sub: PushSubscriptionJSON | null) => void
@@ -153,6 +157,9 @@ export const useAppStore = create<AppState>()(
         applyTheme(get().theme)
         set({ liturgicalAccent: on })
       },
+
+      followSystemDark: false,
+      setFollowSystemDark: (on) => set({ followSystemDark: on }),
 
       pushSubscription: null,
       setPushSubscription: (sub) => set({ pushSubscription: sub }),
@@ -266,6 +273,7 @@ export const useAppStore = create<AppState>()(
         fontSizeValue: state.fontSizeValue,
         fontFamily: state.fontFamily,
         liturgicalAccent: state.liturgicalAccent,
+        followSystemDark: state.followSystemDark,
         estadoDeVida: state.estadoDeVida,
         pushSubscription: state.pushSubscription,
         pinnedBooks: state.pinnedBooks,

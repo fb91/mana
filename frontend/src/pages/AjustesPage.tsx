@@ -47,7 +47,7 @@ const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string; 
 ]
 
 export default function AjustesPage() {
-  const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily } = useAppStore()
+  const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily, followSystemDark, setFollowSystemDark } = useAppStore()
   const { state: installState, install } = usePWAInstall()
   const [showIOSModal, setShowIOSModal] = useState(false)
 
@@ -161,6 +161,39 @@ export default function AjustesPage() {
                 </button>
               )
             })()}
+
+            {/* Seguir tema del sistema — solo mobile */}
+            <label className="sm:hidden flex items-center gap-3 px-1 py-1 cursor-pointer select-none">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-cafe-dark dark:text-crema-200 leading-none">
+                  Seguir tema del dispositivo
+                </p>
+                <p className="text-xs text-cafe-light dark:text-crema-300 mt-1 leading-snug">
+                  Cambia a oscuro automáticamente si el sistema usa modo oscuro
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <input
+                  type="checkbox"
+                  checked={followSystemDark}
+                  onChange={e => setFollowSystemDark(e.target.checked)}
+                  className="sr-only"
+                />
+                <div
+                  className={[
+                    'w-11 h-6 rounded-full transition-colors duration-200 relative',
+                    followSystemDark ? 'bg-dorado' : 'bg-crema-300 dark:bg-oscuro-border',
+                  ].join(' ')}
+                >
+                  <span
+                    className={[
+                      'absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200',
+                      followSystemDark ? 'translate-x-5' : 'translate-x-0.5',
+                    ].join(' ')}
+                  />
+                </div>
+              </div>
+            </label>
 
           </div>
         </section>
