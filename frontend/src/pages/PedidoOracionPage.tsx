@@ -320,20 +320,15 @@ export default function PedidoOracionPage() {
               {/* Prayer content */}
               <div className="relative z-10 flex-1 flex flex-col items-center justify-center
                               text-center px-7 py-10">
-                {/* Motivo pill */}
-                <span className="inline-block text-[11px] font-bold uppercase tracking-widest
-                                 text-dorado/80 bg-dorado/15 border border-dorado/20
-                                 rounded-full px-3.5 py-1 mb-6">
+                {/* Motivo — protagonista */}
+                <p className="font-serif font-bold text-white leading-tight mb-4"
+                   style={{ fontSize: 'clamp(2.2rem, 9vw, 3.5rem)' }}>
                   {current?.motivo}
-                </span>
-
-                {/* Prep + name */}
-                <p className="font-serif text-white/50 text-lg font-medium leading-none mb-1">
-                  {currentPrep}
                 </p>
-                <p className="font-serif text-white font-bold leading-none"
-                   style={{ fontSize: 'clamp(2.5rem, 10vw, 4rem)' }}>
-                  {current?.nombre}
+
+                {/* Prep + nombre — secundario */}
+                <p className="text-white/45 text-base font-medium tracking-wide">
+                  {currentPrep} {current?.nombre}
                 </p>
               </div>
 
