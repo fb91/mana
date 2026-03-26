@@ -336,3 +336,23 @@ input[type="range"].slider-themed::-moz-range-track {
   background-color: rgb(var(--color-border));
   border-radius: 9999px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AUDIO READER — Highlighted segments for karaoke TTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.audio-reader-segment {
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.audio-highlight {
+  background-color: rgb(var(--accent) / 0.2);
+  border-radius: 0.25em;
+  padding: 0.1em 0.2em;
+  box-shadow: 0 0 8px rgb(var(--accent) / 0.3);
+}
+
+.dark .audio-highlight {
+  background-color: rgb(var(--accent) / 0.25);
+  box-shadow: 0 0 12px rgb(var(--accent) / 0.4);
+}

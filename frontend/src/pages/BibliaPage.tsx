@@ -8,6 +8,8 @@ import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
 import SaveCitationModal from '../components/SaveCitationModal'
 import ImageEditorModal, { type ImageEditorData } from '../components/ImageEditorModal'
+import { useAudioReader } from '../hooks/useAudioReader'
+import AudioReader from '../components/AudioReader'
 
 // ── Citation parser ────────────────────────────────────────────────────────────
 interface ParsedCitation {
@@ -969,6 +971,7 @@ function VerseReader({
   const [showFocusExit, setShowFocusExit] = useState(false)
   const [slideDir, setSlideDir] = useState<SlideDir>(null)
   const [animKey, setAnimKey] = useState(0)
+  const { isOpen: isAudioOpen, open: openAudio, close: closeAudio, containerRef } = useAudioReader()
 
   useEffect(() => { setSelectedVerses(new Set()) }, [chapter.chapter])
 
@@ -1052,7 +1055,7 @@ function VerseReader({
       : 'animate-slide-in'
 
   const versesContent = (
-    <div key={animKey} className={`px-3 space-y-0.5 ${slideClass}`}>
+    <div key={animKey} className={`px-3 space-y-0.5 ${slideClass}`} ref={containerRef}>
       {chapter.verses.map(verse => {
         const isSelected = selectedVerses.has(verse.number)
         const isHighlighted = activeHighlights.includes(verse.number)
@@ -1154,6 +1157,13 @@ function VerseReader({
         </span>
         <div className="flex gap-3 items-center">
           <button
+            onClick={openAudio}
+            title="Escuchar capítulo en voz alta"
+            className="text-cafe-light dark:text-crema-400 hover:text-dorado transition-colors py-1"
+          >
+            🔊
+          </button>
+          <button
             onClick={enterFocusMode}
             title="Modo sin distracciones"
             className="text-cafe-light dark:text-crema-400 hover:text-dorado transition-colors py-1"
@@ -1238,6 +1248,8 @@ function VerseReader({
           onClose={() => setShowLectio(false)}
         />
       )}
+
+      {isAudioOpen && <AudioReader containerRef={containerRef} onClose={closeAudio} />}
     </div>
   )
 }

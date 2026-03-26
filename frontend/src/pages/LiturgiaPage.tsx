@@ -11,6 +11,8 @@ import { BugReportLink } from '../components/BugReportButton'
 import ImageEditorModal, { type ImageEditorData } from '../components/ImageEditorModal'
 import { LITURGICAL_THEME_MAP } from '../lib/verseImage'
 import CalendarPicker from '../components/CalendarPicker'
+import { useAudioReader } from '../hooks/useAudioReader'
+import AudioReader from '../components/AudioReader'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -266,7 +268,7 @@ function GospelCard({
           <p className="text-sm text-cafe-light dark:text-crema-300">Cargando evangelio...</p>
         </div>
       ) : verses && verses.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-2" ref={containerRef}>
           {verses.map((v) => (
             <p key={v.number} className="font-serif text-[17px] text-cafe-dark dark:text-crema-200 leading-relaxed">
               <span className="text-dorado font-bold text-xs mr-2 align-top leading-7 select-none">
@@ -548,6 +550,7 @@ export default function LiturgiaPage() {
   const [showLectio, setShowLectio] = useState(false)
   const [imageEditorData, setImageEditorData] = useState<ImageEditorData | null>(null)
   const [shareTextCopied, setShareTextCopied] = useState(false)
+  const { isOpen: isAudioOpen, open: openAudio, close: closeAudio, containerRef } = useAudioReader()
 
   // Jump to today when BottomNav "Lecturas" is pressed while already on this page
   useEffect(() => {
@@ -729,6 +732,22 @@ export default function LiturgiaPage() {
                   </div>
                 </button>
 
+                {/* Listen button */}
+                <button
+                  onClick={openAudio}
+                  disabled={!loadedVerses.gospel}
+                  className="w-full flex items-center justify-center gap-2.5
+                             border border-crema-300 dark:border-oscuro-border
+                             text-cafe-light dark:text-crema-300
+                             rounded-2xl px-5 py-3.5 font-medium text-sm
+                             active:scale-[0.98] transition-all duration-150
+                             hover:bg-crema-100 dark:hover:bg-oscuro-surface
+                             disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Icon name="volume-2" size={18} />
+                  Escuchar evangelio
+                </button>
+
                 {/* Share as text */}
                 <button
                   onClick={handleShareText}
@@ -795,6 +814,8 @@ export default function LiturgiaPage() {
           onClose={() => setImageEditorData(null)}
         />
       )}
+
+      {isAudioOpen && <AudioReader containerRef={containerRef} onClose={closeAudio} />}
 
     </div>
   )
