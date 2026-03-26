@@ -43,13 +43,13 @@ export interface SavedCitation {
   savedAt: number
 }
 
-export type Theme      = 'claro' | 'oscuro' | 'luz' | 'juvenil'
+export type Theme      = 'claro' | 'oscuro' | 'luz' | 'juvenil' | 'liturgico'
 export type FontFamily = 'inter' | 'garamond' | 'cinzel'
 
 export const FONT_PRESETS          = { small: 17, normal: 19, large: 22 } as const
 export const GARAMOND_FONT_PRESETS = { small: 17, normal: 19, large: 22 } as const
 
-export const VALID_THEMES: Theme[] = ['claro', 'oscuro', 'luz', 'juvenil']
+export const VALID_THEMES: Theme[] = ['claro', 'oscuro', 'luz', 'juvenil', 'liturgico']
 
 interface AppState {
   theme: Theme
@@ -113,7 +113,7 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       theme: 'oscuro',
       setTheme: (theme) => {
-        applyTheme(theme, get().liturgicalAccent)
+        applyTheme(theme)
         set({ theme })
       },
 
@@ -150,7 +150,7 @@ export const useAppStore = create<AppState>()(
 
       liturgicalAccent: false,
       setLiturgicalAccent: (on) => {
-        applyTheme(get().theme, on)
+        applyTheme(get().theme)
         set({ liturgicalAccent: on })
       },
 
@@ -291,15 +291,19 @@ const ALL_THEME_CLASSES = [
 // Temas que activan el modo oscuro de Tailwind (dark:)
 const DARK_THEMES: Theme[] = ['oscuro']
 
-export function applyTheme(theme: Theme, liturgicalAccent = false) {
+export function applyTheme(theme: Theme) {
   const html = document.documentElement
   ALL_THEME_CLASSES.forEach(c => html.classList.remove(c))
-  html.classList.toggle('dark', DARK_THEMES.includes(theme))
-  html.classList.add(`theme-${theme}`)
 
-  if (liturgicalAccent) {
+  if (theme === 'liturgico') {
+    // Base clara + acento del tiempo litúrgico activo
+    html.classList.remove('dark')
+    html.classList.add('theme-claro')
     const color = getLiturgicalAppColor(new Date())
     html.classList.add(`theme-liturgico-${color}`)
+  } else {
+    html.classList.toggle('dark', DARK_THEMES.includes(theme))
+    html.classList.add(`theme-${theme}`)
   }
 }
 
