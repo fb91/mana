@@ -7,23 +7,13 @@ interface PrayerRequest {
   nombre: string
 }
 
-const MOTIVO_PREP: Record<string, string> = {
-  'Salud': 'por',
-  'Trabajo': 'por',
-  'Paz interior': 'por',
-  'Familia': 'de',
-  'Conversión': 'de',
-  'Estudios': 'de',
-  'Matrimonio': 'de',
-  'Hijos': 'de',
-  'Situación económica': 'de',
-  'Fortaleza en la fe': 'de',
-  'Intención particular': 'de',
-}
+const SIN_NOMBRE = 'Anónimo'
 
 function formatRequest(req: PrayerRequest): string {
-  const prep = MOTIVO_PREP[req.motivo] ?? 'de'
-  return `${req.motivo} ${prep} ${req.nombre}`
+  // motivo may be "Salud · Cirugía (urgente)" or legacy "Salud"
+  const motivoLabel = req.motivo.split(' · ')[0]
+  if (!req.nombre || req.nombre === SIN_NOMBRE) return motivoLabel
+  return `${motivoLabel} · ${req.nombre}`
 }
 
 export default function PrayerMarquee() {
@@ -58,14 +48,13 @@ export default function PrayerMarquee() {
 
   if (requests.length === 0) return null
 
-  const text = requests.map(formatRequest).join('  ·  ')
   // Duplicate for seamless loop
-  const displayText = `${text}  ·  ${text}`
+  const items = [...requests, ...requests]
 
   return (
     <div
       className="w-full overflow-hidden bg-dorado/10 dark:bg-dorado/15 border-b border-dorado/20
-                 py-2 px-0 flex items-center gap-2 mb-4 rounded-xl"
+                 py-2 px-0 flex items-center gap-2 mb-4 rounded-xl lg:rounded-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -78,6 +67,8 @@ export default function PrayerMarquee() {
           animation: prayer-marquee 18s linear infinite;
           white-space: nowrap;
           will-change: transform;
+          display: inline-flex;
+          align-items: center;
         }
         .prayer-marquee-inner.paused {
           animation-play-state: paused;
@@ -92,9 +83,22 @@ export default function PrayerMarquee() {
       <div className="flex-1 overflow-hidden">
         <div
           ref={marqueeRef}
-          className={`prayer-marquee-inner text-xs text-dorado/90 dark:text-dorado/80 font-medium${paused ? ' paused' : ''}`}
+          className={`prayer-marquee-inner${paused ? ' paused' : ''}`}
         >
-          {displayText}
+          {items.map((req, i) => (
+            <span key={i} className="inline-flex items-center">
+              {/* Separator between items — visually distinct from content */}
+              <span className="mx-4 text-dorado/25 select-none" aria-hidden>✦</span>
+              <span className="text-xs font-semibold text-dorado dark:text-dorado/90">
+                {formatRequest(req).split(' · ')[0]}
+              </span>
+              {formatRequest(req).includes(' · ') && (
+                <span className="text-xs text-dorado/50 dark:text-dorado/40 ml-1.5">
+                  · {formatRequest(req).split(' · ').slice(1).join(' · ')}
+                </span>
+              )}
+            </span>
+          ))}
         </div>
       </div>
     </div>
