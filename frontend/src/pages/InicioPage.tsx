@@ -510,9 +510,7 @@ export default function InicioPage() {
       </header>
 
       {/* Header desktop — solo lg+ */}
-      <header className="hidden lg:flex items-start justify-between px-8 pt-8 pb-6
-                         border-b border-crema-200 dark:border-oscuro-border
-                         bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm sticky top-0 z-10">
+      <header className="hidden lg:flex items-start justify-between px-8 pt-8 pb-6">
         <div>
           <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
             {greeting}
@@ -540,7 +538,9 @@ export default function InicioPage() {
       <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:py-8 animate-fade-in">
 
         {/* Prayer requests marquee */}
-        <PrayerMarquee />
+        <div className="lg:-mx-8">
+          <PrayerMarquee />
+        </div>
 
         {/* Install banner (iOS + Android) */}
         {showInstallBanner && (
