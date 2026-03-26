@@ -231,11 +231,13 @@ function GospelCard({
   verses,
   loading,
   resolvedDay,
+  containerRef,
 }: {
   reference: string
   verses: BibleVerse[] | null | undefined
   loading: boolean
   resolvedDay: ResolvedDay
+  containerRef: React.RefObject<HTMLDivElement>
 }) {
   const refs = parseBibleRef(reference)
   const bookName = refs.length > 0 ? getBookName(refs[0].book) : ''
@@ -268,7 +270,7 @@ function GospelCard({
           <p className="text-sm text-cafe-light dark:text-crema-300">Cargando evangelio...</p>
         </div>
       ) : verses && verses.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-2" ref={containerRef}>
           {verses.map((v) => (
             <p key={v.number} className="font-serif text-[17px] text-cafe-dark dark:text-crema-200 leading-relaxed">
               <span className="text-dorado font-bold text-xs mr-2 align-top leading-7 select-none">
@@ -706,6 +708,7 @@ export default function LiturgiaPage() {
                     verses={loadedVerses.gospel}
                     loading={loadingVerses.has('gospel')}
                     resolvedDay={resolvedDay}
+                    containerRef={containerRef}
                   />
                 )}
               </>
@@ -744,7 +747,7 @@ export default function LiturgiaPage() {
                              hover:bg-crema-100 dark:hover:bg-oscuro-surface
                              disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Icon name="bell" size={18} />
+                  <Icon name="speaker" size={18} />
                   Escuchar evangelio
                 </button>
 

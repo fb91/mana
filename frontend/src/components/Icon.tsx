@@ -40,6 +40,9 @@ export type IconName =
   | 'trash'
   | 'sort-az'
   | 'hands'
+  | 'stop'
+  | 'speaker'
+  | 'play'
 
 const PATHS: Record<IconName, JSX.Element> = {
   home: (
@@ -282,6 +285,33 @@ const PATHS: Record<IconName, JSX.Element> = {
       strokeLinejoin="round"
       strokeWidth={1.75}
       d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+    />
+  ),
+  stop: (
+    <rect x="6" y="6" width="12" height="12" strokeWidth={1.75} />
+  ),
+  speaker: (
+    <>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.75}
+        d="M9 9v6m3-6v6m3-6v6M6 12c0-2.485 1.147-4.707 2.929-6.171L7 3.658C4.358 5.497 2.5 8.598 2.5 12s1.858 6.503 4.5 8.342l1.929-2.171C7.147 16.707 6 14.485 6 12z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.75}
+        d="M18 12c0-2.485-1.147-4.707-2.929-6.171L17 3.658c2.642 1.839 4.5 4.94 4.5 8.342s-1.858 6.503-4.5 8.342l-1.929-2.171C16.853 16.707 18 14.485 18 12z"
+      />
+    </>
+  ),
+  play: (
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.75}
+      d="M5.5 3.636L18.5 12 5.5 20.364V3.636z"
     />
   ),
 }
