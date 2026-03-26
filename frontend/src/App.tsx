@@ -64,14 +64,14 @@ function AppContent() {
 }
 
 export default function App() {
-  const { theme, setTheme, fontSizeValue, fontFamily, liturgicalAccent } = useAppStore()
+  const { theme, setTheme, fontSizeValue, fontFamily } = useAppStore()
   const { init: initAdmin } = useAdminStore()
 
   // Apply persisted settings on mount; migrate legacy themes to 'claro'
   useEffect(() => {
     const effective = VALID_THEMES.includes(theme) ? theme : 'claro'
     if (effective !== theme) setTheme('claro')
-    applyTheme(effective, liturgicalAccent ?? false)
+    applyTheme(effective)
     applyFontSize(fontSizeValue ?? 16)
     applyFontFamily(fontFamily ?? 'inter')
 

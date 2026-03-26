@@ -47,7 +47,7 @@ const STATIC_THEMES: { value: Theme; label: string; accent: string; bg: string; 
 ]
 
 export default function AjustesPage() {
-  const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily, liturgicalAccent, setLiturgicalAccent } = useAppStore()
+  const { theme, setTheme, fontSizeValue, setFontSizeValue, fontFamily, setFontFamily } = useAppStore()
   const { state: installState, install } = usePWAInstall()
   const [showIOSModal, setShowIOSModal] = useState(false)
 
@@ -118,52 +118,49 @@ export default function AjustesPage() {
               })}
             </div>
 
-            {/* Liturgical accent checkbox */}
-            <label className="flex items-start gap-3 px-1 py-1 cursor-pointer select-none">
-              {/* Checkbox */}
-              <div className="flex-shrink-0 mt-0.5">
-                <input
-                  type="checkbox"
-                  checked={liturgicalAccent}
-                  onChange={e => setLiturgicalAccent(e.target.checked)}
-                  className="sr-only"
-                />
-                <div
+            {/* Tema litúrgico — botón ancho completo */}
+            {(() => {
+              const active = theme === 'liturgico'
+              return (
+                <button
+                  onClick={() => setTheme('liturgico')}
                   className={[
-                    'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-150',
-                    liturgicalAccent
-                      ? 'border-transparent'
-                      : 'border-crema-300 dark:border-oscuro-border bg-transparent',
+                    'w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-150 active:scale-[0.98]',
+                    active
+                      ? 'border-[2px] shadow-sm'
+                      : 'bg-crema-50 dark:bg-oscuro-surface border-crema-200 dark:border-oscuro-border hover:border-dorado/50',
                   ].join(' ')}
-                  style={liturgicalAccent ? { backgroundColor: currentLiturgicalHex } : undefined}
+                  style={active ? { borderColor: currentLiturgicalHex, backgroundColor: '#FAF7F2' } : undefined}
                 >
-                  {liturgicalAccent && (
-                    <Icon name="check" size={12} className="text-white" />
-                  )}
-                </div>
-              </div>
-
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-cafe-dark dark:text-crema-200 leading-none">
-                  Realce litúrgico
-                </p>
-                <p className="text-xs text-cafe-light dark:text-crema-300 mt-1 leading-snug">
-                  El color de acento cambia automáticamente según el tiempo del año litúrgico
-                </p>
-                {liturgicalAccent && (
-                  <div className="flex items-center gap-1.5 mt-1.5">
-                    <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: currentLiturgicalHex }}
-                    />
-                    <span className="text-[11px] font-medium" style={{ color: currentLiturgicalHex }}>
-                      Hoy: {currentSeasonLabel}
-                    </span>
+                  <div
+                    className="w-8 h-8 rounded-full shadow-sm border border-black/10 flex-shrink-0"
+                    style={{ backgroundColor: currentLiturgicalHex }}
+                  />
+                  <div className="flex-1 text-left">
+                    <p
+                      className="text-sm font-semibold leading-none"
+                      style={active ? { color: currentLiturgicalHex } : undefined}
+                    >
+                      Litúrgico
+                    </p>
+                    <p
+                      className="text-xs mt-0.5 leading-snug"
+                      style={{ color: active ? `${currentLiturgicalHex}BB` : undefined }}
+                    >
+                      Acento según el tiempo litúrgico · Hoy: {currentSeasonLabel}
+                    </p>
                   </div>
-                )}
-              </div>
-            </label>
+                  {active && (
+                    <span
+                      className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: currentLiturgicalHex }}
+                    >
+                      <Icon name="check" size={11} className="text-white" />
+                    </span>
+                  )}
+                </button>
+              )
+            })()}
 
           </div>
         </section>
