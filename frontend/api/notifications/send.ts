@@ -35,21 +35,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Hora y minuto actuales en Buenos Aires (UTC-3, sin horario de verano)
   const now = new Date()
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Argentina/Buenos_Aires',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-  }).formatToParts(now)
-  const currentHour   = parts.find(p => p.type === 'hour')!.value.padStart(2, '0')
-  const currentMinute = parts.find(p => p.type === 'minute')!.value.padStart(2, '0')
-  const currentTime   = `${currentHour}:${currentMinute}`
+  })
 
-  // Traer todas las subscripciones programadas para este momento exacto
+  // Ventana de ±5 minutos para tolerar retrasos del cron
+  const WINDOW_MINUTES = 5
+  const times = new Set<string>()
+  for (let offset = -WINDOW_MINUTES; offset <= WINDOW_MINUTES; offset++) {
+    const d = new Date(now.getTime() + offset * 60_000)
+    const parts = fmt.formatToParts(d)
+    const h = parts.find(p => p.type === 'hour')!.value.padStart(2, '0')
+    const m = parts.find(p => p.type === 'minute')!.value.padStart(2, '0')
+    times.add(`${h}:${m}`)
+  }
+
+  // Traer todas las suscripciones dentro de la ventana de tiempo
   const { data: subscriptions, error } = await supabase
     .from('push_subscriptions')
     .select('*')
-    .eq('hora_notificacion', currentTime)
+    .in('hora_notificacion', Array.from(times))
 
   if (error) return res.status(500).json({ error: error.message })
   if (!subscriptions?.length) return res.status(200).json({ sent: 0, expired: 0 })

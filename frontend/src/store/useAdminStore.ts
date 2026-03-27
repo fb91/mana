@@ -10,8 +10,8 @@ interface AdminState {
   role: Role
   loading: boolean
 
-  // Inicializa la sesión desde Supabase al arrancar la app
-  init: () => Promise<void>
+  // Inicializa la sesión desde Supabase al arrancar la app. Devuelve cleanup para onAuthStateChange.
+  init: () => Promise<() => void>
 
   login: (email: string, password: string) => Promise<string | null>
   logout: () => Promise<void>
@@ -38,7 +38,7 @@ export const useAdminStore = create<AdminState>()(
         set({ loading: false })
 
         // Escuchar cambios de sesión (token refresh, logout desde otra pestaña)
-        supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
           if (session) {
             const role = await fetchRole(session.user.id)
             set({ session, role })
@@ -46,6 +46,7 @@ export const useAdminStore = create<AdminState>()(
             set({ session: null, role: null })
           }
         })
+        return () => subscription.unsubscribe()
       },
 
       login: async (email, password) => {

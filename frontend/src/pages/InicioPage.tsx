@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Icon, { IconName } from '../components/Icon'
 import { useAppStore } from '../store/useAppStore'
 import { BugReportLink } from '../components/BugReportButton'
-import { api, BibliaRecomendacion, BibleBook, LectioBiblicaResponse } from '../services/api'
-import { getBibleVerse, getBibleBooks, getBibleChapter, BOOK_NAME } from '../lib/bible'
-import { downloadLectioPDF } from '../lib/lectio-pdf'
-import IOSInstallModal, { shouldShowIOSInstall, dismissIOSInstallPrompt } from '../components/IOSInstallModal'
+import IOSInstallModal, { dismissIOSInstallPrompt } from '../components/IOSInstallModal'
 import PrayerMarquee from '../components/PrayerMarquee'
 import { usePWAInstall } from '../hooks/usePWAInstall'
-import { slugify } from '../lib/slugify'
 import { getLiturgicalContext, buildLiturgicalLabel } from '../lib/liturgicalCalendar'
-
+import LectioModal from '../components/LectioModal'
+import AboutModal from '../components/AboutModal'
+import RecommendationModal from '../components/RecommendationModal'
+import LectioSelector from '../components/LectioSelector'
+import QuickAccessCards from '../components/QuickAccessCards'
+import { useEmotionRecommender } from '../hooks/useEmotionRecommender'
+import { useLectioSelector } from '../hooks/useLectioSelector'
 
 interface Quote {
   text: string
@@ -38,29 +40,8 @@ const QUOTES: Quote[] = [
   { text: '«Confía en el Señor.»',                       cite: 'Prov 3,5',   abbr: 'Prov', chapter: 3,   verse: 5   },
 ]
 
-const PRIMARY_EMOTIONS = [
-  'Alegre',
-  'Triste',
-  'Ansioso',
-  'Confiado',
-  'Agradecido',
-  'Confundido',
-]
-
-const SECONDARY_EMOTIONS = [
-  'Solo',
-  'Esperanzado',
-  'Pleno',
-  'Desanimado',
-  'Vacío',
-  'Fortalecido',
-  'Amado',
-  'Acompañado',
-  'Cansado',
-  'Culpable',
-  'Perdido',
-  'Enojado',
-]
+const PRIMARY_EMOTIONS = ['Alegre', 'Triste', 'Ansioso', 'Confiado', 'Agradecido', 'Confundido']
+const SECONDARY_EMOTIONS = ['Solo', 'Esperanzado', 'Pleno', 'Desanimado', 'Vacío', 'Fortalecido', 'Amado', 'Acompañado', 'Cansado', 'Culpable', 'Perdido', 'Enojado']
 
 interface Tool {
   icon: IconName
@@ -70,265 +51,29 @@ interface Tool {
   soon?: boolean
 }
 
-// "/biblia/Gn/1" → "Génesis · Capítulo 1"
-function formatBiblePath(path: string): string {
-  const match = path.match(/^\/biblia\/([^/]+)\/(\d+)/)
-  if (!match) return 'Biblia'
-  const [, abbr, chapter] = match
-  const NAMES: Record<string, string> = {
-    Gn: 'Génesis', Ex: 'Éxodo', Lv: 'Levítico', Nm: 'Números', Dt: 'Deuteronomio',
-    Jos: 'Josué', Jue: 'Jueces', Rt: 'Rut', '1Sam': '1 Samuel', '2Sam': '2 Samuel',
-    '1Re': '1 Reyes', '2Re': '2 Reyes', '1Cr': '1 Crónicas', '2Cr': '2 Crónicas',
-    Esd: 'Esdras', Neh: 'Nehemías', Tb: 'Tobías', Jdt: 'Judit', Est: 'Ester',
-    '1Mac': '1 Macabeos', '2Mac': '2 Macabeos', Job: 'Job', Sal: 'Salmos',
-    Pr: 'Proverbios', Ecl: 'Eclesiastés', Ct: 'Cantares', Sab: 'Sabiduría',
-    Sir: 'Eclesiástico', Is: 'Isaías', Jr: 'Jeremías', Lm: 'Lamentaciones',
-    Bar: 'Baruc', Ez: 'Ezequiel', Dn: 'Daniel', Os: 'Oseas', Jl: 'Joel',
-    Am: 'Amós', Abd: 'Abdías', Jon: 'Jonás', Mi: 'Miqueas', Na: 'Nahúm',
-    Hab: 'Habacuc', Sof: 'Sofonías', Ag: 'Ageo', Za: 'Zacarías', Mal: 'Malaquías',
-    Mt: 'Mateo', Mc: 'Marcos', Lc: 'Lucas', Jn: 'Juan', Hch: 'Hechos',
-    Rm: 'Romanos', '1Co': '1 Corintios', '2Co': '2 Corintios', Ga: 'Gálatas',
-    Ef: 'Efesios', Flp: 'Filipenses', Col: 'Colosenses', '1Ts': '1 Tesalonicenses',
-    '2Ts': '2 Tesalonicenses', '1Tm': '1 Timoteo', '2Tm': '2 Timoteo',
-    Tt: 'Tito', Flm: 'Filemón', Hb: 'Hebreos', St: 'Santiago',
-    '1Pe': '1 Pedro', '2Pe': '2 Pedro', '1Jn': '1 Juan', '2Jn': '2 Juan',
-    '3Jn': '3 Juan', Jds: 'Judas', Ap: 'Apocalipsis',
-  }
-  const name = NAMES[abbr] ?? abbr
-  return `${name} · Capítulo ${chapter}`
-}
-
 const IS_PROD = import.meta.env.PROD
 
 const recursos: Tool[] = [
-  {
-    icon: 'book-open',
-    title: 'La Biblia',
-    description: 'Leé cualquier libro y capítulo. Hacé Lectio Divina sobre los pasajes que te toquen.',
-    to: '/biblia',
-  },
-  {
-    icon: 'beads',
-    title: 'Novenas',
-    description: 'Rezá novenas con recordatorios diarios. Acompañarte con la intercesión de los santos.',
-    to: '/novenas',
-  },
-  {
-    icon: 'clipboard',
-    title: 'Examen de conciencia',
-    description: 'Preparate para la confesión con preguntas adaptadas a tu perfil. Descargá tu examen.',
-    to: '/examen',
-    soon: IS_PROD,
-  },
-  {
-    icon: 'archive',
-    title: 'Devocionario',
-    description: 'Oraciones tradicionales, jaculatorias y devociones para cada momento del día.',
-    to: '',
-    soon: true,
-  },
+  { icon: 'book-open', title: 'La Biblia',           description: 'Leé cualquier libro y capítulo. Hacé Lectio Divina sobre los pasajes que te toquen.', to: '/biblia' },
+  { icon: 'beads',     title: 'Novenas',              description: 'Rezá novenas con recordatorios diarios. Acompañarte con la intercesión de los santos.', to: '/novenas' },
+  { icon: 'clipboard', title: 'Examen de conciencia', description: 'Preparate para la confesión con preguntas adaptadas a tu perfil. Descargá tu examen.', to: '/examen', soon: IS_PROD },
+  { icon: 'archive',   title: 'Devocionario',         description: 'Oraciones tradicionales, jaculatorias y devociones para cada momento del día.', to: '', soon: true },
 ]
 
 const comunidad: Tool[] = [
-  {
-    icon: 'hands',
-    title: 'Pedido de oración',
-    description: 'Rezá por otros y pedí oraciones para vos o para alguien especial.',
-    to: '/comunidad/pedido-oracion',
-  },
+  { icon: 'hands', title: 'Pedido de oración', description: 'Rezá por otros y pedí oraciones para vos o para alguien especial.', to: '/comunidad/pedido-oracion' },
 ]
 
 const herramientas: Tool[] = [
-  {
-    icon: 'sparkles',
-    title: 'Asistente Espiritual',
-    description: 'Generá un plan personalizado de oración, reflexión y acción para N días con guía de IA.',
-    to: '/asistente',
-  },
-  {
-    icon: 'book-open',
-    title: 'Lectio Divina',
-    description: 'Meditá profundamente sobre cualquier pasaje bíblico con guía de IA.',
-    to: '#lectio',
-  },
-  {
-    icon: 'star',
-    title: '¿Con qué santo conectás?',
-    description: 'Descubrí los santos de la Iglesia que mejor conectan con tu vida y espiritualidad.',
-    to: '/santo',
-  },
+  { icon: 'sparkles',  title: 'Asistente Espiritual',    description: 'Generá un plan personalizado de oración, reflexión y acción para N días con guía de IA.', to: '/asistente' },
+  { icon: 'book-open', title: 'Lectio Divina',            description: 'Meditá profundamente sobre cualquier pasaje bíblico con guía de IA.', to: '#lectio' },
+  { icon: 'star',      title: '¿Con qué santo conectás?', description: 'Descubrí los santos de la Iglesia que mejor conectan con tu vida y espiritualidad.', to: '/santo' },
 ]
-
-// ── Helpers for Lectio Modal ────────────────────────────────────────────────
-function DownloadPDFButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center justify-center gap-2.5
-                 border border-dorado/40 text-dorado rounded-2xl py-3 px-4
-                 hover:bg-dorado/10 active:scale-[0.98]
-                 transition-all duration-150 group"
-    >
-      <svg
-        className="w-4 h-4 text-dorado group-hover:translate-y-0.5 transition-transform duration-150"
-        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-      >
-        <path strokeLinecap="round" strokeLinejoin="round"
-          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 3v12" />
-      </svg>
-      <span className="text-sm font-medium">Descargar Lectio en PDF</span>
-    </button>
-  )
-}
-
-function LectioSection({ titulo, color, children }: { titulo: string; color: 'dorado' | 'cafe'; children: React.ReactNode }) {
-  const border = color === 'dorado' ? 'border-dorado/40' : 'border-cafe-light/40'
-  return (
-    <div className={`border-l-2 ${border} pl-4`}>
-      <p className="text-xs font-semibold text-cafe-light dark:text-crema-300 uppercase tracking-wider mb-2">{titulo}</p>
-      {children}
-    </div>
-  )
-}
-
-// ── Lectio Divina Modal ────────────────────────────────────────────────────
-function LectioModal({
-  book,
-  chapter,
-  verseFrom,
-  verseTo,
-  onClose,
-}: {
-  book: string
-  chapter: number
-  verseFrom: number
-  verseTo: number
-  onClose: () => void
-}) {
-  const [loading, setLoading] = useState(true)
-  const [result, setResult] = useState<LectioBiblicaResponse | null>(null)
-  const [error, setError] = useState('')
-  const [verses, setVerses] = useState<{ number: number; text: string }[]>([])
-
-  useEffect(() => {
-    async function loadLectio() {
-      try {
-        const chapterData = await getBibleChapter(book, chapter)
-        const selectedVerses = chapterData.verses.filter(v => v.number >= verseFrom && v.number <= verseTo)
-        setVerses(selectedVerses)
-        
-        const verseNumbers = selectedVerses.map(v => v.number)
-        const verseTexts = selectedVerses.map(v => v.text)
-        const bookName = BOOK_NAME[book] || book
-        
-        const lectioResult = await api.getLectioBiblica(book, bookName, chapter, verseNumbers, verseTexts)
-        setResult(lectioResult)
-      } catch {
-        setError('No se pudo preparar la Lectio. Intentá de nuevo.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadLectio()
-  }, [book, chapter, verseFrom, verseTo])
-
-  const bookName = BOOK_NAME[book] || book
-  const versoLabel = verseFrom === verseTo
-    ? `${bookName} ${chapter}:${verseFrom}`
-    : `${bookName} ${chapter}:${verseFrom}-${verseTo}`
-
-  function handleDownloadPDF() {
-    if (!result) return
-    const chapterData = {
-      book,
-      bookName,
-      chapter,
-      verses,
-    }
-    const selectedVerseNumbers = verses.map(v => v.number)
-    downloadLectioPDF(result, chapterData, selectedVerseNumbers)
-  }
-
-  return (
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end lg:items-center lg:justify-center lg:p-8">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl lg:rounded-3xl px-5 pt-5 pb-8
-                      w-full lg:max-w-2xl max-h-[92vh] overflow-y-auto animate-slide-up shadow-2xl">
-        <div className="lg:hidden w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
-
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
-            Lectio Divina
-          </h2>
-          <button onClick={onClose} className="text-cafe-light dark:text-crema-300 text-sm py-1 px-2">
-            cerrar ✕
-          </button>
-        </div>
-        <p className="text-dorado text-sm font-medium mb-4">{versoLabel}</p>
-
-        <div className="bg-dorado/10 dark:bg-dorado/15 border border-dorado/30 rounded-2xl p-4 mb-6">
-          <div className="space-y-2">
-            {verses.map(verse => (
-              <p key={verse.number} className="font-serif text-[15px] text-cafe-dark dark:text-crema-200 leading-relaxed">
-                <span className="text-dorado font-bold text-xs mr-2 align-top leading-6 select-none">
-                  {verse.number}
-                </span>
-                {verse.text}
-              </p>
-            ))}
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="flex flex-col items-center py-12 gap-4 animate-pulse-soft">
-            <span className="text-5xl">🕯️</span>
-            <p className="text-sm text-cafe-light dark:text-crema-300">Preparando tu Lectio Divina...</p>
-          </div>
-        ) : error ? (
-          <p className="text-sm text-red-500 text-center py-8">{error}</p>
-        ) : result ? (
-          <div className="space-y-6 animate-fade-in">
-            <DownloadPDFButton onClick={handleDownloadPDF} />
-            <LectioSection titulo="Lectio · Leer" color="dorado">
-              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.lectio}</p>
-            </LectioSection>
-            <LectioSection titulo="Meditatio · Meditar" color="cafe">
-              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-3">{result.meditatioIntro}</p>
-              <ul className="space-y-2">
-                {result.meditatioPreguntas.map((q, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-cafe-dark dark:text-crema-200">
-                    <span className="text-dorado font-bold mt-0.5 shrink-0">{i + 1}.</span>
-                    <span className="leading-relaxed">{q}</span>
-                  </li>
-                ))}
-              </ul>
-            </LectioSection>
-            <LectioSection titulo="Oratio · Orar" color="dorado">
-              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.oratio}</p>
-            </LectioSection>
-            <LectioSection titulo="Contemplatio · Contemplar" color="cafe">
-              <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed">{result.contemplatio}</p>
-            </LectioSection>
-            <DownloadPDFButton onClick={handleDownloadPDF} />
-            <button
-              onClick={onClose}
-              className="w-full text-center text-sm text-cafe-light dark:text-crema-300 py-2
-                         active:scale-[0.98] transition-all"
-            >
-              Cerrar
-            </button>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  )
-}
 
 export default function InicioPage() {
   const navigate = useNavigate()
   const lastBiblePath = useAppStore(s => s.lastBiblePath)
   const novenasProgreso = useAppStore(s => s.novenasProgreso)
-  // Novena activa: la que tenga días incompletos, ordenada por la más reciente
   const novenaActiva = novenasProgreso.find(p => p.diasCompletados.length < 9) ?? null
   const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
   const planEspiritual = useAppStore(s => s.planEspiritual)
@@ -345,16 +90,12 @@ export default function InicioPage() {
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches'
 
-  // About modal
   const [showAbout, setShowAbout] = useState(false)
 
   // Install banner & modal (iOS + Android)
   const { state: installState, install: triggerAndroidInstall } = usePWAInstall()
   const [showIOSModal, setShowIOSModal] = useState(false)
   const [installDismissed, setInstallDismissed] = useState(false)
-
-  // iOS: show if device is iOS, not installed as PWA (ignore localStorage dismiss — that was for the old auto-popup)
-  // Android: show if beforeinstallprompt fired (state === 'prompt')
   const isIOS = installState === 'ios'
   const showInstallBanner = !installDismissed && (isIOS || installState === 'prompt')
 
@@ -366,114 +107,20 @@ export default function InicioPage() {
     }
   }
 
-  // Emotion and recommendation
-  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
-  const [showMoreEmotions, setShowMoreEmotions] = useState(false)
-  const [loadingRec, setLoadingRec] = useState(false)
-  const [recommendation, setRecommendation] = useState<BibliaRecomendacion | null>(null)
-  const [errorRec, setErrorRec] = useState('')
+  // Emotion & recommendation
+  const {
+    selectedEmotions, showMoreEmotions, setShowMoreEmotions,
+    loadingRec, recommendation, setRecommendation,
+    errorRec, handleEmotionClick, handleGetRecommendation,
+  } = useEmotionRecommender()
 
   // Lectio Divina selector
   const [showLectioSelector, setShowLectioSelector] = useState(false)
   const [showLectioModal, setShowLectioModal] = useState(false)
-  const [bibleBooks, setBibleBooks] = useState<BibleBook[]>([])
-  const [selectedBook, setSelectedBook] = useState('')
-  const [selectedChapter, setSelectedChapter] = useState(0)
-  const [verseFrom, setVerseFrom] = useState(0)
-  const [verseTo, setVerseTo] = useState(0)
-  const [versesPreview, setVersesPreview] = useState<string[]>([])
-  const [maxVerses, setMaxVerses] = useState(0)
-
-  // Load bible books for lectio selector
-  useEffect(() => {
-    getBibleBooks().then(setBibleBooks)
-  }, [])
-
-  async function handleGetRecommendation() {
-    if (selectedEmotions.length === 0 || loadingRec) return
-    const feeling = [...selectedEmotions].sort((a, b) => a.localeCompare(b)).map(e => e.toLowerCase()).join(',')
-
-    setLoadingRec(true)
-    setErrorRec('')
-    setRecommendation(null)
-
-    try {
-      const rec = await api.getBibliaRecomendacion(feeling)
-      const verseText = await getBibleVerse(rec.libro, rec.capitulo, rec.versiculo)
-      setRecommendation({ ...rec, textoVersiculo: verseText ?? '' })
-    } catch (err) {
-      if (err instanceof Error && err.message === 'INVALID_INPUT') {
-        setErrorRec('Contanos algo sobre cómo te sentís para buscarte un pasaje que te acompañe.')
-      } else {
-        setErrorRec('No se pudo obtener una recomendación. Intentá de nuevo.')
-      }
-    } finally {
-      setLoadingRec(false)
-    }
-  }
-
-  function handleEmotionClick(emotion: string) {
-    setSelectedEmotions(prev =>
-      prev.includes(emotion)
-        ? prev.filter(e => e !== emotion)
-        : [...prev, emotion]
-    )
-  }
-
-  function handleGoToPassage() {
-    if (!recommendation) return
-    navigate(`/biblia/${recommendation.libro}/${recommendation.capitulo}?verso=${recommendation.versiculo}`)
-  }
-
-  // When book changes, load chapter count
-  async function handleBookChange(bookAbbr: string) {
-    setSelectedBook(bookAbbr)
-    setSelectedChapter(0)
-    setVerseFrom(0)
-    setVerseTo(0)
-    setVersesPreview([])
-    setMaxVerses(0)
-  }
-
-  // When chapter changes, load verse count
-  async function handleChapterChange(chapter: number) {
-    setSelectedChapter(chapter)
-    setVerseFrom(0)
-    setVerseTo(0)
-    setVersesPreview([])
-    if (selectedBook && chapter > 0) {
-      try {
-        const chapterData = await getBibleChapter(selectedBook, chapter)
-        setMaxVerses(chapterData.verses.length)
-      } catch {
-        setMaxVerses(0)
-      }
-    }
-  }
-
-  // When verses change, update preview
-  async function handleVerseChange(from: number, to: number) {
-    setVerseFrom(from)
-    setVerseTo(to)
-    if (selectedBook && selectedChapter && from > 0 && to >= from) {
-      try {
-        const chapterData = await getBibleChapter(selectedBook, selectedChapter)
-        const preview = chapterData.verses
-          .filter(v => v.number >= from && v.number <= to)
-          .map(v => `${v.number}. ${v.text}`)
-        setVersesPreview(preview)
-      } catch {
-        setVersesPreview([])
-      }
-    } else {
-      setVersesPreview([])
-    }
-  }
-
-  function handleStartLectioDivina() {
-    if (!selectedBook || !selectedChapter || !verseFrom || !verseTo) return
-    setShowLectioModal(true)
-  }
+  const {
+    bibleBooks, selectedBook, selectedChapter, verseFrom, verseTo,
+    versesPreview, maxVerses, handleBookChange, handleChapterChange, handleVerseChange,
+  } = useLectioSelector()
 
   return (
     <div className="flex flex-col h-screen">
@@ -496,8 +143,6 @@ export default function InicioPage() {
             </button>
           </p>
         </div>
-        
-        {/* About button - icon only */}
         <button
           onClick={() => setShowAbout(true)}
           className="absolute top-1/2 -translate-y-1/2 right-4 w-9 h-9 rounded-full
@@ -511,7 +156,7 @@ export default function InicioPage() {
 
       <div className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:pt-0 lg:pb-8 animate-fade-in">
 
-        {/* Header desktop — solo lg+, dentro del scroll para que no quede fijo */}
+        {/* Header desktop */}
         <header className="hidden lg:flex items-start justify-between pt-8 pb-6">
           <div>
             <h1 className="font-serif text-3xl font-bold text-cafe-dark dark:text-crema-200 leading-tight">
@@ -573,7 +218,6 @@ export default function InicioPage() {
             ¿Cómo te sientes hoy?
           </h2>
 
-          {/* Emotion pills - primary */}
           <div className="flex flex-wrap gap-2">
             {PRIMARY_EMOTIONS.map(emotion => (
               <button
@@ -591,7 +235,6 @@ export default function InicioPage() {
             ))}
           </div>
 
-          {/* Accordion: ver más */}
           <button
             onClick={() => setShowMoreEmotions(prev => !prev)}
             className="flex items-center gap-1.5 text-xs text-dorado font-medium py-2"
@@ -619,7 +262,6 @@ export default function InicioPage() {
             </div>
           )}
 
-          {/* CTA button / Loading animation */}
           {loadingRec ? (
             <div className="flex flex-col items-center gap-3 py-4 animate-fade-in">
               <div className="relative w-12 h-12">
@@ -641,210 +283,17 @@ export default function InicioPage() {
             </button>
           )}
 
-          {errorRec && (
-            <p className="text-xs text-red-500 mt-3">{errorRec}</p>
-          )}
+          {errorRec && <p className="text-xs text-red-500 mt-3">{errorRec}</p>}
         </div>
 
-        {/* Accesos rápidos — mobile: condicional / desktop: grilla 2 columnas siempre */}
-
-        {/* Mobile */}
-        <div className="lg:hidden">
-          {novenaActiva && diaSiguiente && diaSiguiente <= 9 && (
-            <button
-              onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
-              className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
-                         active:scale-[0.98] transition-all duration-200"
-            >
-              <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
-                  Rezar oración del día
-                </p>
-                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
-                  Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
-                </p>
-                {novenaActiva.intencion && (
-                  <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
-                    {novenaActiva.intencion}
-                  </p>
-                )}
-              </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
-                <Icon name="chevron-right" size={16} className="text-dorado/50" />
-              </div>
-            </button>
-          )}
-          {planActivo && diaPlanSiguiente && (
-            <button
-              onClick={() => navigate('/asistente')}
-              className="w-full mb-3 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-dorado/10 dark:bg-dorado/8 border border-dorado/25
-                         active:scale-[0.98] transition-all duration-200"
-            >
-              <Icon name="sparkles" size={20} className="text-dorado flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
-                  Plan espiritual · Día {diaPlanSiguiente}
-                </p>
-                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
-                  {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.tema ?? planActivo.plan.titulo}
-                </p>
-                <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5">
-                  {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.lectura}
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="text-xs text-dorado font-semibold">{planActivo.diasCompletados.length}/{planActivo.plan.duracionDias}</span>
-                <Icon name="chevron-right" size={16} className="text-dorado/50" />
-              </div>
-            </button>
-          )}
-          {lastBiblePath && (
-            <button
-              onClick={() => navigate(lastBiblePath)}
-              className="w-full mb-4 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-cafe-dark dark:bg-dorado/90
-                         active:scale-[0.98] transition-all duration-200 shadow-md"
-            >
-              <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
-                  Continuar leyendo
-                </p>
-                <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
-                  {formatBiblePath(lastBiblePath)}
-                </p>
-              </div>
-              <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
-            </button>
-          )}
-        </div>
-
-        {/* Desktop: siempre muestra ambas tarjetas, con placeholder si no hay datos */}
-        <div className="hidden lg:grid grid-cols-2 gap-3 mb-6">
-
-          {/* Novena */}
-          {novenaActiva && diaSiguiente && diaSiguiente <= 9 ? (
-            <button
-              onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
-              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
-                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/50 hover:shadow-sm"
-            >
-              <Icon name="beads" size={20} className="text-dorado flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
-                  Rezar oración del día
-                </p>
-                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
-                  Día {diaSiguiente} — {novenaActiva.nombreNovena.replace('Novena a ', '').replace('Novena al ', '')}
-                </p>
-                {novenaActiva.intencion && (
-                  <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5 italic">
-                    {novenaActiva.intencion}
-                  </p>
-                )}
-              </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="text-xs text-dorado font-semibold">{novenaActiva.diasCompletados.length}/9</span>
-                <Icon name="chevron-right" size={16} className="text-dorado/50" />
-              </div>
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('/novenas')}
-              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
-                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
-            >
-              <Icon name="beads" size={20} className="text-cafe-light dark:text-crema-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-cafe-light dark:text-crema-400 mb-0.5">
-                  Oración del día
-                </p>
-                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
-                  Comenzar una novena
-                </p>
-                <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
-                  Acompañate con la intercesión de los santos
-                </p>
-              </div>
-              <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
-            </button>
-          )}
-
-          {/* Biblia */}
-          {lastBiblePath ? (
-            <button
-              onClick={() => navigate(lastBiblePath)}
-              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-cafe-dark dark:bg-dorado/90
-                         active:scale-[0.98] transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
-                  Continuar leyendo
-                </p>
-                <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
-                  {formatBiblePath(lastBiblePath)}
-                </p>
-              </div>
-              <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('/biblia')}
-              className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                         bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
-                         active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
-            >
-              <Icon name="book-open" size={20} className="text-cafe-light dark:text-crema-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-cafe-light dark:text-crema-400 mb-0.5">
-                  La Biblia
-                </p>
-                <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
-                  Empezar a leer
-                </p>
-                <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
-                  Leé cualquier libro y capítulo
-                </p>
-              </div>
-              <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
-            </button>
-          )}
-        </div>
-
-        {/* Plan espiritual activo — desktop */}
-        {planActivo && diaPlanSiguiente && (
-          <button
-            onClick={() => navigate('/asistente')}
-            className="hidden lg:flex w-full mb-4 rounded-2xl text-left items-center gap-4 px-5 py-4
-                       bg-dorado/10 dark:bg-dorado/8 border border-dorado/25
-                       active:scale-[0.98] transition-all duration-200 hover:border-dorado/40 hover:shadow-sm"
-          >
-            <Icon name="sparkles" size={20} className="text-dorado flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-dorado/70 mb-0.5">
-                Plan espiritual · Día {diaPlanSiguiente}
-              </p>
-              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight truncate">
-                {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.tema ?? planActivo.plan.titulo}
-              </p>
-              <p className="text-xs text-cafe-light dark:text-crema-400 truncate mt-0.5">
-                {planActivo.plan.plan.find(d => d.dia === diaPlanSiguiente)?.lectura}
-              </p>
-            </div>
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
-              <span className="text-xs text-dorado font-semibold">{planActivo.diasCompletados.length}/{planActivo.plan.duracionDias}</span>
-              <Icon name="chevron-right" size={16} className="text-dorado/50" />
-            </div>
-          </button>
-        )}
+        {/* Accesos rápidos */}
+        <QuickAccessCards
+          novenaActiva={novenaActiva}
+          diaSiguiente={diaSiguiente}
+          planActivo={planActivo}
+          diaPlanSiguiente={diaPlanSiguiente}
+          lastBiblePath={lastBiblePath}
+        />
 
         {/* RECURSOS Section */}
         <div className="h-px bg-crema-200 dark:bg-oscuro-border my-6" />
@@ -859,15 +308,12 @@ export default function InicioPage() {
               disabled={tool.soon}
               className={[
                 'card text-left flex items-start gap-4 transition-all duration-200',
-                tool.soon
-                  ? 'opacity-60 cursor-default'
-                  : 'hover:border-dorado/50 hover:shadow-md active:scale-[0.98]',
+                tool.soon ? 'opacity-60 cursor-default' : 'hover:border-dorado/50 hover:shadow-md active:scale-[0.98]',
               ].join(' ')}
             >
               <div className="w-12 h-12 rounded-2xl bg-dorado/10 dark:bg-dorado/15 flex items-center justify-center flex-shrink-0 text-dorado">
                 <Icon name={tool.icon} size={22} />
               </div>
-
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
@@ -884,7 +330,6 @@ export default function InicioPage() {
                   {tool.description}
                 </p>
               </div>
-
               {!tool.soon && (
                 <Icon name="chevron-right" size={18} className="text-dorado/50 flex-shrink-0 mt-0.5" />
               )}
@@ -922,7 +367,6 @@ export default function InicioPage() {
                 <div className="w-12 h-12 rounded-2xl bg-dorado/10 dark:bg-dorado/15 flex items-center justify-center flex-shrink-0 text-dorado">
                   <Icon name={tool.icon} size={22} />
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight mb-1">
                     {tool.title}
@@ -931,139 +375,27 @@ export default function InicioPage() {
                     {tool.description}
                   </p>
                 </div>
-
-                <Icon 
-                  name={showLectioSelector && tool.to === '#lectio' ? 'chevron-up' : 'chevron-right'} 
-                  size={18} 
-                  className="text-dorado/50 flex-shrink-0 mt-0.5 transition-transform" 
+                <Icon
+                  name={showLectioSelector && tool.to === '#lectio' ? 'chevron-up' : 'chevron-right'}
+                  size={18}
+                  className="text-dorado/50 flex-shrink-0 mt-0.5 transition-transform"
                 />
               </button>
 
-              {/* Lectio Divina selector - accordion style */}
               {tool.to === '#lectio' && showLectioSelector && (
-                <div className="bg-white dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
-                                border-t-0 rounded-b-2xl px-5 py-5 animate-fade-in">
-                  <h3 className="font-serif font-semibold text-cafe-dark dark:text-crema-200 mb-3">
-                    Seleccioná un pasaje
-                  </h3>
-
-            {/* Book selector */}
-            <div className="mb-3">
-              <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
-                Libro
-              </label>
-              <select
-                value={selectedBook}
-                onChange={e => handleBookChange(e.target.value)}
-                className="input-field text-sm w-full"
-              >
-                <option value="">Seleccionar libro...</option>
-                <optgroup label="ANTIGUO TESTAMENTO">
-                  {bibleBooks.filter(b => b.testament === 'AT').map(book => (
-                    <option key={book.abbr} value={book.abbr}>
-                      {book.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="NUEVO TESTAMENTO">
-                  {bibleBooks.filter(b => b.testament === 'NT').map(book => (
-                    <option key={book.abbr} value={book.abbr}>
-                      {book.name}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-
-            {/* Chapter selector */}
-            {selectedBook && (
-              <div className="mb-3">
-                <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
-                  Capítulo
-                </label>
-                <select
-                  value={selectedChapter}
-                  onChange={e => handleChapterChange(Number(e.target.value))}
-                  className="input-field text-sm w-full"
-                >
-                  <option value="0">Seleccionar capítulo...</option>
-                  {Array.from(
-                    { length: bibleBooks.find(b => b.abbr === selectedBook)?.chaptersCount || 0 },
-                    (_, i) => i + 1
-                  ).map(ch => (
-                    <option key={ch} value={ch}>
-                      Capítulo {ch}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Verse range */}
-            {selectedChapter > 0 && maxVerses > 0 && (
-              <>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
-                      Desde versículo
-                    </label>
-                    <select
-                      value={verseFrom}
-                      onChange={e => handleVerseChange(Number(e.target.value), verseTo)}
-                      className="input-field text-sm w-full"
-                    >
-                      <option value="0">--</option>
-                      {Array.from({ length: maxVerses }, (_, i) => i + 1).map(v => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-cafe-light dark:text-crema-300 mb-1 block">
-                      Hasta versículo
-                    </label>
-                    <select
-                      value={verseTo}
-                      onChange={e => handleVerseChange(verseFrom, Number(e.target.value))}
-                      className="input-field text-sm w-full"
-                      disabled={verseFrom === 0}
-                    >
-                      <option value="0">--</option>
-                      {Array.from({ length: maxVerses }, (_, i) => i + 1)
-                        .filter(v => v >= verseFrom)
-                        .map(v => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Preview */}
-                {versesPreview.length > 0 && (
-                  <div className="mb-3 p-3 rounded-2xl bg-crema-100 dark:bg-oscuro-bg max-h-48 overflow-y-auto">
-                    <p className="text-xs font-semibold text-dorado mb-2">Vista previa:</p>
-                    {versesPreview.map((verse, i) => (
-                      <p key={i} className="text-xs text-cafe-dark dark:text-crema-200 leading-relaxed mb-1">
-                        {verse}
-                      </p>
-                    ))}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleStartLectioDivina}
-                  disabled={!verseFrom || !verseTo}
-                  className="btn-primary w-full"
-                >
-                  Generar Lectio Divina
-                </button>
-              </>
-            )}
-                </div>
+                <LectioSelector
+                  bibleBooks={bibleBooks}
+                  selectedBook={selectedBook}
+                  selectedChapter={selectedChapter}
+                  verseFrom={verseFrom}
+                  verseTo={verseTo}
+                  versesPreview={versesPreview}
+                  maxVerses={maxVerses}
+                  onBookChange={handleBookChange}
+                  onChapterChange={handleChapterChange}
+                  onVerseChange={handleVerseChange}
+                  onStart={() => setShowLectioModal(true)}
+                />
               )}
             </div>
           ))}
@@ -1107,53 +439,10 @@ export default function InicioPage() {
         </p>
 
         <div className="pb-28 lg:pb-10" />
-
       </div>
 
-      {/* About Modal */}
-      {showAbout && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={() => setShowAbout(false)}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <div
-            className="relative w-full max-w-md bg-crema dark:bg-oscuro-bg rounded-3xl px-6 py-6 shadow-2xl animate-fade-in"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-dorado/15 flex items-center justify-center text-dorado">
-                <Icon name="sparkles" size={20} />
-              </div>
-              <h2 className="font-serif font-bold text-cafe-dark dark:text-crema-200 text-xl">
-                Acerca de Maná
-              </h2>
-            </div>
+      {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
 
-            <div className="space-y-3 text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-5">
-              <p>
-                <strong>Maná</strong> es tu compañero espiritual diario. Combina la Biblia católica completa
-                con las lecturas litúrgicas diarias, disponibles <strong className="text-dorado">100% offline</strong>.
-              </p>
-              <p>
-                Incorpora inteligencia artificial para generar <em>Lectios Divinas</em> personalizadas,
-                recomendarte pasajes bíblicos según tu momento espiritual, y conectarte con santos que
-                resuenen con tu vida.
-              </p>
-              <p>
-                Personalizá la experiencia desde <strong>Ajustes</strong>: elegí colores, tamaño de letra,
-                y configurá notificaciones para acompañarte en tu jornada de fe.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowAbout(false)}
-              className="btn-secondary w-full"
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Lectio Divina Modal */}
       {showLectioModal && (
         <LectioModal
           book={selectedBook}
@@ -1164,56 +453,14 @@ export default function InicioPage() {
         />
       )}
 
-      {/* Recommendation Modal */}
       {recommendation && (
-        <div className="fixed inset-0 z-[60] flex flex-col justify-end lg:items-center lg:justify-center lg:p-8">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRecommendation(null)} />
-          <div className="relative bg-crema dark:bg-oscuro-bg rounded-t-3xl lg:rounded-3xl px-5 pt-5 pb-8
-                          w-full lg:max-w-lg max-h-[85vh] overflow-y-auto animate-slide-up shadow-2xl">
-            <div className="lg:hidden w-10 h-1 rounded-full bg-crema-300 dark:bg-oscuro-border mx-auto mb-5" />
-
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-serif text-xl font-semibold text-cafe-dark dark:text-crema-200">
-                Pasaje recomendado
-              </h2>
-              <button onClick={() => setRecommendation(null)} className="text-cafe-light dark:text-crema-300 text-sm py-1 px-2">
-                cerrar ✕
-              </button>
-            </div>
-
-            <p className="text-sm text-cafe-dark dark:text-crema-200 leading-relaxed mb-4">
-              {recommendation.mensaje}
-            </p>
-
-            <div className="rounded-2xl bg-dorado/10 dark:bg-dorado/15 border border-dorado/30 p-5 mb-5">
-              <p className="text-xs font-semibold text-dorado uppercase tracking-wider mb-3">
-                {recommendation.libroNombre} {recommendation.capitulo}:{recommendation.versiculo}
-              </p>
-              <p className="font-serif text-lg text-cafe-dark dark:text-crema-200 leading-relaxed">
-                «{recommendation.textoVersiculo}»
-              </p>
-            </div>
-
-            <button
-              onClick={handleGoToPassage}
-              className="btn-primary w-full flex items-center justify-center gap-2 mb-2"
-            >
-              <span>📖</span>
-              <span>Leer en contexto</span>
-            </button>
-
-            <button
-              onClick={() => setRecommendation(null)}
-              className="w-full text-center text-sm text-cafe-light dark:text-crema-300 py-2
-                         active:scale-[0.98] transition-all"
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
+        <RecommendationModal
+          recommendation={recommendation}
+          onClose={() => setRecommendation(null)}
+          onGoToPassage={() => navigate(`/biblia/${recommendation.libro}/${recommendation.capitulo}?verso=${recommendation.versiculo}`)}
+        />
       )}
 
-      {/* iOS Install Modal */}
       {showIOSModal && (
         <IOSInstallModal
           show={showIOSModal}
