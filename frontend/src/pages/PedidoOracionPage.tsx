@@ -159,14 +159,11 @@ export default function PedidoOracionPage() {
   useEffect(() => {
     async function fetchPrayers() {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      console.log('🔍 sevenDaysAgo:', sevenDaysAgo)
       const { data, error } = await supabase
         .from('prayer_requests')
         .select('motivo, nombre')
         .gte('created_at', sevenDaysAgo)
         .order('created_at', { ascending: false })
-      console.log('📊 data:', data)
-      console.log('❌ error:', error)
       if (error) {
         console.error('Error fetching prayers:', error)
       }
