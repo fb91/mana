@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useAuthStore } from './store/useAuthStore'
+import { useUserSync } from './hooks/useUserSync'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
 // InstallPrompt replaced by unified banner in InicioPage
@@ -21,6 +23,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminNovenasPage from './pages/admin/AdminNovenasPage'
 import AdminNovenaFormPage from './pages/admin/AdminNovenaFormPage'
+import PrivacidadPage from './pages/PrivacidadPage'
 import AdminRoute from './components/AdminRoute'
 import { useAdminStore } from './store/useAdminStore'
 
@@ -48,6 +51,7 @@ function AppContent() {
           <Route path="/novenas/:slug" element={<NovenaDetallePage />} />
           <Route path="/asistente" element={<AsistentePage />} />
           <Route path="/comunidad/pedido-oracion" element={<PedidoOracionPage />} />
+          <Route path="/privacidad" element={<PrivacidadPage />} />
 
           {/* ── Rutas de administración ── */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -66,6 +70,10 @@ function AppContent() {
 export default function App() {
   const { theme, setTheme, fontSizeValue, fontFamily, followSystemDark } = useAppStore()
   const { init: initAdmin } = useAdminStore()
+  const initAuth = useAuthStore((s) => s.init)
+
+  // Sincronización con Google (hook activo mientras haya sesión)
+  useUserSync()
 
   // Seguir el tema oscuro del sistema operativo
   useEffect(() => {
@@ -96,6 +104,10 @@ export default function App() {
 
     // Inicializar sesión admin si existe (silencioso, no bloquea la app)
     initAdmin()
+
+    // Inicializar auth de Google (retorna cleanup de listener)
+    const cleanupAuth = initAuth()
+    return cleanupAuth
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import Icon, { IconName } from '../components/Icon'
 import { useAppStore } from '../store/useAppStore'
 import { BugReportLink } from '../components/BugReportButton'
@@ -1099,6 +1099,12 @@ export default function InicioPage() {
         </div>
 
         <BugReportLink />
+
+        <p className="text-center text-[11px] text-cafe-light dark:text-crema-500 mt-2">
+          <Link to="/privacidad" className="hover:underline">
+            Política de Privacidad
+          </Link>
+        </p>
 
         <div className="pb-28 lg:pb-10" />
 
