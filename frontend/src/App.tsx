@@ -23,6 +23,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminNovenasPage from './pages/admin/AdminNovenasPage'
 import AdminNovenaFormPage from './pages/admin/AdminNovenaFormPage'
+import PrivacidadPage from './pages/PrivacidadPage'
 import AdminRoute from './components/AdminRoute'
 import { useAdminStore } from './store/useAdminStore'
 
@@ -50,6 +51,7 @@ function AppContent() {
           <Route path="/novenas/:slug" element={<NovenaDetallePage />} />
           <Route path="/asistente" element={<AsistentePage />} />
           <Route path="/comunidad/pedido-oracion" element={<PedidoOracionPage />} />
+          <Route path="/privacidad" element={<PrivacidadPage />} />
 
           {/* ── Rutas de administración ── */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
