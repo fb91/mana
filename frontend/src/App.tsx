@@ -37,7 +37,7 @@ function AppContent() {
       <div className="flex flex-col flex-1 lg:ml-64">
         <main className="flex-1 overflow-hidden">
           <Routes>
-          <Route path="/" element={<Navigate to="/inicio" replace />} />
+          <Route path="/" element={<Navigate to="/lecturas-del-dia" replace />} />
           <Route path="/inicio" element={<InicioPage />} />
           <Route path="/lecturas-del-dia" element={<LiturgiaPage />} />
           <Route path="/recomendacion" element={<RecomendacionPage />} />
