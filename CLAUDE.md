@@ -1,5 +1,12 @@
 # Notas del proyecto Maná
 
+## Contexto de la app
+
+- **Offline-first y mobile-first**: la app debe funcionar 100% sin conexión
+- La Biblia (JSON estático) y las lecturas del día (algoritmo local) deben andar sin red
+- PWA instalada en iOS y Android, deployada en Vercel
+
+
 ## Service Worker — cache versioning
 
 Al hacer deploy, si querés forzar la limpieza de todos los runtime caches en los
