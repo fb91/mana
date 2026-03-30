@@ -31,8 +31,10 @@ export default defineConfig({
         ]
       },
       injectManifest: {
-        // Sin html: index.html nunca se precachea; se sirve siempre desde red (NetworkFirst)
-        globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
+        // index.html incluido en el precache con revision hash (Workbox lo gestiona).
+        // Con skipWaiting() el SW nuevo activa inmediatamente en cada deploy,
+        // por lo que el precache siempre refleja la versión actual — sin contenido stale.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },
       devOptions: {
         enabled: false

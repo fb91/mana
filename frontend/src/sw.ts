@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
+import { precacheAndRoute, cleanupOutdatedCaches, createHandlerBoundToURL } from 'workbox-precaching'
+import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
@@ -12,18 +12,12 @@ declare const self: ServiceWorkerGlobalScope & {
 // Bump cuando quieras invalidar todos los runtime caches
 const CV = 'v2'
 
-// ── Activación inmediata + pre-cache de index.html ───────────────────────────
+// ── Activación inmediata ──────────────────────────────────────────────────────
+// skipWaiting() garantiza que el SW nuevo activa sin esperar tabs cerradas.
+// Esto hace que el precache (incluido index.html) siempre sea el del deploy actual.
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   self.skipWaiting()
-  // Guarda index.html en el install para que navegación funcione offline
-  // desde el primer momento, sin necesidad de haber visitado online antes.
-  // Si la red no está disponible durante el install, no falla el SW.
-  event.waitUntil(
-    caches.open(`navigate-${CV}`)
-      .then((cache) => cache.add('/'))
-      .catch(() => { /* red no disponible al instalar — se llenará en la primera visita online */ })
-  )
 })
 
 self.addEventListener('activate', (event) => {
@@ -32,7 +26,7 @@ self.addEventListener('activate', (event) => {
       .then((names) =>
         Promise.all(
           names
-            .filter((n) => !n.endsWith(`-${CV}`))
+            .filter((n) => !n.endsWith(`-${CV}`) && !n.startsWith('workbox-precache'))
             .map((n) => caches.delete(n))
         )
       )
@@ -93,30 +87,19 @@ self.addEventListener('notificationclick', (event) => {
   )
 })
 
-// ── Precache assets estáticos (sin index.html) ────────────────────────────────
+// ── Precache de todos los assets estáticos + index.html ──────────────────────
+// Workbox asigna un revision hash a index.html; si cambia en el deploy,
+// el nuevo SW (que activa por skipWaiting) lo reemplaza en el precache.
 
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
-// ── Navegación → NetworkFirst con fallback offline a index.html ───────────────
-// Red primero: garantiza index.html fresco en cada deploy.
-// Offline: devuelve el index.html pre-cacheado en el install (SPA shell).
+// ── Navegación SPA → precache de index.html ───────────────────────────────────
+// createHandlerBoundToURL sirve el index.html precacheado para cualquier ruta
+// (/biblia, /lecturas-del-dia, etc.), habilitando offline completo sin fetch.
 
 registerRoute(
-  ({ request }) => request.mode === 'navigate',
-  async ({ request }) => {
-    try {
-      const response = await fetch(request)
-      // Actualiza la caché con el index.html más reciente
-      const cache = await caches.open(`navigate-${CV}`)
-      cache.put('/', response.clone())
-      return response
-    } catch {
-      // Sin red: sirve el SPA shell cacheado en el install
-      const fallback = await caches.match('/', { cacheName: `navigate-${CV}` })
-      return fallback ?? new Response('Sin conexión', { status: 503 })
-    }
-  }
+  new NavigationRoute(createHandlerBoundToURL('/index.html'))
 )
 
 // ── Datos bíblicos → CacheFirst (contenido estático, no cambia) ───────────────
