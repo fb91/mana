@@ -1075,7 +1075,7 @@ function VerseReader({
             <span className={`font-bold text-xs mr-2 select-none align-top leading-6 ${isSelected ? 'text-dorado' : 'text-dorado/70'}`}>
               {verse.number}
             </span>
-            <span className="text-cafe-dark dark:text-crema-200 text-base leading-relaxed">
+            <span className="font-serif text-cafe-dark dark:text-crema-200 text-base leading-snug">
               {verse.text}
             </span>
           </div>
