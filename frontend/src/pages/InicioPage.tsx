@@ -72,7 +72,6 @@ const herramientas: Tool[] = [
 
 export default function InicioPage() {
   const navigate = useNavigate()
-  const lastBiblePath = useAppStore(s => s.lastBiblePath)
   const novenasProgreso = useAppStore(s => s.novenasProgreso)
   const novenaActiva = novenasProgreso.find(p => p.diasCompletados.length < 9) ?? null
   const diaSiguiente = novenaActiva ? (novenaActiva.diaActual ?? 0) + 1 : null
@@ -292,7 +291,6 @@ export default function InicioPage() {
           diaSiguiente={diaSiguiente}
           planActivo={planActivo}
           diaPlanSiguiente={diaPlanSiguiente}
-          lastBiblePath={lastBiblePath}
         />
 
         {/* RECURSOS Section */}

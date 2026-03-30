@@ -36,10 +36,9 @@ interface Props {
   diaSiguiente: number | null
   planActivo: PlanEspiritualProgreso | null
   diaPlanSiguiente: number | null
-  lastBiblePath: string | null
 }
 
-export default function QuickAccessCards({ novenaActiva, diaSiguiente, planActivo, diaPlanSiguiente, lastBiblePath }: Props) {
+export default function QuickAccessCards({ novenaActiva, diaSiguiente, planActivo, diaPlanSiguiente }: Props) {
   const navigate = useNavigate()
 
   return (
@@ -98,33 +97,14 @@ export default function QuickAccessCards({ novenaActiva, diaSiguiente, planActiv
             </div>
           </button>
         )}
-        {lastBiblePath && (
-          <button
-            onClick={() => navigate(lastBiblePath)}
-            className="w-full mb-4 rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                       bg-cafe-dark dark:bg-dorado/90
-                       active:scale-[0.98] transition-all duration-200 shadow-md"
-          >
-            <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
-                Continuar leyendo
-              </p>
-              <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
-                {formatBiblePath(lastBiblePath)}
-              </p>
-            </div>
-            <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
-          </button>
-        )}
       </div>
 
-      {/* Desktop: siempre muestra ambas tarjetas, con placeholder si no hay datos */}
-      <div className="hidden lg:grid grid-cols-2 gap-3 mb-6">
+      {/* Desktop: novena card */}
+      <div className="hidden lg:block mb-6">
         {novenaActiva && diaSiguiente && diaSiguiente <= 9 ? (
           <button
             onClick={() => navigate(`/novenas/${slugify(novenaActiva.nombreNovena)}`)}
-            className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+            className="w-full rounded-2xl text-left flex items-center gap-4 px-5 py-4
                        bg-dorado/15 dark:bg-dorado/10 border border-dorado/30
                        active:scale-[0.98] transition-all duration-200 hover:border-dorado/50 hover:shadow-sm"
           >
@@ -150,7 +130,7 @@ export default function QuickAccessCards({ novenaActiva, diaSiguiente, planActiv
         ) : (
           <button
             onClick={() => navigate('/novenas')}
-            className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
+            className="w-full rounded-2xl text-left flex items-center gap-4 px-5 py-4
                        bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
                        active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
           >
@@ -164,47 +144,6 @@ export default function QuickAccessCards({ novenaActiva, diaSiguiente, planActiv
               </p>
               <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
                 Acompañate con la intercesión de los santos
-              </p>
-            </div>
-            <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
-          </button>
-        )}
-
-        {lastBiblePath ? (
-          <button
-            onClick={() => navigate(lastBiblePath)}
-            className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                       bg-cafe-dark dark:bg-dorado/90
-                       active:scale-[0.98] transition-all duration-200 shadow-sm hover:shadow-md"
-          >
-            <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
-                Continuar leyendo
-              </p>
-              <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
-                {formatBiblePath(lastBiblePath)}
-              </p>
-            </div>
-            <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
-          </button>
-        ) : (
-          <button
-            onClick={() => navigate('/biblia')}
-            className="rounded-2xl text-left flex items-center gap-4 px-5 py-4
-                       bg-crema-100 dark:bg-oscuro-surface border border-crema-200 dark:border-oscuro-border
-                       active:scale-[0.98] transition-all duration-200 hover:border-dorado/30 hover:shadow-sm"
-          >
-            <Icon name="book-open" size={20} className="text-cafe-light dark:text-crema-400 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-cafe-light dark:text-crema-400 mb-0.5">
-                La Biblia
-              </p>
-              <p className="font-serif font-semibold text-cafe-dark dark:text-crema-200 leading-tight">
-                Empezar a leer
-              </p>
-              <p className="text-xs text-cafe-light/70 dark:text-crema-400/70 mt-0.5">
-                Leé cualquier libro y capítulo
               </p>
             </div>
             <Icon name="chevron-right" size={18} className="text-cafe-light/40 dark:text-crema-400/40 flex-shrink-0" />
