@@ -204,6 +204,7 @@ function BookSelector({
   onCitationGo,
   onShowCitations,
   citationCount,
+  lastBiblePath,
 }: {
   books: BibleBook[]
   pinnedBooks: string[]
