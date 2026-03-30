@@ -18,6 +18,7 @@ import AjustesPage from './pages/AjustesPage'
 import AsistentePage from './pages/AsistentePage'
 import PedidoOracionPage from './pages/PedidoOracionPage'
 import { BugReportProvider } from './components/BugReportButton'
+import UpdateBanner from './components/UpdateBanner'
 import { useAppStore, applyTheme, applyFontSize, applyFontFamily, VALID_THEMES } from './store/useAppStore'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -116,6 +117,7 @@ export default function App() {
       <BugReportProvider>
         <div className="min-h-screen bg-token-bg sm:flex sm:justify-center" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
           <AppContent />
+          <UpdateBanner />
         </div>
       </BugReportProvider>
     </BrowserRouter>

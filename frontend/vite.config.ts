@@ -6,6 +6,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // SW custom con injectManifest: control total sobre caching y activación
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'icons/*.svg'],
       manifest: {
@@ -26,61 +30,9 @@ export default defineConfig({
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
-      workbox: {
-        // Incluye los handlers de push y notificationclick en el SW generado
-        importScripts: ['/sw-push.js'],
-
-        // Prefijo para los caches generados por Workbox (precache → mi-pwa-cache-v1-precache-v2)
-        cacheId: 'mi-pwa-cache-v1',
-
-        // Archivos pre-cacheados en el install del SW — excluimos bible_es.json
-        // porque se persiste en IndexedDB libro por libro (más eficiente y sobrevive iOS)
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-
-        // Ruta de fallback para navegación SPA cuando no hay red
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//],
-
-        runtimeCaching: [
-          {
-            // Datos bíblicos: siempre desde caché (no cambian), red como respaldo
-            urlPattern: /\/data\/.*\.json$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'mi-pwa-cache-v1-datos',
-              expiration: {
-                maxAgeSeconds: 365 * 24 * 60 * 60, // 1 año
-                maxEntries: 10
-              },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          },
-          {
-            // Llamadas a la API externa: red primero, caché como respaldo offline
-            urlPattern: /^https:\/\/api\./,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'mi-pwa-cache-v1-api',
-              networkTimeoutSeconds: 5,
-              expiration: { maxAgeSeconds: 300 },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          },
-          {
-            // Supabase REST API: red primero, caché como respaldo offline (7 días)
-            urlPattern: /^https:\/\/[^/]+\.supabase\.co\//,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'mi-pwa-cache-v1-supabase',
-              networkTimeoutSeconds: 5,
-              expiration: {
-                maxAgeSeconds: 7 * 24 * 60 * 60,
-                maxEntries: 50,
-              },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          }
-        ]
+      injectManifest: {
+        // Sin html: index.html nunca se precachea; se sirve siempre desde red (NetworkFirst)
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
       },
       devOptions: {
         enabled: false
