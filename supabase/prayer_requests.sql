@@ -18,9 +18,9 @@ CREATE POLICY "public insert prayer_requests"
   TO anon
   WITH CHECK (true);
 
--- Solo se pueden leer pedidos de los últimos 7 días
+-- Solo se pueden leer pedidos de los últimos 7 días (anon y autenticados)
 CREATE POLICY "public read recent prayer_requests"
   ON prayer_requests
   FOR SELECT
-  TO anon
+  TO anon, authenticated
   USING (created_at > now() - interval '7 days');
