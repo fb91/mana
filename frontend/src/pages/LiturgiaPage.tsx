@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
-import PageHeader from '../components/PageHeader'
 import Icon from '../components/Icon'
 import { api, BibleVerse, LectioBiblicaResponse, BibleChapter } from '../services/api'
 import { downloadLectioPDF } from '../lib/lectio-pdf'
@@ -648,11 +647,22 @@ export default function LiturgiaPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      <PageHeader
-        icon={<Icon name="cross" size={18} />}
-        title="Evangelio del día"
-        subtitle={resolvedDay?.label ?? ''}
-      />
+      <header className="sticky top-0 z-10 bg-crema/95 dark:bg-oscuro-bg/95 backdrop-blur-sm
+                          border-b border-crema-200 dark:border-oscuro-border px-5 py-4
+                          lg:static lg:z-auto lg:bg-transparent lg:dark:bg-transparent lg:backdrop-blur-none">
+        <div className="flex items-center gap-3">
+          <h1 className="font-serif text-5xl font-semibold text-cafe-dark dark:text-crema-200 leading-none lg:text-3xl">
+            Maná
+          </h1>
+          <div className="w-px h-8 bg-crema-300 dark:bg-oscuro-border" />
+          <div>
+            <p className="text-sm font-semibold text-cafe-dark dark:text-crema-200 leading-tight">Evangelio del día</p>
+            {resolvedDay?.label && (
+              <p className="text-xs text-cafe-light dark:text-crema-300">{resolvedDay.label}</p>
+            )}
+          </div>
+        </div>
+      </header>
 
       <div className="flex-1 overflow-y-auto pb-24">
 
