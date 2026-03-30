@@ -6,17 +6,36 @@ export function useServiceWorkerUpdate() {
   useEffect(() => {
     if (!navigator.serviceWorker) return
 
-    // Si ya hay un controller al montar, cualquier cambio posterior es una actualización real.
-    // Si no hay controller, el primer 'controllerchange' es la instalación inicial (no update).
-    const hadController = Boolean(navigator.serviceWorker.controller)
+    // En una SPA las rutas son pushState — el browser nunca hace un request real
+    // y por lo tanto nunca checkea si el SW cambió. Debemos pedirlo nosotros.
+    const checkForUpdate = () => {
+      navigator.serviceWorker.getRegistration().then((reg) => reg?.update()).catch(() => {})
+    }
 
+    // Check inmediato al montar
+    checkForUpdate()
+
+    // Check al volver al foco (visibilitychange para Android, focus para iOS standalone)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') checkForUpdate()
+    }
+    const handleFocus = () => checkForUpdate()
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('focus', handleFocus)
+
+    // Detectar cuando el nuevo SW toma control
+    // hadController=true → ya había SW activo → el cambio es una actualización real
+    const hadController = Boolean(navigator.serviceWorker.controller)
     const handleControllerChange = () => {
       if (hadController) setHasUpdate(true)
     }
-
     navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+
     return () => {
       navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [])
 
