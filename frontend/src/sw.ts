@@ -12,10 +12,18 @@ declare const self: ServiceWorkerGlobalScope & {
 // Bump cuando quieras invalidar todos los runtime caches
 const CV = 'v2'
 
-// ── Activación inmediata ──────────────────────────────────────────────────────
+// ── Activación inmediata + pre-cache de index.html ───────────────────────────
 
-self.addEventListener('install', () => {
+self.addEventListener('install', (event) => {
   self.skipWaiting()
+  // Guarda index.html en el install para que navegación funcione offline
+  // desde el primer momento, sin necesidad de haber visitado online antes.
+  // Si la red no está disponible durante el install, no falla el SW.
+  event.waitUntil(
+    caches.open(`navigate-${CV}`)
+      .then((cache) => cache.add('/'))
+      .catch(() => { /* red no disponible al instalar — se llenará en la primera visita online */ })
+  )
 })
 
 self.addEventListener('activate', (event) => {
@@ -90,15 +98,25 @@ self.addEventListener('notificationclick', (event) => {
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
-// ── Navegación → NetworkFirst (nunca sirve index.html cacheado) ───────────────
+// ── Navegación → NetworkFirst con fallback offline a index.html ───────────────
+// Red primero: garantiza index.html fresco en cada deploy.
+// Offline: devuelve el index.html pre-cacheado en el install (SPA shell).
 
 registerRoute(
   ({ request }) => request.mode === 'navigate',
-  new NetworkFirst({
-    cacheName: `navigate-${CV}`,
-    networkTimeoutSeconds: 5,
-    plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
-  })
+  async ({ request }) => {
+    try {
+      const response = await fetch(request)
+      // Actualiza la caché con el index.html más reciente
+      const cache = await caches.open(`navigate-${CV}`)
+      cache.put('/', response.clone())
+      return response
+    } catch {
+      // Sin red: sirve el SPA shell cacheado en el install
+      const fallback = await caches.match('/', { cacheName: `navigate-${CV}` })
+      return fallback ?? new Response('Sin conexión', { status: 503 })
+    }
+  }
 )
 
 // ── Datos bíblicos → CacheFirst (contenido estático, no cambia) ───────────────
