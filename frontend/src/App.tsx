@@ -115,9 +115,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <BugReportProvider>
-        <div className="min-h-screen bg-token-bg sm:flex sm:justify-center" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
-          <AppContent />
+        <div className="min-h-screen bg-token-bg sm:flex sm:flex-col sm:justify-start sm:items-center" style={{ backgroundColor: 'rgb(var(--color-bg))' }}>
           <UpdateBanner />
+          <AppContent />
         </div>
       </BugReportProvider>
     </BrowserRouter>

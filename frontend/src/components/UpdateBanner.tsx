@@ -8,14 +8,14 @@ export default function UpdateBanner() {
   return (
     <div
       role="alert"
-      className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm"
-      style={{ background: 'rgb(var(--color-card))', border: '1px solid rgb(var(--accent) / 0.3)' }}
+      className="w-full flex items-center justify-between px-4 py-2.5 gap-3"
+      style={{ background: 'rgb(var(--accent))', color: '#fff' }}
     >
-      <span style={{ color: 'rgb(var(--color-text))' }}>Nueva versión disponible</span>
+      <span className="text-sm font-medium">Nueva versión disponible</span>
       <button
         onClick={reload}
-        className="font-semibold px-3 py-1 rounded-lg transition-opacity hover:opacity-80 active:opacity-60"
-        style={{ background: 'rgb(var(--accent))', color: '#fff' }}
+        className="shrink-0 text-sm font-semibold px-3 py-1 rounded-lg"
+        style={{ background: 'rgba(255,255,255,0.2)' }}
       >
         Actualizar
       </button>
