@@ -8,6 +8,7 @@ import Icon from '../components/Icon'
 import { BugReportLink } from '../components/BugReportButton'
 import SaveCitationModal from '../components/SaveCitationModal'
 import ImageEditorModal, { type ImageEditorData } from '../components/ImageEditorModal'
+import { formatBiblePath } from '../components/QuickAccessCards'
 
 // ── Citation parser ────────────────────────────────────────────────────────────
 interface ParsedCitation {
@@ -203,6 +204,7 @@ function BookSelector({
   onCitationGo,
   onShowCitations,
   citationCount,
+  lastBiblePath,
 }: {
   books: BibleBook[]
   pinnedBooks: string[]
@@ -212,7 +214,9 @@ function BookSelector({
   onCitationGo: (parsed: ParsedCitation) => void
   onShowCitations: () => void
   citationCount: number
+  lastBiblePath: string | null
 }) {
+  const navigate = useNavigate()
   const pinnedCardRef = useRef<HTMLButtonElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortMode, setSortMode] = useState<'organic' | 'alpha'>('organic')
@@ -345,6 +349,29 @@ function BookSelector({
           </button>
         )}
       </div>
+
+      {/* Continuar leyendo */}
+      {!isSearching && lastBiblePath && (
+        <div className="px-4 mb-4">
+          <button
+            onClick={() => navigate(lastBiblePath)}
+            className="w-full rounded-2xl text-left flex items-center gap-4 px-5 py-4
+                       bg-cafe-dark dark:bg-dorado/90
+                       active:scale-[0.98] transition-all duration-200 shadow-md"
+          >
+            <Icon name="book-open" size={20} className="text-crema/70 dark:text-cafe-dark/70 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-crema/60 dark:text-cafe-dark/60 mb-0.5">
+                Continuar leyendo
+              </p>
+              <p className="font-serif font-semibold text-crema dark:text-cafe-dark leading-tight truncate">
+                {formatBiblePath(lastBiblePath)}
+              </p>
+            </div>
+            <Icon name="chevron-right" size={18} className="text-crema/50 dark:text-cafe-dark/50 flex-shrink-0" />
+          </button>
+        </div>
+      )}
 
       {/* Fijados section (only when not searching or when pinned match) */}
       {!isSearching && pinned.length > 0 && (
@@ -1249,7 +1276,7 @@ export default function BibliaPage() {
   const { book: urlBook, chapter: urlChapter } = useParams<{ book?: string; chapter?: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { pinnedBooks, togglePinnedBook, setLastBiblePath, savedCitations } = useAppStore()
+  const { pinnedBooks, togglePinnedBook, setLastBiblePath, savedCitations, lastBiblePath } = useAppStore()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const [books, setBooks] = useState<BibleBook[]>([])
@@ -1414,6 +1441,7 @@ export default function BibliaPage() {
             onCitationGo={handleCitationGo}
             onShowCitations={() => setView('citas')}
             citationCount={savedCitations.length}
+            lastBiblePath={lastBiblePath}
           />
         ) : view === 'citas' ? (
           <CitationsView
