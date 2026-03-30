@@ -166,12 +166,12 @@ function OtherReadingsBanner({
       {/* Toggle header */}
       <button
         onClick={onToggleOpen}
-        className="w-full flex items-center justify-between px-4 py-3.5
+        className="w-full flex items-center justify-between px-4 py-3
                    active:bg-crema-50 dark:active:bg-oscuro-bg transition-colors"
       >
-        <div className="flex items-center gap-2.5">
-          <span className="text-base">📖</span>
-          <span className="text-sm font-semibold text-cafe-dark dark:text-crema-200">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm">📖</span>
+          <span className="text-xs font-medium text-cafe-dark dark:text-crema-200">{label}</span>
         </div>
         <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform duration-200
                          bg-crema-100 dark:bg-oscuro-bg ${open ? 'rotate-180' : ''}`}>
@@ -265,10 +265,10 @@ function GospelCard({
           <p className="text-sm text-cafe-light dark:text-crema-300">Cargando evangelio...</p>
         </div>
       ) : verses && verses.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {verses.map((v) => (
-            <p key={v.number} className="font-serif text-[17px] text-cafe-dark dark:text-crema-200 leading-relaxed">
-              <span className="text-dorado font-bold text-xs mr-2 align-top leading-7 select-none">
+            <p key={v.number} className="font-serif text-[17px] text-cafe-dark dark:text-crema-200 leading-snug">
+              <span className="text-dorado font-bold text-xs mr-2 align-top leading-6 select-none">
                 {v.number}
               </span>
               {v.text}
